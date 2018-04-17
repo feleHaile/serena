@@ -160,7 +160,7 @@ def dnToTOA (inPath, outPath, sensor) :
         for j in range(bandCount):
             dnArray=g.GetRasterBand(j+1).ReadAsArray()
             radArray[:,:,j]=dnArray*0.01
-            toaArray[:,:,j]=radArray[:,:,j]*(pi*ESUN**ESUN/dicEAI[j+1]*cos(SOLAR_ZENITH*pi/180))
+            toaArray[:,:,j]=radArray[:,:,j]*(pi*(ESUN**ESUN)/dicEAI[j+1]*cos(SOLAR_ZENITH*pi/180))
         toaArray=sp.where(toaArray==0,sp.nan,toaArray)
         toaArray=sp.round_(toaArray*10000)
         
@@ -440,11 +440,11 @@ def Mos_Resize (inPath,outPath, inShpFile, sensor) :
     
     if sensor == 0 :
         outName = 'Planet_'+lstFiles[0].split('_')[0][:4]+'_'+lstFiles[0].split('_')[0][4:6]+'_'+lstFiles[0].split('_')[0][6:8]+'_MOS_RESIZE.tif'
+        Command = ["gdalwarp",'-overwrite',"-tr", "%s"%3, "%s"%3, "-co", "COMPRESS=LZW", "-srcnodata", "%s"%sp.nan , "-dstnodata", "%s"%sp.nan, "-multi", "-te","%s" %ulx,"%s" %lry,"%s" %lrx,"%s" %uly]
     elif sensor == 1:
         outName = 'RapidEye_'+lstFiles[0].split('_')[1][:4]+'_'+lstFiles[0].split('_')[1][5:7]+'_'+lstFiles[0].split('_')[1][8:10]+'_MOS_RESIZE.tif'
+        Command = ["gdalwarp",'-overwrite',"-tr", "%s"%5, "%s"%5, "-co", "COMPRESS=LZW", "-srcnodata", "%s"%sp.nan , "-dstnodata", "%s"%sp.nan, "-multi", "-te","%s" %ulx,"%s" %lry,"%s" %lrx,"%s" %uly]
         
-    Command = ["gdalwarp",'-overwrite', "-co", "COMPRESS=LZW", "-srcnodata", "%s"%sp.nan , "-dstnodata", "%s"%sp.nan, "-multi", "-te","%s" %ulx,"%s" %lry,"%s" %lrx,"%s" %uly]
-    
     for file in lstFiles : 
         Command += [os.path.join(inPath,file)]
         
