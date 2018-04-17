@@ -460,13 +460,16 @@ if  __name__=='__main__':
     
     ################################## PLANETSCOPE & RAPIDEYE #####################################
     
-#    inPath="/home/je/Bureau/Stage/Gbodjo_2018/Data/Brutes/PLANET/2017_07_27"
-#    outPath="/home/je/Bureau/Stage/Output/PlanetScope"
-#    sensor=0
-#    lstFolders = [folder for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
-#    for foldername in lstFolders :
-#        dnToTOA(os.path.join(inPath,foldername), outPath, sensor)
-#        print (foldername + ' OK')
+    inPath="/home/je/Bureau/Stage/Gbodjo_2018/Data/Brutes/RAPIDEYE"
+    outPath="/home/je/Bureau/Stage/Output/RapidEye"
+    sensor=1
+    lstFolders = [folder for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+    for foldername in lstFolders :
+#        print (foldername)
+        lstSubFolders = [folder for folder in os.listdir(os.path.join(inPath,foldername)) if os.path.isdir(os.path.join(inPath,foldername,folder))]
+        for subfoldername in lstSubFolders :
+            dnToTOA(os.path.join(inPath,foldername,subfoldername), outPath, sensor)
+            print (subfoldername + ' OK')
     
 #    def process_folder(foldername) :
 #        outPath="/home/je/Bureau/Stage/Output/RapidEye"
@@ -493,8 +496,10 @@ if  __name__=='__main__':
     ################################## PLANETSCOPE & RAPIDEYE #####################################
 #                                        MOSAIC AND RESIZE
     
-    inPath="/home/je/Bureau/Stage/Output/RapidEye/20170727"
+    inPath="/home/je/Bureau/Stage/Output/RapidEye"
     outPath="/home/je/Bureau/Stage/Output/RapidEye"
     inShpFile="/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone_Corr.shp"
     sensor = 1
-    Mos_Resize (inPath,outPath, inShpFile, sensor)
+    lstFolders = [folder for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+    for foldername in lstFolders :
+        Mos_Resize (os.path.join(inPath,foldername),outPath, inShpFile, sensor)
