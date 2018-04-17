@@ -21,6 +21,7 @@ Fonctions de calcul des indices spectraux /et texturaux?
 import gdal
 from osgeo import gdal_array
 import ogr
+#import osr
 import scipy as sp
 import os
 import re
@@ -29,6 +30,8 @@ import json
 #from lxml import etree
 #from multiprocessing import Pool
 from math import cos,pi
+import sys
+import subprocess
 
 def dnToTOA (inPath, outPath, sensor) :
     """
@@ -60,13 +63,14 @@ def dnToTOA (inPath, outPath, sensor) :
     #    print (lstBand, lstRCoef)
         for i in range(len(lstBand)):
             dicMetadata.update({lstBand[i]:lstRCoef[i]})
-    #    print (dicMetadata)
+#        print (dicMetadata)
         
         # Open Raster File and Convert DN to TOA Reflectance
         
         g=gdal.Open(os.path.join(inPath,inRaster),gdal.GA_ReadOnly)
         if g is None:
             print ('Can\'t open Analystic MS File. Please Check it.')
+            sys.exit (1)
     #    print (g)
         geoT = g.GetGeoTransform()
         Proj = g.GetProjection()
@@ -78,14 +82,14 @@ def dnToTOA (inPath, outPath, sensor) :
         for j in range(bandCount):
             dnArray=g.GetRasterBand(j+1).ReadAsArray()
             toaArray[:,:,j]=dnArray*dicMetadata[j+1]
-            toaArray[:,:,j]=sp.where(toaArray[:,:,j]==0,sp.nan,toaArray[:,:,j])
-            toaArray=sp.round_(toaArray*10000)
-        #toaArray=sp.where(toaArray==0,sp.nan,toaArray)
+#            toaArray[:,:,j]=sp.where(toaArray[:,:,j]==0,sp.nan,toaArray[:,:,j])
+        toaArray=sp.round_(toaArray*10000)
+        toaArray=sp.where(toaArray==0,sp.nan,toaArray)
         
         # Write TOA Reflectance Image in GeoTiff
         outName=inRaster[:-4]+'_TOA.tif'
     #    print (outName)
-        outFolder=os.path.join(outPath,inRaster.split('_')[0])
+        outFolder=os.path.join(outPath,inRaster.split('_')[0][:4]+'_'+inRaster.split('_')[0][4:6]+'_'+inRaster.split('_')[0][6:8])
         if not os.path.isdir(outFolder):
             os.makedirs(outFolder)
             
@@ -143,6 +147,7 @@ def dnToTOA (inPath, outPath, sensor) :
         g=gdal.Open(os.path.join(inPath,inRaster),gdal.GA_ReadOnly)
         if g is None:
             print ('Can\'t open Analystic File. Please Check it.')
+            sys.exit (1)
     #    print (g)
         geoT = g.GetGeoTransform()
         Proj = g.GetProjection()
@@ -163,7 +168,7 @@ def dnToTOA (inPath, outPath, sensor) :
         
         outName=inRaster[:-4]+'_TOA.tif'
     #    print (outName)
-        outFolder=os.path.join(outPath,os.path.basename(inPath).split('_')[0])
+        outFolder=os.path.join(outPath,os.path.basename(inPath).split('_')[0][:4]+'_'+os.path.basename(inPath).split('_')[0][4:6]+'_'+os.path.basename(inPath).split('_')[0][6:8])
         if not os.path.isdir(outFolder):
             os.makedirs(outFolder)
   
@@ -198,13 +203,20 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
     
     """
     
-    # Get Study Zone Extent
+    # Get Study Zone Extent 
     driver = ogr.GetDriverByName('ESRI Shapefile')
     ds = driver.Open(inShpFile, gdal.GA_ReadOnly)
     if ds is None:
         print ('Couldn\'t open ShapeFile. Please Check it.')
+        sys.exit (1)
 #    print (ds)
     layer = ds.GetLayer()
+
+#    print (layer.GetFeatureCount())
+#    for i in range(1, layer.GetFeatureCount()):
+#        feature = layer.GetFeature(i)
+
+# layer Extent Case
     extent = layer.GetExtent()
 #    print (extent)
     ulx = extent[0]
@@ -213,6 +225,65 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
     lry = extent[2]
     
     ds.Destroy()
+    
+    """
+    feature = layer.GetFeature(0)
+    geometry = feature.GetGeometryRef()
+#    print (geometry)
+    
+    # Get Envelope returns a tuple (minX, maxX, minY, maxY)
+    env = geometry.GetEnvelope()
+#    print (env)
+    ulx = env[0]
+    uly = env[3]
+    lrx = env[1]
+    lry = env[2]
+#    print (ulx,uly,lrx,lry)
+    
+
+    coordSys = osr.SpatialReference()
+    coordSys.ImportFromEPSG(32628)
+
+    # write New Shapefile and GeoJSON with feature
+    
+    # Shapefile
+    outDS = driver.CreateDataSource('/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone_Corr.shp')
+    if outDS is None:
+        print ('Could not create file')
+        sys.exit (1)
+    outLayer = outDS.CreateLayer('/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone_Corr.shp', srs=coordSys, geom_type=ogr.wkbPolygon)
+    featureDefn = outLayer.GetLayerDefn()
+    # Creation d’une forme par recopie
+    outFeature = ogr.Feature(featureDefn)
+    outFeature.SetGeometry(geometry)
+    # Ajouter de la forme a la couche de sortie
+    outLayer.CreateFeature(outFeature)
+    # destruction des formes
+    geometry.Destroy()
+    outFeature.Destroy()
+    outDS.Destroy()
+    
+    #GeoJSON
+    # Create the output Driver
+    outDriver = ogr.GetDriverByName('GeoJSON')
+    # Create the output GeoJSON
+    outDataSource = outDriver.CreateDataSource('/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone.geojson')
+    outLayer = outDataSource.CreateLayer('/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone.geojson', srs=coordSys, geom_type=ogr.wkbPolygon )
+    # Get the output Layer's Feature Definition
+    featureDefn = outLayer.GetLayerDefn()
+    # create a new feature
+    outFeature = ogr.Feature(featureDefn)
+    # Set new geometry
+    outFeature.SetGeometry(geometry)
+    # Add new feature to output Layer
+    outLayer.CreateFeature(outFeature)
+    #destroy Geometry
+    geometry.Destroy()
+    # dereference the feature
+    outFeature = None
+    # Save and close DataSources
+    outDataSource = None
+    """
     
     # Define some lists
     if option == "SRE":
@@ -233,6 +304,7 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
                 gi=gdal.Open(os.path.join(inPath,file),gdal.GA_ReadOnly)
                 if gi is None:
                     print ('Can\'t open {}. Please Check it.'.format(file))
+                    sys.exit (1)
             #    print (g)
                 if compteur == 0 :
                     geoT = gi.GetGeoTransform()
@@ -267,6 +339,7 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
                 gi=gdal.Open(os.path.join(inPath,file),gdal.GA_ReadOnly)
                 if gi is None:
                     print ('Can\'t open {}. Please Check it.'.format(file))
+                    sys.exit (1)
             #    print (g)
                 if compteur == 0 :
                     geoT2 = gi.GetGeoTransform()
@@ -329,30 +402,99 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
     
     ds=None
     driver=None
-        
-if  __name__=='__main__':
-    """
-    inPath="/home/je/Bureau/Stage/Gbodjo_2018/Data/Brutes/RAPIDEYE/2017_07_27"
-#    outPath="/home/je/Bureau/Stage/Output/RapidEye"
-#    sensor=1
-#    dnToTOA(inPath, outPath, sensor)
-    def process_folder(foldername) :
-        outPath="/home/je/Bureau/Stage/Output/RapidEye"
-        sensor=1
-        
-        dnToTOA(os.path.join(inPath,foldername), outPath, sensor)
-        return foldername
+    
 
-    pool = Pool(processes=4)
-    lstFolders = [folder for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
-#    print (lstFolders)
-    results = pool.imap(process_folder, lstFolders)
+def Mos_Resize (inPath,outPath, inShpFile, sensor) :
+    """
+    Mosaiquer et découper selon l'extent du fichier vecteur Shape, les images PLanetScope ou RapidEye 
+    correspondant à une même date.
+    Input : Dossier contenant toutes les images à mosaiquer
+    Output : Image mosaiquée et découpée selon l'emprise du Shapefile
+    
+    """
+    # Get Study Zone Extent 
+    driver = ogr.GetDriverByName('ESRI Shapefile')
+    ds = driver.Open(inShpFile, gdal.GA_ReadOnly)
+    if ds is None:
+        print ('Couldn\'t open ShapeFile. Please Check it.')
+        sys.exit (1)
+#    print (ds)
+    layer = ds.GetLayer()
+
+#    print (layer.GetFeatureCount())
+#    for i in range(1, layer.GetFeatureCount()):
+#        feature = layer.GetFeature(i)
+
+# layer Extent Case
+    extent = layer.GetExtent()
+#    print (extent)
+    ulx = extent[0]
+    uly = extent[3]
+    lrx = extent[1]
+    lry = extent[2]
+    
+    ds.Destroy()
+    
+    lstFiles = [file for file in os.listdir(inPath) if file.endswith('.tif')]
+#    print (lstFiles)
+    
+    if sensor == 0 :
+        outName = 'Planet_'+lstFiles[0].split('_')[0][:4]+'_'+lstFiles[0].split('_')[0][4:6]+'_'+lstFiles[0].split('_')[0][6:8]+'_MOS_RESIZE.tif'
+    elif sensor == 1:
+        outName = 'RapidEye_'+lstFiles[0].split('_')[1][:4]+'_'+lstFiles[0].split('_')[1][5:7]+'_'+lstFiles[0].split('_')[1][8:10]+'_MOS_RESIZE.tif'
+        
+    Command = ["gdalwarp",'-overwrite', "-co", "COMPRESS=LZW", "-srcnodata", "%s"%sp.nan , "-dstnodata", "%s"%sp.nan, "-multi", "-te","%s" %ulx,"%s" %lry,"%s" %lrx,"%s" %uly]
+    
+    for file in lstFiles : 
+        Command += [os.path.join(inPath,file)]
+        
+    Command+=[os.path.join(outPath,outName)]
+#    print (Command)
+   
+    process=subprocess.Popen(Command, stderr=subprocess.PIPE,stdout=subprocess.PIPE)
+    out,err = process.communicate()
+    print (out,err)
+    
+    
+if  __name__=='__main__':
+    
+    ################################## PLANETSCOPE & RAPIDEYE #####################################
+    
+#    inPath="/home/je/Bureau/Stage/Gbodjo_2018/Data/Brutes/PLANET/2017_07_27"
+#    outPath="/home/je/Bureau/Stage/Output/PlanetScope"
+#    sensor=0
+#    lstFolders = [folder for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+#    for foldername in lstFolders :
+#        dnToTOA(os.path.join(inPath,foldername), outPath, sensor)
+#        print (foldername + ' OK')
+    
+#    def process_folder(foldername) :
+#        outPath="/home/je/Bureau/Stage/Output/RapidEye"
+#        sensor=1
+#        
+#        dnToTOA(os.path.join(inPath,foldername), outPath, sensor)
+#        return foldername
+#
+#    pool = Pool(processes=4)
+#    lstFolders = [folder for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+##    print (lstFolders)
+#    results = pool.imap(process_folder, lstFolders)
    
 #    for result in results :
 #        print (result)
-    """
-    ##################################################################################
-    inPath="/home/je/Bureau/Stage/Gbodjo_2018/Data/Brutes/S2/SENTINEL2A_20170727-114348-215_L2A_T28PCB_D_V1-4"
-    outPath="/home/je/Bureau/Stage/Output/Sentinel-2"
-    inShpFile="/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone.shp"
-    Resample_Resize_Stack_S2 (inPath, outPath, inShpFile)
+
+    ################################### SENTINEL-2 ######################################
+    
+#    inPath="/home/je/Bureau/Stage/Gbodjo_2018/Data/Brutes/S2/SENTINEL2A_20170727-114348-215_L2A_T28PCB_D_V1-4"
+#    outPath="/home/je/Bureau/Stage/Output/Sentinel-2"
+#    inShpFile="/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone_Corr.shp"
+#    Resample_Resize_Stack_S2 (inPath, outPath, inShpFile)
+    
+    ################################## PLANETSCOPE & RAPIDEYE #####################################
+#                                        MOSAIC AND RESIZE
+    
+    inPath="/home/je/Bureau/Stage/Output/RapidEye/20170727"
+    outPath="/home/je/Bureau/Stage/Output/RapidEye"
+    inShpFile="/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone_Corr.shp"
+    sensor = 1
+    Mos_Resize (inPath,outPath, inShpFile, sensor)
