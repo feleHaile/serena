@@ -31,7 +31,9 @@ def compute_index (inPath, outPath, lstIndex) :
         ChlRE (Chlorophylle RE)                                 -->  RE / PIR
         GDVI (Green Difference Vegetation Index)                -->
         GLI (Green Leaf Index)                                  -->
-        MSAVI2 (Modified Soil Adjusted Vegetation Index)        -->
+        
+        MSAVI2 (Modified Soil Adjusted Vegetation Index)        --> à tester
+        
         NDRE (Normalized Difference Red Edge)                   -->
         PSRI-NIR (Plant Senescence Reflectance Index -NIR)      -->
         RE (Red Edge)                                           -->
