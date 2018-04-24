@@ -28,38 +28,10 @@ import re
 import xml.etree.ElementTree as ET
 import json
 #from lxml import etree
-from multiprocessing import Pool
+#from multiprocessing import Pool
 from math import cos,pi
 import sys
 import subprocess
-import time
-#import concurrent.futures
-
-def get_datatype (dataset):
-    
-    # Get the type of the data
-    gdal_dt = dataset.GetRasterBand(1).DataType
-    if gdal_dt == gdal.GDT_Byte:
-        datatype = 'uint8'
-    elif gdal_dt == gdal.GDT_Int16:
-        datatype = 'int16'
-    elif gdal_dt == gdal.GDT_UInt16:
-        datatype = 'uint16'
-    elif gdal_dt == gdal.GDT_Int32:
-        datatype = 'int32'
-    elif gdal_dt == gdal.GDT_UInt32:
-        datatype = 'uint32'
-    elif gdal_dt == gdal.GDT_Float32:
-        datatype = 'float32'
-    elif gdal_dt == gdal.GDT_Float64:
-        datatype = 'float64'
-    elif gdal_dt == gdal.GDT_CInt16 or gdal_dt == gdal.GDT_CInt32 or gdal_dt == gdal.GDT_CFloat32 or gdal_dt == gdal.GDT_CFloat64 :
-        datatype = 'complex64'
-    else:
-        print ('Data type unkown')
-        exit()
-
-    return datatype
 
 def dnToTOA (inPath, outPath, sensor) :
     """
@@ -105,12 +77,14 @@ def dnToTOA (inPath, outPath, sensor) :
         x_size = g.RasterXSize  # Raster xsize
         y_size = g.RasterYSize  # Raster ysize
         bandCount=g.RasterCount
-        nodata = g.GetRasterBand(1).GetNoDataValue()
-
-        toaArray=sp.empty((y_size,x_size,bandCount),dtype=get_datatype(g))
+        
+        toaArray=sp.empty((y_size,x_size,bandCount),dtype=sp.float64)
         for j in range(bandCount):
             dnArray=g.GetRasterBand(j+1).ReadAsArray()
-            toaArray[:,:,j]=sp.round_(dnArray*dicMetadata[j+1]*10000)
+            toaArray[:,:,j]=dnArray*dicMetadata[j+1]
+#            toaArray[:,:,j]=sp.where(toaArray[:,:,j]==0,sp.nan,toaArray[:,:,j])
+        toaArray=sp.round_(toaArray*10000)
+        toaArray=sp.where(toaArray==0,sp.nan,toaArray)
         
         # Write TOA Reflectance Image in GeoTiff
         outName=inRaster[:-4]+'_TOA.tif'
@@ -129,13 +103,12 @@ def dnToTOA (inPath, outPath, sensor) :
         ds.SetProjection(Proj)
         for k in range(bandCount):
             ds.GetRasterBand(k+1).WriteArray(toaArray[:,:,k])
-            if nodata != None :
-                ds.GetRasterBand(k+1).SetNoDataValue(nodata)
         
         g=None
         ds=None
         driver=None
         
+    #    print (datatype)
 
     elif sensor == 1 : # RapidEye
         # Search MS Image and Metadata XML File
@@ -181,14 +154,16 @@ def dnToTOA (inPath, outPath, sensor) :
         x_size = g.RasterXSize  # Raster xsize
         y_size = g.RasterYSize  # Raster ysize
         bandCount=g.RasterCount
-        nodata = g.GetRasterBand(1).GetNoDataValue()
         
-        toaArray=sp.empty((y_size,x_size,bandCount),dtype=get_datatype(g))
+        radArray=sp.empty((y_size,x_size,bandCount),dtype=sp.float64)
+        toaArray=sp.empty((y_size,x_size,bandCount),dtype=sp.float64)
         for j in range(bandCount):
             dnArray=g.GetRasterBand(j+1).ReadAsArray()
-           
-            toaArray[:,:,j]=sp.round_(dnArray*0.01*(pi*(ESUN**ESUN)/dicEAI[j+1]*cos(SOLAR_ZENITH*pi/180))*10000)
-            
+            radArray[:,:,j]=dnArray*0.01
+            toaArray[:,:,j]=radArray[:,:,j]*(pi*(ESUN**ESUN)/dicEAI[j+1]*cos(SOLAR_ZENITH*pi/180))
+        toaArray=sp.where(toaArray==0,sp.nan,toaArray)
+        toaArray=sp.round_(toaArray*10000)
+        
         # Save TOA Reflectance Image in GeoTiff
         
         outName=inRaster[:-4]+'_TOA.tif'
@@ -207,8 +182,6 @@ def dnToTOA (inPath, outPath, sensor) :
         ds.SetProjection(Proj)
         for k in range(bandCount):
             ds.GetRasterBand(k+1).WriteArray(toaArray[:,:,k])
-            if nodata != None :
-                ds.GetRasterBand(k+1).SetNoDataValue(nodata)
         
         g=None
         ds=None
@@ -339,7 +312,6 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
                     originY = geoT[3] 
                     pixelWidth = geoT[1]
                     pixelHeight = geoT[5]
-                    nodata = gi.GetRasterBand(1).GetNoDataValue()
                     
                     Proj = gi.GetProjection()
                     
@@ -350,7 +322,7 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
                     ysize = int((uly - lry)/pixelWidth)  # Raster ysize lines
                     
                     newGeoT=(ulx,pixelWidth,geoT[2],uly,geoT[4],pixelHeight)
-                    band10Array=sp.empty((ysize,xsize,len(lstBand10)),dtype=get_datatype(gi))
+                    band10Array=sp.empty((ysize,xsize,len(lstBand10)),dtype=sp.int16)
                     
                 band10Array[:,:,compteur]=gi.GetRasterBand(1).ReadAsArray(xOffset,yOffset,xsize,ysize)
                 compteur+=1
@@ -358,7 +330,7 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
     
     # Resample 20m Images Bands 
     
-    
+    resampleArray=sp.empty((ysize,xsize,len(lstBand20)),dtype=sp.int16)
     compteur=0
     for bandNumber in lstBand20 :
         for file in lstFiles :
@@ -381,7 +353,6 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
                     
                     xsize2 = int((lrx - ulx)/pixelWidth2)  # Raster xsize col
                     ysize2 = int((uly - lry)/pixelWidth2)  # Raster ysize lines
-                    resampleArray=sp.empty((ysize,xsize,len(lstBand20)),dtype=get_datatype(gi))
                     
                 biArray=gi.GetRasterBand(1).ReadAsArray(xOffset2,yOffset2,xsize2,ysize2)
                 dataType=gdal_array.NumericTypeCodeToGDALTypeCode(biArray.dtype)
@@ -428,8 +399,6 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
     ds.SetProjection(Proj)
     for k in range(StackArray.shape[2]):
         ds.GetRasterBand(k+1).WriteArray(StackArray[:,:,k])
-        if nodata != None :
-            ds.GetRasterBand(k+1).SetNoDataValue(nodata)
     
     ds=None
     driver=None
@@ -452,6 +421,11 @@ def Mos_Resize (inPath,outPath, inShpFile, sensor) :
 #    print (ds)
     layer = ds.GetLayer()
 
+#    print (layer.GetFeatureCount())
+#    for i in range(1, layer.GetFeatureCount()):
+#        feature = layer.GetFeature(i)
+
+# layer Extent Case
     extent = layer.GetExtent()
 #    print (extent)
     ulx = extent[0]
@@ -464,15 +438,12 @@ def Mos_Resize (inPath,outPath, inShpFile, sensor) :
     lstFiles = [file for file in os.listdir(inPath) if file.endswith('.tif')]
 #    print (lstFiles)
     
-    g=gdal.Open(os.path.join(inPath,lstFiles[0]))
-    nodata = g.GetRasterBand(1).GetNoDataValue()
-    
     if sensor == 0 :
         outName = 'Planet_'+lstFiles[0].split('_')[0][:4]+'_'+lstFiles[0].split('_')[0][4:6]+'_'+lstFiles[0].split('_')[0][6:8]+'_MOS_RESIZE.tif'
-        Command = ["gdalwarp",'-overwrite',"-tr", "%s"%3, "%s"%3, "-co", "COMPRESS=LZW", "-srcnodata", "%s"%nodata , "-dstnodata", "%s"%nodata, "-multi", "-te","%s" %ulx,"%s" %lry,"%s" %lrx,"%s" %uly]
+        Command = ["gdalwarp",'-overwrite',"-tr", "%s"%3, "%s"%3, "-co", "COMPRESS=LZW", "-srcnodata", "%s"%sp.nan , "-dstnodata", "%s"%sp.nan, "-multi", "-te","%s" %ulx,"%s" %lry,"%s" %lrx,"%s" %uly]
     elif sensor == 1:
         outName = 'RapidEye_'+lstFiles[0].split('_')[1][:4]+'_'+lstFiles[0].split('_')[1][5:7]+'_'+lstFiles[0].split('_')[1][8:10]+'_MOS_RESIZE.tif'
-        Command = ["gdalwarp",'-overwrite',"-tr", "%s"%5, "%s"%5, "-co", "COMPRESS=LZW", "-srcnodata", "%s"%nodata , "-dstnodata", "%s"%nodata, "-multi", "-te","%s" %ulx,"%s" %lry,"%s" %lrx,"%s" %uly]
+        Command = ["gdalwarp",'-overwrite',"-tr", "%s"%5, "%s"%5, "-co", "COMPRESS=LZW", "-srcnodata", "%s"%sp.nan , "-dstnodata", "%s"%sp.nan, "-multi", "-te","%s" %ulx,"%s" %lry,"%s" %lrx,"%s" %uly]
         
     for file in lstFiles : 
         Command += [os.path.join(inPath,file)]
@@ -487,106 +458,48 @@ def Mos_Resize (inPath,outPath, inShpFile, sensor) :
     
 if  __name__=='__main__':
     
-    ################################## PLANETSCOPE  #####################################
-#                              TOA Reflectance, MOSAIC AND RESIZE
-#    inPath="/home/je/Bureau/Stage/Data/Brutes/PLANET/"
-#    outPath="/home/je/Bureau/Stage/Output/MOS_RESIZE/PLANETSCOPE"
-#    inShpFile="/home/je/Bureau/Stage/Data/Process/Extent_Zone_Corr.shp"
-#    sensor=0
-#    lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
-#    lstSubfolders = []
-#    for parentFolder in lstFolders :
-#        lstSubfolders += [os.path.join(parentFolder,subfolder) for subfolder in os.listdir(parentFolder) if os.path.isdir(os.path.join(parentFolder,subfolder))]
-##    print(lstSubfolders)
-#    
-#    def process_folder(foldername) :
-#        dnToTOA (foldername, outPath, sensor)
-#        return foldername
-#    
-#    pool = Pool()
-#    
-#    start_time = time.time()
-#    results = pool.imap(process_folder, lstSubfolders)
-#    for result in results :
-#        print (result)
-#    end_time = time.time() 
-#    print("Time for proccess : %ssecs" % (end_time - start_time))
-#    
-#    inPath2="/home/je/Bureau/Stage/Output/MOS_RESIZE/PLANETSCOPE"
-#    lstNewfolders = [os.path.join(inPath2,folder) for folder in os.listdir(inPath2) if os.path.isdir(os.path.join(inPath2,folder))]
-#    
-#    def process_folder(folderName) :
-#        Mos_Resize(folderName,outPath,inShpFile,sensor)
-#        return folderName
-#    pool = Pool()
-#    
-#    start_time = time.time()
-#    results = pool.imap(process_folder, lstNewfolders)
-#    for result in results :
-#        print (result)
-#    end_time = time.time() 
-#    print("Time for proccess : %ssecs" % (end_time - start_time)) 
+    ################################## PLANETSCOPE & RAPIDEYE #####################################
     
+    inPath="/home/je/Bureau/Stage/Gbodjo_2018/Data/Brutes/RAPIDEYE"
+    outPath="/home/je/Bureau/Stage/Output/RapidEye"
+    sensor=1
+    lstFolders = [folder for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+    for foldername in lstFolders :
+#        print (foldername)
+        lstSubFolders = [folder for folder in os.listdir(os.path.join(inPath,foldername)) if os.path.isdir(os.path.join(inPath,foldername,folder))]
+        for subfoldername in lstSubFolders :
+            dnToTOA(os.path.join(inPath,foldername,subfoldername), outPath, sensor)
+            print (subfoldername + ' OK')
     
-     ################################## RAPIDEYE #####################################
-#                              TOA Reflectance, MOSAIC AND RESIZE
-#    inPath="/home/je/Bureau/Stage/Data/Brutes/RAPIDEYE/"
-#    outPath="/home/je/Bureau/Stage/Output/MOS_RESIZE/RAPIDEYE"
-#    inShpFile="/home/je/Bureau/Stage/Data/Process/Extent_Zone_Corr.shp"
-#    sensor=1
-#    lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
-#    lstSubfolders = []
-#    for parentFolder in lstFolders :
-#        lstSubfolders += [os.path.join(parentFolder,subfolder) for subfolder in os.listdir(parentFolder) if os.path.isdir(os.path.join(parentFolder,subfolder))]
-##    print(lstSubfolders)
-#    
 #    def process_folder(foldername) :
-#        dnToTOA (foldername, outPath, sensor)
+#        outPath="/home/je/Bureau/Stage/Output/RapidEye"
+#        sensor=1
+#        
+#        dnToTOA(os.path.join(inPath,foldername), outPath, sensor)
 #        return foldername
-#    
-#    pool = Pool()
-#    
-#    start_time = time.time()
-#    results = pool.imap(process_folder, lstSubfolders)
-#    for result in results :
-#        print (result)
-#    end_time = time.time() 
-#    print("Time for proccess : %ssecs" % (end_time - start_time))
-#    
-#    inPath2="/home/je/Bureau/Stage/Output/MOS_RESIZE/RAPIDEYE"
-#    lstNewfolders = [os.path.join(inPath2,folder) for folder in os.listdir(inPath2) if os.path.isdir(os.path.join(inPath2,folder))]
-#    
-#    def process_folder(folderName) :
-#        Mos_Resize(folderName,outPath,inShpFile,sensor)
-#        return folderName
-#    pool = Pool()
-#    
-#    start_time = time.time()
-#    results = pool.imap(process_folder, lstNewfolders)
-#    for result in results :
-#        print (result)
-#    end_time = time.time() 
-#    print("Time for proccess : %ssecs" % (end_time - start_time))
 #
-#    ################################### SENTINEL-2 ######################################
-#    
-#    inPath="/home/je/Bureau/Stage/Data/Brutes/S2/"
-#    outPath="/home/je/Bureau/Stage/Output/MOS_RESIZE/SENTINEL-2"
-#    inShpFile="/home/je/Bureau/Stage/Data/Process/Extent_Zone_Corr.shp"
-##    Resample_Resize_Stack_S2 (inPath, outPath, inShpFile)
-#    lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
-#    
-#    def process_folder(foldername) :
-#        Resample_Resize_Stack_S2 (foldername, outPath, inShpFile)
-#        return foldername
-#    
-#    pool = Pool()
-#    
-#    start_time = time.time()
+#    pool = Pool(processes=4)
+#    lstFolders = [folder for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+##    print (lstFolders)
 #    results = pool.imap(process_folder, lstFolders)
+   
 #    for result in results :
 #        print (result)
-#    end_time = time.time() 
-#    print("Time for proccess : %ssecs" % (end_time - start_time))
-     
-     print ("end")
+
+    ################################### SENTINEL-2 ######################################
+    
+#    inPath="/home/je/Bureau/Stage/Gbodjo_2018/Data/Brutes/S2/SENTINEL2A_20170727-114348-215_L2A_T28PCB_D_V1-4"
+#    outPath="/home/je/Bureau/Stage/Output/Sentinel-2"
+#    inShpFile="/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone_Corr.shp"
+#    Resample_Resize_Stack_S2 (inPath, outPath, inShpFile)
+    
+    ################################## PLANETSCOPE & RAPIDEYE #####################################
+#                                        MOSAIC AND RESIZE
+    
+    inPath="/home/je/Bureau/Stage/Output/RapidEye"
+    outPath="/home/je/Bureau/Stage/Output/RapidEye"
+    inShpFile="/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone_Corr.shp"
+    sensor = 1
+    lstFolders = [folder for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+    for foldername in lstFolders :
+        Mos_Resize (os.path.join(inPath,foldername),outPath, inShpFile, sensor)
