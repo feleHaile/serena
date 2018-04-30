@@ -1,0 +1,67 @@
+\documentclass[a4paper,12pt,openany]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{lmodern}
+\usepackage{setspace}
+%\usepackage{makeidx}
+%\usepackage[french]{nomencl}
+%\usepackage[xindy]{glossaries}
+
+\title{Evaluation du potentiel d’une série temporelle multi-source à haute résolution spatiale pour le suivi des cultures annuelles en petite agriculture familiale : 
+Cas du bassin arachidier sénégalais}
+\author{\textsc{Gbodjo} Yawogan Jean Eudes}
+\date{\today}
+
+%\onehalfspacing
+\pagestyle{plain}
+%\renewcommand{\emph}{\textbf}
+
+%\makeglossaries
+
+\begin{document}
+
+\maketitle
+
+\frontmatter
+
+  %\tableofcontents
+  %\listoffigures
+  %\listoftables
+  
+
+\mainmatter
+
+  \chapter{Introduction Générale}
+  
+  \input{introduction/intro}
+
+  \chapter{Synthèse bibliographique}
+  
+  \input{synthese_biblio/synthese}
+
+  \chapter{Matériels et Méthodes}
+  
+  \input{materiels_methodes/mat_met}
+
+  \chapter{Résultats et Discussions}
+  
+  \input{resultats_discussions/result_discuss}
+  
+  \chapter{Conclusion et Perspectives}
+  
+  \input{conclusion/conclu_persp}
+  
+\appendix
+
+\backmatter
+
+%\glsaddall
+%\printglossaries
+
+\bibliographystyle{plain}
+\bibliography{bibliographie/library}
+
+  
+\end{document}          
