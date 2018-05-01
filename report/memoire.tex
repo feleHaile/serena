@@ -1,13 +1,15 @@
-\documentclass[a4paper,12pt,openany]{book}
+\documentclass[a4paper,12pt,openany,chapterprefix=true]{scrbook}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[french]{babel}
 \usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
-\usepackage{lmodern}
-\usepackage{setspace}
+\usepackage[osf,sc]{mathpazo}
+\usepackage[citecolor=magenta,colorlinks=true,hypertexnames=false,pdftitle=Mémoire SERENA Gbodjo]{hyperref}
+\usepackage{natbib}
+\usepackage[french]{babel}
+%\usepackage{setspace}
 %\usepackage{makeidx}
 %\usepackage[french]{nomencl}
-%\usepackage[xindy]{glossaries}
+\usepackage[acronyms,xindy,toc,nomain]{glossaries}
 
 \title{Evaluation du potentiel d’une série temporelle multi-source à haute résolution spatiale pour le suivi des cultures annuelles en petite agriculture familiale : 
 Cas du bassin arachidier sénégalais}
@@ -18,15 +20,18 @@ Cas du bassin arachidier sénégalais}
 \pagestyle{plain}
 %\renewcommand{\emph}{\textbf}
 
-%\makeglossaries
+\makeglossaries
 
 \begin{document}
+
+\input{acronymes}
 
 \maketitle
 
 \frontmatter
-
-  %\tableofcontents
+  \renewcommand{\contentsname}{Sommaire}
+  \setcounter{tocdepth}{2}
+  \tableofcontents
   %\listoffigures
   %\listoftables
   
@@ -55,13 +60,13 @@ Cas du bassin arachidier sénégalais}
   
 \appendix
 
+\chapter{Diagramme de Gantt}\label{annexe-a}
+
 \backmatter
 
-%\glsaddall
-%\printglossaries
+\printglossary[type=\acronymtype]
 
-\bibliographystyle{plain}
+\bibliographystyle{apalike}
 \bibliography{bibliographie/library}
-
   
 \end{document}          
