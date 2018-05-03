@@ -1,26 +1,27 @@
 \section{Extraction des dates de semis par Télédétection}
   
-  \subsection{Considérations générales}
+  \subsection{Considérations générales} \label{general}
   
 Les périodes ou dates les plus appropriés pour mettre en terre des semences dépendent de nombreux facteurs.  Nous pouvons considérer les espèces et leurs variétés, les températures 
 selon la zone de prodcution, l'humidité du sol, les objectifs de la production (date de récolte souhaitée) ou encore les méthodes de production (plein air, serre). Cependant, l'on peut
 s'accorder sur le rôle prépondérant que joue le facteur climatique. Au Sénégal comme dans d'autres pays d'Afrique où l'agriculture est pluviale, le comportement des agriculteurs est
-généralement celui de semer après les premiers épisodes pluvieux importants. Ceux-ci peuvent être néanmoins emmenés à semer de nouveau quand survient un épisode sec risquant de
-mettre en péril les premières semences.\\ \'Etant donné l'étroite relation entre les rendements agricoles et la longueur de la saison, des semis tardifs sont susceptibles de 
+généralement celui de semer après les premiers épisodes pluvieux importants. Ceux-ci peuvent être néanmoins emmenés à semer de nouveau quand survient un épisode sec qui risque de
+mettre en péril les premières semences.\\ \'Etant donné l'étroite relation entre les rendements agricoles et la durée du cycle de développement pour les céréales comme le Mil, 
+des semis tardifs sont susceptibles de 
 conduire à des rendements faibles en fin de saison. Le suivi du démarrage de la saison agricole permet donc de fournir aux décideurs, une évaluation précoce des menaces potentielles 
-à la production et à la sécurité alimentaire. La méthode la plus courante pour l'estimation des dates de semis dans les pays d'Afrique de l'Ouest est un approche agrométéorologique 
+à la production et à la sécurité alimentaire. L'une des méthodes les plus courantes pour l'estimation des dates de semis dans les pays d'Afrique de l'Ouest est un approche agrométéorologique 
 qui consiste à appliquer des seuils sur les quantités de précipitations survenues pendant une période définie \citep{Marinho2014}. Cependant, cette méthode présente des inconvénients liés 
 à la résolution spatiale des données qui est souvent grossière (de l'ordre des kilomètres) et à l'estimation en elle même des quantités de précipitations qui peut être imprécise. 
 Compte tenu de notre échelle de travail qui est parcellaire, cette méthode n'est pas adaptée à notre étude et ne sera pas considérée. \\Une autre approche par Télédection cette fois-ci
-consiste à dériver les dates du démarrage de la végétation ou en général les métriques phénologiques à partir d'indices de végétation comme le \acrshort{ndvi} ou le \acrshort{evi} 
+consiste à dériver les dates du début de croissance de la végétation ou en général les \emph{métriques phénologiques} à partir de séries d'indices de végétation comme le \acrshort{ndvi} ou le \acrshort{evi} 
 et à les lier aux dates de semis. Ces indices de végétation rendent compte entre autres de l’activité photosynthétique de la
-végétation, de l’intensité de son métabolisme ainsi que de sa verdure \citep{Duarte2018}. Cette approche par Télédétection présente l'avantage d'avoir non seulement une résolution spatiale 
-beaucoup plus élevée en fonction de l'image 
-satellitaire utilisée mais intègre également la réponse spectrale de la végétation aux divers facteurs externes, pratiques agricoles y compris. Bien évidemment, les contraintes intrinsèques à 
+végétation, de l’intensité de son métabolisme ainsi que de sa verdure \citep{Duarte2018}. Cette approche par Télédétection présente non seulement l'avantage d'avoir une résolution 
+spatiale beaucoup plus élevée en fonction de l'image 
+satellitaire utilisée mais d'intégrer également la réponse spectrale de la végétation aux divers facteurs externes comme les pratiques agricoles. Bien évidemment, les contraintes intrinsèques de
 l'acquisition des images satellitaires ne sont pas en reste. C'est notamment le cas des bruits induits par la diffusion atmosphérique. Il faudra donc avant exploitation des images, considérer 
-par exemple l'application d'une technique de lissage. Une autre précaution est à prendre vis-à-vis de l'influence des sols nus dans la réponse spectrale du couvert végétal 
-notamment quand celui ci est clairsemé. Il faudra considérer par exemple l'utilisation d'un indice de végétation tenant compte de l'effet des sols. 
-Il existe une foultitude de méthodes dans la littérature pour estimer le démarrage de la végétation en étudiant sa phénologie par observation satellitaire. 
+par exemple l'application d'une méthode de lissage. Une autre précaution est à prendre vis-à-vis de l'influence des sols nus dans la réponse spectrale du couvert végétal 
+notamment quand celui ci est clairsemé. Il faudra considérer par exemple l'utilisation d'un indice de végétation tenant compte de l'effet des sols comme le \acrshort{savi} ou le 
+\acrshort{msavi}. Il existe une foultitude de méthodes dans la littérature pour estimer le démarrage de la végétation en étudiant sa phénologie par observation satellitaire. 
   
   \subsection{Phénologie de la végétation}
   
@@ -34,12 +35,73 @@ petits grains, épis non aristés et insensibles à la longueur du jour) ou de 1
 \\L'\'etude de la phénologie des plantes sur une échelle régionale à globale à partir d’observations satellitaires est désignée par \acrfull{lsp} \citep{Helman2018}. Le terme LSP 
 vient tenir compte du fait que le signal intercepté par les satellites provient d’une surface hétérogène et n’est pas représentatif de la réponse spectrale d’une seule espèce 
 \citep{Kimball2014}. L'analyse de la LSP contribue entre autres à diverses applications comme l’étude des changements climatiques \citep{Begue2014} ou encore le suivi des
-cultures. Les séries temporelles d’indices de végétation provenant de capteurs comme AVHRR, MODIS, SPOT VEGETATION ou encore PROBA-V permettent donc d’évaluer la phénologie de la 
-végétation sur une échelle régionale à globale. Plus récemment, quelques auteurs ont étudié la phénologie de la végétation à une échelle beaucoup plus fine en utilisant des données
-provenant de satellites comme HJ-1 A/B \citep{Pan2015} ou RapidEye \citep{Vrieling2017}.
+cultures. Les séries temporelles d’indices de végétation provenant de capteurs à basse résolution comme AVHRR, MODIS, SPOT VEGETATION ou encore PROBA-V permettent d’évaluer 
+la phénologie de la végétation sur une échelle régionale à globale. Plus récemment, quelques auteurs ont étudié la phénologie de la végétation à une échelle beaucoup plus fine en utilisant des données
+à haute et très haute résolution comme ceux du satellite chinois HJ-1 A/B \citep{Pan2015} ou du satellite RapidEye \citep{Vrieling2017}.
 
-  \subsection{Métriques Phénologiques}
+  \subsection{Métriques phénologiques}
 
- 
+Le démarrage de croissance de la végétation et plus généralement les métriques phénologiques peuvent être utilisés comme proxy à l'évaluation des dates de semis. Les métriques phénologiques
+ou variables phénologiques désignent l'ensemble des stades phénologiques du cycle saisonnier de la végétation dérivés par observation satellitaire \citep{Helman2018}. Elles fournissent 
+donc des indications sur la dynamique des écosystèmes.
+Il s'agit usuellement (\cref{metrics}) : 
+\begin{itemize}
+ \item du démarrage de croissance de la végétation ou \acrshort{sos},
+ \item du pic ou du maximum de croissance de la végétation \acrshort{pos},
+ \item de la fin de croissance de la végétation \acrshort{eos},
+ \item et de la durée de croissance de la végétation \acrshort{gsl} : différence de temps entre le SOS et le EOS.
+\end{itemize}
+Pour ces premières métriques citées, il importe de noter que l'on considère à la fois la date (jour exact dans l'année ou nombre de jours dans le cas du GSL) et la valeur de l'indice de 
+végétation utilisé par exemple le NDVI. D'autres métriques en plus peuvent être également dérivées : 
+\begin{itemize}
+ \item le niveau de base (le plus bas) dans la croissance de la végétation
+ \item le milieu de croissance de la végétation,
+ \item le taux de croissance de la végétation au début du cycle
+ \item le taux de décroissance de la végétation à la fin du cycle
+ \item la petite intégrale saisonnière (intégrale du SOS au EOS pour les valeurs au dessus de la base)
+ \item la grande intégrale saisonnière (intégrale du SOS au EOS en considérant toutes les valeurs)
+\end{itemize}
+
+\begin{figure}[t]
+ \begin{center}
+  \includegraphics[scale=0.45]{synthese_biblio/metrics.png} 
+ \end{center}
+ \caption{a-SOS b-EOS c-Length of season d-Base value e-Middle of season f-Maximum NDVI g-Amplitude of NDVI \citep{Eklundh2017}}
+ \label{metrics}
+\end{figure}
+%\clearpage
+\vspace{5mm}
+
+Outre leur utilisation comme proxy à l'évaluation des dates de semis, les métriques phénologiques peuvent être employées à d'autres fins comme l'estimation de rendements, exploitant 
+la forte corrélation avec la biomasse en fin de saison ou encore la détection d'anomalies dans le cycle de la végétation, en considérant une référence ou une normale parmi un 
+historique de saisons.
+
+\vspace{5mm}
+
+Comme évoqué dans la \cref{general}, plusieurs méthodes ont été mises au point pour dériver les métriques phénologiques à partir de séries temporelles d'indices de végétation.
+\citep{Atzberger2013} les a classé en 2 catégories : 
+\begin{itemize}
+ \item un premier groupe de méthodes qui estime les métriques phénologiques de manière indépendante à un instant donné 
+ \item et un second groupe qui modélise le cycle entier par une fonction mathématique pour estimer les métriques phénologiques.
+\end{itemize}
+
+Dans le premier groupe, sont classés surtout les méthodes de seuillage des indices de végétation. Dans leur revue, \citep{deBeurs2010} en ont décrit quelques unes notamment le NDVI 
+Ratios \citep{White1997}. Les méthodes de seuillage sont les plus simples et les plus communes \citep{Pan2015}. En effet, elles supposent qu’un stade phénologique a commencé quand 
+la valeur de l'indice de végétation atteint un certain seuil fixé \citep{Jonsson2002}. Cependant, cette approche par seuillage peut s'avérer inconsistente quand le couvert n'est 
+pas homogène. De plus, un seuil n'est pas toujours transposable du fait qu'il est bien souvent lié à sa zone d'application. La seconde catégorie regroupe  des méthodes comme
+l'analyse de Fourier, la transformation en ondelettes, l'analyse en composantes principales ou encore les modèles logistiques. Ces dernières méthodes sont plus poussées et plus 
+de complexes à mettre en \oe uvre. 
+
+\vspace{5mm}
+
+Bon nombre de logiciels et applications ont été développés pour traiter les séries temporelles d'indices de végétation et en extraire les métriques phénologiques souhaitées. 
+Nous avons identifié les suivants :
+\begin{itemize}
+ \item TIMESAT \footnote{\url{http://web.nateko.lu.se/timesat/timesat.asp?cat=0}} \citep{Eklundh2017} 
+ \item SPIRITS \footnote{\url{http://spirits.jrc.ec.europa.eu/}}
+ \item PhenoSat \footnote{\url{http://www.fc.up.pt/PhenoSat/software.html}} \citep{Rodrigues2013}
+ \item Plugin QGIS QPhenoMetrics \citep{Duarte2018}
+ \item Plugin QGIS VERSAO VegaMonitor \footnote{\url{https://github.com/Xdarii/VERSAO_VegaMonitor/wiki}}
+\end{itemize}
 
 \section{Estimation des rendements par Télédétection}
