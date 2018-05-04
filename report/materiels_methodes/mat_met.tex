@@ -1,10 +1,88 @@
 \section{Présentation générale de la Zone d'étude}
 
-\section{Données utilisées}
+\section{Données satellitaires utilisées}
 
-  \subsection{Imageries satellitaires}
+Notre série temporelle est composée de 3 types d’imageries satellitaires ont été utilisées dans ce travail. Il s'agit d'images PlanetScope, RapidEye et Sentinel-2. 
+
+  \subsection{Imagerie PlanetScope et RapidEye}
   
-  \subsection{Données de terrain}
+Les imageries PlanetScope sont produites par la société privée américaine Planet Labs, Inc. \footnote{\url{https://www.planet.com/}} fondée en 2010, basée à San Francisco 
+en Californie et spécialisée dans l'observation de la terre par imagerie satellitaire. Planet Labs conçoit et fabrique des \emph{nanosatellites} ou \emph{CubSats} qui sont placés sur 
+orbite en tant que charge utile secondaire sur d'autres missions de lancement de fusée. La société dispose ainsi d'une constellation de nanosatellites appelés \emph{Doves} notamment 
+\emph{Flock}. La constellation est composée de 88 nanosatellites au total en 2017. Ces nanosatellites produisent des images complètes de la Terre une fois par jour à une résolution 
+spatiale de 3 à 5 mètres. Ces images fournissent des informations permettant de suivre les changements climatiques, de prévoir les récoltes, de gérer les catastrophes ou encore de 
+mettre au point des applications urbaines. Les images recueillies par les Doves sont accessibles en ligne et certaines disponibles dans le cadre de l'Open Data. \\
+En 2015, Planet Labs a acquis la constellation RapidEye auprès société allemande BlackBridge. Les images RapidEye qui ont une résolution spatiale de 5 mètres sont fournies par une 
+constellation de 5 satellites. Leur période de revisite est de 5,5 jours au nadir ou journalière sinon. Enfin en 2017, Google vend sa filiale Terra Bella et sa constellation de 
+satellites \emph{SkySat} à Planet Labs. Les images SkySat ont une résolution submétrique (80 cm). 
+
+    \paragraph{Spécifications des images PlanetScope}
+
+Trois niveaux de traitements sont disponibles pour les images PlanetScope. Ce sont les niveaux 1B, 3A et 3B. Le niveau 1B correspond aux produits basiques. Les données numériques ont 
+été calibrées en radiance \acrshort{toa} mais les images ne sont pas géoréférencées. Le niveau 3B qui est celui de nos images correspond à des produits orthorectifiés et projetés en
+\acrshort{utm}. Comme pour le niveau 1B, les valeurs numériques ont été calibrées en radiance TOA. Le niveau 3A est similaire au 3B à la différence que les images sont tuilées pour 
+couvrir un système de grilles de $25\times25$ kilomètres.\\
+Les images PlanetScope sont distribuées en format \emph{GeoTiff}. Au niveau 3B, elles ont une résolution au sol de \emph{3 mètres} et une résolution radiométrique de \emph{12 bits} s'il 
+s'agit de compte numérique ou \emph{16 bits} dans le cas des radiances TOA. Elles disposent de 4 bandes spectrales (\Cref{planetscope}). 
+
+\begin{table}
+\begin{center}
+\caption{Caractéristiques spectrales des images PlanetScope}
+\label{planetscope}
+ \begin{tabular}{ccc}
+  \hline
+  Bande spectrale & Domaine spectral & Longueurs d'onde (micromètres)\\
+  \hline
+  1 & Bleu & 0,455 --- 0,515 \\
+  2 & Vert & 0,500 --- 0,590 \\
+  3 & Rouge & 0,590 --- 0,670 \\
+  4 & Proche Infrarouge & 0,780 --- 0,860 \\ 
+  \hline
+ \end{tabular}
+\end{center}
+\end{table}
+
+La conversion des valeurs de pixels en réflectance TOA pour les images PlanetScope est donnée par la formule suivante :
+\[
+   Reflectance (i) = DN(i) \times reflectanceFactor(i)
+\]
+
+  \paragraph{Spécifications des images RapidEye}
+
+Les images RapidEye sont pour leur part, disponibles en 2 niveaux de traitements : 1B et 3A. Ces niveaux de traitements sont identiques à ceux des produits PlanetScope. Les images
+RapidEye utilisées sont traitées au niveau 3A. Elles sont distribuées également en format \emph{GeoTiff}. Leur résolution au sol est de \emph{5 mètres} et leur résolution 
+radiométrique de \emph{16 bits}. Elles disposent de 5 bandes spectrales (\Cref{rapideye}).
+
+\begin{table}
+\begin{center}
+\caption{Caractéristiques spectrales des images RapidEye}
+\label{rapideye}
+ \begin{tabular}{ccc}
+  \hline
+  Bande spectrale & Domaine spectral & Longueurs d'onde (micromètres)\\
+  \hline
+  1 & Bleu & 0,440 --- 0,510 \\
+  2 & Vert & 0,520 --- 0,590 \\
+  3 & Rouge & 0,630 --- 0,685 \\
+  4 & Red Edge & 0,690 --- 0,730 \\ 
+  5 & Proche Infrarouge & 0,760 --- 0,850 \\
+  \hline
+ \end{tabular}
+\end{center}
+\end{table}
+
+La conversion des valeurs de pixels en réflectance TOA pour les produits RapidEye se fait en 2 étapes :
+\[  Radiance (i) = DN(i) \times radiometricScaleFactor(i) \]
+
+\[   Reflectance(i) = Radiance(i) \times \pi \]
+
+  \subsection{Imagerie Sentinel-2}
+ 
+\vspace{5mm}
+ 
+Nous avons mis en place une chaîne de traitements écrit en \texttt{Python} découpage mosaiquage
+  
+\section{Données de terrain}
   
 \section{Extraction d'indices spectraux}
 
