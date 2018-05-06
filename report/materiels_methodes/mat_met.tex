@@ -2,18 +2,18 @@
 
 \section{Données satellitaires utilisées}
 
-Notre série temporelle est composée de 3 types d’imageries satellitaires ont été utilisées dans ce travail. Il s'agit d'images PlanetScope, RapidEye et Sentinel-2. 
+Notre série temporelle est composée de 3 types d’imageries satellitaires. Il s'agit d'images PlanetScope, RapidEye et Sentinel-2. 
 
   \subsection{Imagerie PlanetScope et RapidEye}
   
-Les imageries PlanetScope sont produites par la société privée américaine Planet Labs, Inc. \footnote{\url{https://www.planet.com/}} fondée en 2010, basée à San Francisco 
-en Californie et spécialisée dans l'observation de la terre par imagerie satellitaire. Planet Labs conçoit et fabrique des \emph{nanosatellites} ou \emph{CubSats} qui sont placés sur 
-orbite en tant que charge utile secondaire sur d'autres missions de lancement de fusée. La société dispose ainsi d'une constellation de nanosatellites appelés \emph{Doves} notamment 
-\emph{Flock}. La constellation est composée de 88 nanosatellites au total en 2017. Ces nanosatellites produisent des images complètes de la Terre une fois par jour à une résolution 
+Les images PlanetScope sont produites par la société privée américaine Planet Labs, Inc. \footnote{\url{https://www.planet.com/}}. Fondée en 2010 et basée à San Francisco 
+en Californie, cette société est spécialisée dans l'observation de la terre par imagerie satellitaire. Planet Labs conçoit et fabrique des \emph{nanosatellites} ou \emph{CubSats} appelés \emph{Doves}
+qui sont placés sur orbite en tant que charge utile secondaire sur d'autres missions de lancement de fusée. La société dispose ainsi d'une constellation de nanosatellites surnommée \emph{Flock}. 
+La constellation est composée au total de 88 nanosatellites en 2017. Ces nanosatellites produisent des images complètes de la Terre une fois par jour à une résolution 
 spatiale de 3 à 5 mètres. Ces images fournissent des informations permettant de suivre les changements climatiques, de prévoir les récoltes, de gérer les catastrophes ou encore de 
 mettre au point des applications urbaines. Les images recueillies par les Doves sont accessibles en ligne et certaines disponibles dans le cadre de l'Open Data. \\
-En 2015, Planet Labs a acquis la constellation RapidEye auprès société allemande BlackBridge. Les images RapidEye qui ont une résolution spatiale de 5 mètres sont fournies par une 
-constellation de 5 satellites. Leur période de revisite est de 5,5 jours au nadir ou journalière sinon. Enfin en 2017, Google vend sa filiale Terra Bella et sa constellation de 
+En 2015, Planet Labs a acquis la constellation RapidEye auprès de la société allemande BlackBridge. Les images RapidEye qui ont une résolution spatiale de 5 mètres sont fournies par une 
+constellation de 5 satellites. Leur période de revisite est de 5 jours et demi au nadir ou journalière sinon. Enfin en 2017, Google vend sa filiale Terra Bella et sa constellation de 
 satellites \emph{SkySat} à Planet Labs. Les images SkySat ont une résolution submétrique (80 cm). 
 
     \paragraph{Spécifications des images PlanetScope}
@@ -77,6 +77,10 @@ La conversion des valeurs de pixels en réflectance TOA pour les produits RapidE
 \[   Reflectance(i) = Radiance(i) \times \pi \]
 
   \subsection{Imagerie Sentinel-2}
+
+Sentinel est une famille de 6 satellites d'observation de la Terre développée par l'\acrshort{esa} et destinée à assurer la continuité des données de la mission \acrshort{envisat} arrivée à 
+terme en 2012. Sentinel représente le volet spatial du programme Copernicus ou ex \acrshort{gmes} de l'Union Européenne qui vise à doter l'Europe d'une capacité autonome et 
+opérationnelle en matière d'observation de la Terre notamment pour la surveillance de l'environnement et la sécurité. Sentinel-2 
  
 \vspace{5mm}
  
@@ -86,7 +90,32 @@ Nous avons mis en place une chaîne de traitements écrit en \texttt{Python} dé
   
 \section{Extraction d'indices spectraux}
 
-\section{Lissage et Interpolation de la Série temporelle}
+\section{Lissage et Interpolation des Série temporelles}
+
+Nous disposons \`a présent d'une série temporelle, pour chaque indice de végétation calculé. Cependant, avant de pouvoir les exploiter pour la suite de notre travail, un autre 
+traitement s'impose : le \emph{lissage} ou \emph{smoothing}. En effet, bien que des prétraitements soient effectuées sur les images satellitaires : calibrations radiométriques et 
+corrections atmosphériques entre autres, il subsiste du bruit qui affecte l'utilisation des séries temporelles d'images, impactant ainsi les futures analyses et pouvant donc fausser les interprétations
+données aux résultats obtenus \citep{Chen2004}. Ce bruit résiduel peut être lié à plusieurs facteurs notamment les conditions atmosphériques variables et la présence de pixels nuageux
+indétectés. Les techniques de lissage font l'hypothèse que le bruit résiduel dans les images entraine des chutes soudaines dans le profil temporel des indices de végétation 
+\citep{Bojanowski2009}. Ces valeurs peuvent être ainsi identifiées puis supprimées et des séries temporelles de meilleure qualité reconstruites.
+\\L'une des techniques usuelles adoptée notamment par les fournisseurs d'indices de végétation périodique comme GIMMS-MODIS, SPOT-VEGETATION ou PROBA-V est le \acrshort{mvc}. Cette technique 
+consiste à créer des synthèses d'indices de végétation sur une période donnée, généralement une décade en considérant pour chaque pixel la plus grande valeur enrégistrée sur la période.
+D'autres techniques de lissage de séries temporelles d'indices de végétation ont été mises au point. Nous pouvons citer des méthodes de seuillages comme l'algorithme \acrshort{bise}, 
+des méthodes basées sur l'analyse de Fourier comme \acrshort{hants} \citep{Verhoef1996} et d'autres approches par fonction asymétrique notamment gaussienne \citep{Jonsson2002}. 
+\citep{Chen2004} ont introduit une méthode de lissage basée sur le filtre de Savitzky-Golay \citep{Savitzky1964}. D'autres approches ont aussi été distinguées par \citep{Geng2014,
+Liu2017} comme la technique de lissage de Whittaker ou encore la transformation en ondelettes.
+\\Plusieurs études ont comparées ces différentes techniques de lissage entre elles \citep{Jonsson2002,Chen2004,Hird2009,Geng2014,Shao2016,Liu2017}. La conclusion faite par \citep{
+Geng2014} qui ont comparé notamment 8 méthodes de lissage est qu'il n'y avait pas de meilleure méthode qu'une autre chacune présentant ses avantages et inconvénients. De plus, la
+comparaison entre diverses n'est pas toujours significative du fait des différentes données utilisées et de l'application à des zones différentes. Néanmoins, s'il est vrai qu'il n'y 
+a pas de méthode de lissage idéale, il n'en demeure pas moins que le filtre de Savitzky-Golay est une méthode qui revient souvent dans la littérature et qui est connue pour ses 
+résultats consistants. En effet, le filtre de Savitzky-Golay est apprécié pour sa capacité à conserver la forme du profil temporel des indices de végétation ainsi que le timing et 
+l'amplitude des minima et maxima locaux. Nous avons retenu et comparé 2 techniques de lissage pour nos séries temporelles : HANTS et le filtre de Savitzky-Golay.
+
+\subsection{Lissage avec HANTS}
+
+\subsection{Lissage avec le filtre de Savitzky-Golay}
+
+\subsection{Interpolation}
 
 \section{Extraction des Métriques Phénologiques}
 afin d'évaluer les dates de semis
