@@ -4,7 +4,7 @@
 
 Notre série temporelle est composée de 3 types d’imageries satellitaires. Il s'agit d'images PlanetScope, RapidEye et Sentinel-2. 
 
-  \subsection{Imagerie PlanetScope et RapidEye}
+  \subsection{Imageries PlanetScope et RapidEye}
   
 Les images PlanetScope sont produites par la société privée américaine Planet Labs, Inc. \footnote{\url{https://www.planet.com/}}. Fondée en 2010 et basée à San Francisco 
 en Californie, cette société est spécialisée dans l'observation de la terre par imagerie satellitaire. Planet Labs conçoit et fabrique des \emph{nanosatellites} ou \emph{CubSats} appelés \emph{Doves}
@@ -47,6 +47,11 @@ La conversion des données PlanetScope en réflectance TOA s'effectue par la for
    Reflectance (i) = DN(i) \times reflectanceFactor(i)
 \end{align}
 
+où :\\
+\emph{i} = Numéro de la bande spectrale de l'image,\\
+\emph{DN} = Valeurs numériques (brutes) de l'image,\\
+et \emph{reflectanceFactor(i)} = Facteur de conversion en réflectance pour une bande spectrale donnée, renseigné dans les metadonnées de l'image.
+
   \paragraph{Spécifications des images RapidEye}
 
 Les images RapidEye sont pour leur part, disponibles en 2 niveaux de traitements : 1B et 3A. Ces niveaux de traitements sont identiques à ceux des produits PlanetScope. Les images
@@ -71,12 +76,19 @@ radiométrique de \emph{16 bits}. Elles disposent de 5 bandes spectrales (\Cref{
 \end{center}
 \end{table}
 
-La conversion des données RapidEye en réflectance TOA s'effectue en 2 étapes :
+La conversion des données RapidEye en réflectance TOA s'effectue en 2 étapes à savoir la conversion en radiance puis la conversion en réflectance :
 
-\begin{align}
- Radiance (i) = &  DN(i) \times radiometricScaleFactor(i) \\
- Reflectance(i) = &  Radiance(i) \times \frac{\pi \times SunDist^2}{EAI(i) \times \cos(SolarZenith)}
+\begin{align} Radiance (i) = &  DN(i) \times radiometricScaleFactor(i) \\
+Reflectance(i) = &  Radiance(i) \times \frac{\pi \times SunDist^2}{EAI(i) \times \cos(SolarZenith)} 
 \end{align}
+
+où :\\
+\emph{i} = Numéro de la bande spectrale de l'image \\
+\emph{DN} = Valeurs numériques (brutes) de l'image \\
+\emph{radiometricScaleFactor(i)} = Facteur de conversion en radiance pour une bande spectrale donnée, renseigné dans les métadonnées de l'image \\
+\emph{SunDist} = Distance Terre-Soleil en unités astronomiques \\
+\emph{EAI(i)} = Irradiance exo-atmosphérique pour une bande spectrale donnée, renseignée dans les métadonnées de l'image \\
+\emph{SolarZenith} = Angle zénithal solaire en degrés (90° - Elévation solaire)
 
   \subsection{Imagerie Sentinel-2}
 
