@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 #from multiprocessing import Pool
 #import time
 
-def create_TimeSeries (inPath, inVectorFile):
+def create_TimeSeries (inPath, inVectorFile, outFile):
     """
     - Function to create Vegetation Index Time Serie in NetCDF4 Format 
     - Input should be Folder containing GeoTiff files
@@ -79,7 +79,6 @@ def create_TimeSeries (inPath, inVectorFile):
     # Create Time Series in netCDF4
     
     # Create netcdf file
-    outFile = inPath+'/NDVI.nc'
     ncds = Dataset(outFile ,'w',format='NETCDF4')
 #    print (ncds)
     
@@ -148,7 +147,7 @@ def create_TimeSeries (inPath, inVectorFile):
         print (Date)
 #        File = os.path.join(inPath,FileName%Date)
 #        if File in lstFiles :
-        if Date in dicFile :          
+        if (Date in dicFile and dicFile[Date]!='S2')  : # Exclude Sentinel-2 Imagery         
             File = os.path.join(inPath,FileName%(Date,dicFile[Date]))
             print (File)
             with rasterio.open(File,'r') as ds:
@@ -376,12 +375,13 @@ def HANTS(ni, nb, nf, y, ts, HiLo, low, high, fet, dod, delta, fill_val):
 
 if __name__=="__main__":
     
-    inPath = "/home/je/Bureau/Stage/Output/INDICES/NDVI"
-    inVectorFile = "/home/je/Bureau/Stage/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628.shp"
+    inPath = "/home/je/Bureau/Stage/Output/INDICES/MSAVI2"
+    inVectorFile = "/home/je/Bureau/Stage/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
+    outFile = inPath+'/MSAVI2_Planet_RapidEye.nc'
 #    inPath = "G:/NDVI"
 #    inVectorFile = "H:/Gbodjo_2018/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628.shp"
-#    ncFile = create_TimeSeries (inPath,inVectorFile)
-    
+#    ncFile = create_TimeSeries (inPath,inVectorFile, outFile)
+#    
 #    nb = 365
 #    nf = 3
 #    HiLo = 'Lo'
@@ -391,11 +391,12 @@ if __name__=="__main__":
 #    dod = 1
 #    delta = 0.25
 #    fill_val = -9999.
+#    
 #    smooth_hants (ncFile, nb, nf, HiLo, low, high, fet, dod, delta, fill_val)
     
     
 #    ncFile = "/home/je/Bureau/Stage/Output/INDICES/NDVI/NDVI.nc" 
-    ncFile = "/home/je/Bureau/Stage/Output/INDICES/NDVI/NDVI_Planet.nc"
+    ncFile = "/home/je/Bureau/Stage/Output/INDICES/MSAVI2/MSAVI2_Planet_RapidEye.nc"
 
     Points = [(336142.1, 1602889.5), (335329, 1603060), (334582.4, 1600219.6), (334578.5,1600143.5), (336082.9,1603694.0), \
           (336746.3,1603706.7), (336423.9,1603248.0), (336858.4,1603152.2), (337457.6,1603508.4), (337067.1,1603144.3)]
