@@ -61,7 +61,7 @@ végétation utilisé par exemple le NDVI. D'autres métriques en plus peuvent �
  \item la grande intégrale saisonnière (intégrale du SOS au EOS en considérant toutes les valeurs).
 \end{itemize}
 
-\begin{figure}[tb]
+\begin{figure}[htbp]
  \begin{center}
   \includegraphics[scale=0.45]{synthese_biblio/metrics.png} 
  \end{center}
@@ -78,13 +78,13 @@ historique de saisons culturales.
 \vspace{5mm}
 
 Comme évoqué dans la \cref{general}, plusieurs méthodes ont été mises au point pour dériver les métriques phénologiques à partir de séries temporelles d'indices de végétation.
-\citep{Atzberger2013} les a classé en 2 catégories : 
+\citet{Atzberger2013} les a classé en 2 catégories : 
 \begin{itemize}
  \item un premier groupe de méthodes qui estime les métriques phénologiques de manière indépendante à un instant donné 
  \item et un second groupe qui modélise le cycle entier par une fonction mathématique pour estimer les métriques phénologiques.
 \end{itemize}
 
-Dans le premier groupe, sont classées surtout les méthodes par seuillage des indices de végétation. Dans leur revue, \citep{deBeurs2010} en ont décrit quelques unes notamment le NDVI 
+Dans le premier groupe, sont classées surtout les méthodes par seuillage des indices de végétation. Dans leur revue, \citet{deBeurs2010} en ont décrit quelques unes notamment le NDVI 
 Ratios \citep{White1997}. Les méthodes de seuillage sont les plus simples et les plus communes \citep{Pan2015}. En effet, elles supposent qu’un stade phénologique a commencé quand 
 la valeur de l'indice de végétation atteint un certain seuil fixé \citep{Jonsson2002}. Cependant, cette approche par seuillage peut s'avérer inconsistante quand le couvert n'est 
 pas homogène. De plus, un seuil n'est pas toujours transposable du fait qu'il est bien souvent lié à sa zone d'application. La seconde catégorie regroupe  des méthodes comme

@@ -9,7 +9,7 @@ Notre série temporelle est composée de 3 types d’imageries satellitaires. Il
 Les images PlanetScope sont produites par la société privée américaine Planet Labs, Inc. \footnote{\url{https://www.planet.com/}}. Fondée en 2010 et basée à San Francisco 
 en Californie, cette société est spécialisée dans l'observation de la terre par imagerie satellitaire. Planet Labs conçoit et fabrique des \emph{nanosatellites} ou \emph{CubSats} appelés \emph{Doves}
 qui sont placés sur orbite en tant que charge utile secondaire sur d'autres missions de lancement de fusée. La société dispose ainsi d'une constellation de nanosatellites surnommée \emph{Flock}. 
-La constellation est composée au total de 88 nanosatellites en 2017. Ces nanosatellites produisent des images complètes de la Terre une fois par jour, à une résolution 
+La constellation est composée d'environ 150 nanosatellites en début 2017. Ces nanosatellites produisent des images complètes de la Terre une fois par jour, à une résolution 
 spatiale variant de 3 à 5 mètres. Ces images fournissent des informations permettant de suivre les changements climatiques, de prévoir les récoltes, de gérer les catastrophes ou encore de 
 mettre au point des applications urbaines. Les images recueillies par les Doves sont accessibles en ligne et certaines disponibles dans le cadre de l'Open Data. \\
 En 2015, Planet Labs a acquis la constellation RapidEye auprès de la société allemande BlackBridge. Les images RapidEye qui ont une résolution spatiale de 5 mètres sont fournies par une 
@@ -31,7 +31,7 @@ s'agit de compte numérique ou \emph{16 bits} dans le cas des radiances TOA. Ell
 \label{planetscope}
  \begin{tabular}{ccc}
   \hline
-  Bande spectrale & Domaine spectral & Longueurs d'onde (micromètres)\\
+  Bande spectrale & Domaine spectral & Longueurs d'onde (\textmu m)\\
   \hline
   1 & Bleu & 0,455 --- 0,515 \\
   2 & Vert & 0,500 --- 0,590 \\
@@ -64,7 +64,7 @@ radiométrique de \emph{16 bits}. Elles disposent de 5 bandes spectrales (\Cref{
 \label{rapideye}
  \begin{tabular}{ccc}
   \hline
-  Bande spectrale & Domaine spectral & Longueurs d'onde (micromètres)\\
+  Bande spectrale & Domaine spectral & Longueurs d'onde (\textmu m)\\
   \hline
   1 & Bleu & 0,440 --- 0,510 \\
   2 & Vert & 0,520 --- 0,590 \\
@@ -88,16 +88,16 @@ où :\\
 \emph{radiometricScaleFactor(i)} = Facteur de conversion en radiance pour une bande spectrale donnée, renseigné dans les métadonnées de l'image \\
 \emph{SunDist} = Distance Terre-Soleil en unités astronomiques \\
 \emph{EAI(i)} = Irradiance exo-atmosphérique pour une bande spectrale donnée, renseignée dans les métadonnées de l'image \\
-\emph{SolarZenith} = Angle zénithal solaire en degrés (90° - Elévation solaire)
+\emph{SolarZenith} = Angle zénithal solaire en degrés (90\textdegree - Elévation solaire)
 
   \subsection{Imagerie Sentinel-2}
 
 Sentinel est une famille de 6 satellites d'observation de la Terre, développée par l'\acrshort{esa} et destinée à assurer la continuité des données de la mission \acrshort{envisat} arrivée à 
 terme en 2012. Sentinel représente le volet spatial du programme Copernicus (ex \acrshort{gmes}) de l'Union Européenne qui vise à doter l'Europe d'une capacité autonome et 
-opérationnelle en matière d'observation de la Terre notamment pour la surveillance de l'environnement et la sécurité. La mission Sentinel-2 est la composante spatiale du programme 
+opérationnelle en matière d'observation de la Terre notamment pour la surveillance de l'environnement et la sécurité \citep{Drusch2012}. La mission Sentinel-2 est la composante spatiale du programme 
 devant fournir une imagerie optique haute résolution permettant l’observation des sols (utilisation, végétation, zones côtières, fleuves \ldots) ainsi que la mise en place de services 
 de traitement des situations d'urgence notamment les catastrophes naturelles. Cette mission est composée de 2 satellites \emph{Sentinel-2A} et \emph{Sentinel-2B} circulant en déphasage de 
-180 sur la même orbite héliosynchrone de 10h30. Ces 2 satellites sont identiques et embarquent l'instrument \acrshort{msi} qui fournit des images dans 13 bandes spectrales 
+180\textdegree{} sur la même orbite héliosynchrone de 10h30. Ces 2 satellites sont identiques et embarquent l'instrument \acrshort{msi} qui fournit des images dans 13 bandes spectrales 
 du Visible à l'Infrarouge (\Cref{msi}) avec une résolution spatiale comprise entre 10 et 60 mètres et une résolution radiométrique de 12 bits. Les satellites Sentinel-2 ont une période de revisite au nadir de 5 jours et doivent acquérir au moins une donnée claire par mois sur la plupart des terres émergées. Cette grande richesse spectrale couplée à cette capacité d'observation temporelle 
 élevée constituent le véritable apport de la mission Sentinel-2. Les données sont principalement utilisées pour l'agriculture, la sylviculture, l'occupation des sols, la biodiversité, 
 la caractérisation des habitats ou encore l'observation et la prévention des catastrophes naturelles notamment les inondations. 
@@ -108,7 +108,7 @@ la caractérisation des habitats ou encore l'observation et la prévention des c
 \label{msi}
  \begin{tabular}{cccc}
   \hline
-  Bande spectrale & Domaine spectral & Longueurs d'onde (um) & R. spatiale (m)\\
+  Bande spectrale & Domaine spectral & Longueurs d'onde (\textmu m) & R. spatiale (m)\\
   \hline
   \phantom{1}1 & Aérosols & 0,433 --- 0,453 & 60 \\
   \phantom{1}2 & Bleu & 0,4575 --- 0,5225 & 10 \\
@@ -250,19 +250,19 @@ Sur base des images de réflectance, nous avons extrait différents indices de v
 ont été rééchantillonnés à la résolution des indices PlanetScope (3m), ce afin de pouvoir considérer une série temporelle par indice calculé. 
 % décalage pixels
 
-\paragraph{NDVI}
+\paragraph{NDVI} \citep{Rouse1974,Tucker1979} 
 
 \begin{align}
  NDVI = \frac{PIR - R}{PIR + R}
 \end{align}
 
-\paragraph{MSAVI2}
+\paragraph{MSAVI2} \citep{Qi1994}
 
 \begin{align}
  MSAVI2 = \frac{2 \times (PIR + 1) - \sqrt{((2 \times PIR + 1)^2 - 8 \times (PIR - R))}}{2}
 \end{align}
 
-\section{Lissage et Interpolation des Série temporelles}
+\section{Lissage des séries temporelles}
 
 Nous disposons \`a présent d'une série temporelle, pour chaque indice de végétation calculé. Cependant, avant de pouvoir les exploiter pour la suite de notre travail, un autre 
 traitement s'impose : le \emph{lissage} ou \emph{smoothing}. En effet, bien que des prétraitements soient effectuées sur les images satellitaires : calibrations radiométriques et 
@@ -274,9 +274,9 @@ indétectés. Les techniques de lissage font l'hypothèse que le bruit résiduel
 consiste à créer des synthèses d'indices de végétation sur une période donnée, généralement une décade en considérant pour chaque pixel la plus grande valeur enrégistrée sur la période.
 D'autres techniques de lissage de séries temporelles d'indices de végétation ont été mises au point. Nous pouvons citer des méthodes de seuillages comme l'algorithme \acrshort{bise}, 
 des méthodes basées sur l'analyse de Fourier comme \acrshort{hants} \citep{Verhoef1996} et d'autres approches par fonction asymétrique notamment gaussienne \citep{Jonsson2002}. 
-\citep{Chen2004} ont introduit une méthode de lissage basée sur le filtre de Savitzky-Golay \citep{Savitzky1964}. D'autres approches ont aussi été distinguées par \citep{Geng2014,
-Liu2017} comme la technique de lissage de Whittaker ou encore la transformation en ondelettes.
-\\Plusieurs études ont comparées ces différentes techniques de lissage entre elles \citep{Jonsson2002,Chen2004,Hird2009,Geng2014,Shao2016,Liu2017}. La conclusion faite par \citep{
+\citet{Chen2004} ont introduit une méthode de lissage basée sur le filtre de Savitzky-Golay \citep{Savitzky1964}. D'autres approches ont aussi été distinguées par \citet{Geng2014} et 
+\citet{Liu2017} comme la technique de lissage de Whittaker ou encore la transformation en ondelettes.
+\\Plusieurs études ont comparées ces différentes techniques de lissage entre elles \citep{Jonsson2002,Chen2004,Hird2009,Geng2014,Shao2016,Liu2017}. La conclusion faite par \citet{
 Geng2014} qui ont comparé notamment 8 méthodes de lissage est qu'il n'y avait pas une meilleure méthode qu'une autre, chacune présentant ses avantages et ses inconvénients. De plus, la
 comparaison entre ces diverses méthodes n'est pas toujours significative du fait des différentes données utilisées et de l'application à des zones différentes. Néanmoins, s'il est vrai qu'il n'y 
 a pas de méthode idéale de lissage, il n'en demeure pas moins que le filtre de Savitzky-Golay est une méthode qui revient souvent dans la littérature et qui est connue pour ses 
@@ -287,7 +287,6 @@ l'amplitude des minima et maxima locaux. Nous avons retenu et comparé 2 techniq
 
 \subsection{Lissage avec le filtre de Savitzky-Golay}
 
-\subsection{Interpolation}
 Mois de septembre couvert par une seule image
 
 \section{Extraction des Métriques Phénologiques}
