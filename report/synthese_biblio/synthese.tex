@@ -2,25 +2,25 @@
   
   \subsection{Considérations générales} \label{general}
   
-Les périodes ou dates les plus appropriés pour mettre en terre des semences dépendent de nombreux facteurs.  Nous pouvons considérer les espèces et leurs variétés, les températures 
-selon la zone de prodcution, l'humidité du sol, les objectifs de la production (date de récolte souhaitée) ou encore les méthodes de production (plein air, serre). Cependant, l'on peut
+Les périodes ou dates les plus appropriés pour semer dépendent de nombreux facteurs.  Nous pouvons considérer les espèces et leurs variétés, les températures 
+selon la zone de production, l'humidité du sol, les objectifs de la production (date de récolte souhaitée) ou encore les pratiques culturales (semi direct sans labour, semi en sec avant les premières pluies \ldots{}). Cependant, l'on peut
 s'accorder sur le rôle prépondérant que joue le facteur climatique. Au Sénégal comme dans d'autres pays d'Afrique où l'agriculture est pluviale, le comportement des agriculteurs est
-généralement celui de semer après les premiers épisodes pluvieux importants. Ceux-ci peuvent être néanmoins emmenés à semer de nouveau quand survient un épisode sec qui risque de
+généralement celui de semer après les premiers épisodes pluvieux importants. Ceux-ci peuvent être néanmoins amenés à semer de nouveau quand survient un épisode sec qui risque de
 mettre en péril les premières semences.\\ \'Etant donné l'étroite relation entre les rendements agricoles et la durée du cycle de développement pour les céréales comme le Mil, 
 des semis tardifs sont susceptibles de 
 conduire à des rendements faibles en fin de saison. Le suivi du démarrage de la saison agricole permet donc de fournir aux décideurs, une évaluation précoce des menaces potentielles 
 à la production et à la sécurité alimentaire. L'une des méthodes les plus courantes pour l'estimation des dates de semis dans les pays d'Afrique de l'Ouest est un approche agrométéorologique 
 qui consiste à appliquer des seuils sur les quantités de précipitations survenues pendant une période définie \citep{Marinho2014}. Cependant, cette méthode présente des inconvénients liés 
 à la résolution spatiale des données qui est souvent grossière (de l'ordre des kilomètres) et à l'estimation en elle même des quantités de précipitations qui peut être imprécise. 
-Compte tenu de notre échelle de travail qui est parcellaire, cette méthode n'est pas adaptée à notre étude et ne sera pas considérée. \\Une autre approche par Télédection cette fois-ci
-consiste à dériver les dates du début de croissance de la végétation ou en général les \emph{métriques phénologiques} à partir de séries d'indices de végétation comme le \acrshort{ndvi} ou le \acrshort{evi} 
-et à les lier aux dates de semis. Ces indices de végétation rendent compte entre autres de l’activité photosynthétique de la
-végétation, de l’intensité de son métabolisme ainsi que de sa verdure \citep{Duarte2018}. Cette approche par Télédétection présente non seulement l'avantage d'avoir une résolution 
+Compte tenu de notre échelle de travail qui est parcellaire, cette méthode n'est pas adaptée à notre étude et ne sera pas considérée. \\Une autre approche par télédection cette fois-ci
+consiste à dériver les dates du début de croissance de la végétation ou en général les \emph{métriques phénologiques} à partir de séries temporelles d'indices de végétation comme le \acrshort{ndvi} ou le \acrshort{evi} 
+et à en déduire les dates de semis. Ces indices de végétation rendent compte entre autres de l’activité photosynthétique de la
+végétation, de l’intensité de son métabolisme ainsi que de sa verdure \citep{Duarte2018}. Cette approche par télédétection présente non seulement l'avantage d'avoir une résolution 
 spatiale beaucoup plus élevée en fonction de l'image 
-satellitaire utilisée mais d'intégrer également la réponse spectrale de la végétation aux divers facteurs externes comme les pratiques agricoles. Bien évidemment, les contraintes intrinsèques de
-l'acquisition des images satellitaires ne sont pas en reste. C'est notamment le cas des bruits induits par la diffusion atmosphérique. Il faudra donc avant exploitation des images, considérer 
+satellitaire utilisée mais d'intégrer également la réponse spectrale de la végétation aux divers facteurs externes comme les pratiques agricoles. Bien évidemment, les contraintes intrinsèques à
+l'acquisition des images satellitaires ne sont pas en reste. C'est notamment le cas des bruits induits par la perturbations atmosphériques (nébulosité). Il faudra donc avant exploitation des images, considérer 
 par exemple l'application d'une méthode de lissage. Une autre précaution est à prendre vis-à-vis de l'influence des sols nus dans la réponse spectrale du couvert végétal 
-notamment quand celui ci est clairsemé. Il faudra considérer par exemple l'utilisation d'un indice de végétation tenant compte de l'effet des sols comme le \acrshort{savi} ou le 
+notamment quand celui ci est clairsemé tel pour des cultures peu couvrantes comme le Mil. Il faudra considérer par exemple l'utilisation d'un indice de végétation tenant compte de l'effet des sols comme le \acrshort{savi} ou le 
 \acrshort{msavi}. Il existe une foultitude de méthodes dans la littérature pour estimer le démarrage de la végétation en étudiant sa phénologie par observation satellitaire. 
   
   \subsection{Phénologie de la végétation}
@@ -30,8 +30,7 @@ est l’étude de l’apparition d’événements périodiques (annuels le plus 
 la végétation, par l’ensemble des stades de développement intervenant dans le cycle de vie des plantes en l’occurrence le bourgeonnement, la croissance, la floraison et la 
 sénescence \citep{Kimball2014}. La phénologie du Mil peut être par exemple décomposée en une phase \emph{végétative}, une phase \emph{reproductrice} et une phase de 
 \emph{maturation}. Selon les variétés de Mil cultivées, la longueur du cycle de développement peut être de 90 à 100 jours pour les \emph{Souna} (Variétés à cycle court --- 
-petits grains, épis non aristés et insensibles à la longueur du jour) ou de 130 à 150 jours pour les \emph{Sanio} (Variétés à cycle long --- grains plus gros, épis aristés et sensibles
-à une photopériode de jours courts) \citep{Diouf2001}.
+petits grains, épis non aristés et et peu photosensibles) ou de 130 à 150 jours pour les \emph{Sanio} (Variétés à cycle long --- grains plus gros, épis aristés et variété photopériodique) \citep{Diouf2001}.
 \\L'\'etude de la phénologie des plantes sur une échelle régionale à globale à partir d’observations satellitaires est désignée par \acrfull{lsp} \citep{Helman2018}. Le terme LSP 
 vient tenir compte du fait que le signal intercepté par les satellites provient d’une surface hétérogène et n’est pas représentatif de la réponse spectrale d’une seule espèce 
 \citep{Kimball2014}. L'analyse de la LSP contribue entre autres à diverses applications comme l’étude des changements climatiques \citep{Begue2014} ou encore le suivi des
@@ -74,7 +73,7 @@ végétation utilisé par exemple le NDVI. D'autres métriques en plus peuvent �
 
 Outre leur utilisation comme proxy à l'évaluation des dates de semis, les métriques phénologiques peuvent être employées à d'autres fins comme l'estimation de rendements, exploitant 
 la forte corrélation avec la biomasse en fin de saison ou encore la détection d'anomalies dans le cycle de la végétation, en considérant une référence ou une normale parmi un 
-historique de saisons.
+historique de saisons culturales.
 
 \vspace{5mm}
 
@@ -85,7 +84,7 @@ Comme évoqué dans la \cref{general}, plusieurs méthodes ont été mises au po
  \item et un second groupe qui modélise le cycle entier par une fonction mathématique pour estimer les métriques phénologiques.
 \end{itemize}
 
-Dans le premier groupe, sont classés surtout les méthodes de seuillage des indices de végétation. Dans leur revue, \citep{deBeurs2010} en ont décrit quelques unes notamment le NDVI 
+Dans le premier groupe, sont classées surtout les méthodes par seuillage des indices de végétation. Dans leur revue, \citep{deBeurs2010} en ont décrit quelques unes notamment le NDVI 
 Ratios \citep{White1997}. Les méthodes de seuillage sont les plus simples et les plus communes \citep{Pan2015}. En effet, elles supposent qu’un stade phénologique a commencé quand 
 la valeur de l'indice de végétation atteint un certain seuil fixé \citep{Jonsson2002}. Cependant, cette approche par seuillage peut s'avérer inconsistante quand le couvert n'est 
 pas homogène. De plus, un seuil n'est pas toujours transposable du fait qu'il est bien souvent lié à sa zone d'application. La seconde catégorie regroupe  des méthodes comme

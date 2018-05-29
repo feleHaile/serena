@@ -1,4 +1,4 @@
-\section{Présentation générale de la Zone d'étude}
+\section{Présentation générale de la zone d'étude}
 
 \section{Données satellitaires utilisées}
 
@@ -97,9 +97,8 @@ terme en 2012. Sentinel représente le volet spatial du programme Copernicus (ex
 opérationnelle en matière d'observation de la Terre notamment pour la surveillance de l'environnement et la sécurité. La mission Sentinel-2 est la composante spatiale du programme 
 devant fournir une imagerie optique haute résolution permettant l’observation des sols (utilisation, végétation, zones côtières, fleuves \ldots) ainsi que la mise en place de services 
 de traitement des situations d'urgence notamment les catastrophes naturelles. Cette mission est composée de 2 satellites \emph{Sentinel-2A} et \emph{Sentinel-2B} circulant en déphasage de 
-180° sur la même orbite héliosynchrone de 10h30. Ces 2 satellites sont identiques et embarquent l'instrument \acrshort{msi} qui fournit des images dans 13 bandes spectrales 
-du Visible à l'Infrarouge (\Cref{msi}) avec une résolution spatiale comprise entre 10 et 60 mètres et une résolution radiométrique de 12 bits. En configuration opérationnelle, les satellites Sentinel-2 permettront d'avoir une période
-de revisite au nadir de 5 jours et au moins une donnée claire par mois sur la plupart des terres émergées. Cette grande richesse spectrale couplée à cette capacité d'observation temporelle 
+180 sur la même orbite héliosynchrone de 10h30. Ces 2 satellites sont identiques et embarquent l'instrument \acrshort{msi} qui fournit des images dans 13 bandes spectrales 
+du Visible à l'Infrarouge (\Cref{msi}) avec une résolution spatiale comprise entre 10 et 60 mètres et une résolution radiométrique de 12 bits. Les satellites Sentinel-2 ont une période de revisite au nadir de 5 jours et doivent acquérir au moins une donnée claire par mois sur la plupart des terres émergées. Cette grande richesse spectrale couplée à cette capacité d'observation temporelle 
 élevée constituent le véritable apport de la mission Sentinel-2. Les données sont principalement utilisées pour l'agriculture, la sylviculture, l'occupation des sols, la biodiversité, 
 la caractérisation des habitats ou encore l'observation et la prévention des catastrophes naturelles notamment les inondations. 
 
@@ -153,7 +152,7 @@ réflectance (TOA pour les images PlanetScope et RapidEye et réflectance de sur
 Les bibliothèques \texttt{gdal} et \texttt{rasterio} ont été utilisées à cet effet. Notons que pour les images PlanetScope et certaines images RapidEye, nous avons d'abord dû 
 effectuer un mosaiquage de toutes les images correspondant à la même date d'acqusition avant de les découper. Pour leur part, les bandes Red Edge des images Sentinel-2 (20 mètres 
 de résolution) ont été rééchantillonnées à 10 mètres et empilées avec les bandes originelles de 10 mètres. Les bandes de 60 mètres qui sont plus relatives aux applications 
-météorologiques n'ont pas été considérées.
+météorologiques n'ont pas été considérées dans le cadre de ce stage.
 
   \subsection{Chronologie des images acquises}
   
