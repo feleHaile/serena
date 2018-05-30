@@ -29,6 +29,7 @@ Cas du bassin arachidier sénégalais}
 %\renewcommand{\emph}{\textbf}
 
 \makeglossaries
+\pgfplotsset{compat=1.15}
 
 \begin{document}
 
@@ -48,9 +49,13 @@ Cas du bassin arachidier sénégalais}
 
 \mainmatter
 
-  \chapter{Introduction Générale}
+  \chapter{Introduction}
   
   \input{introduction/intro}
+  
+  \chapter{Contexte et Objectifs}
+  
+  \input{introduction/contexte}
 
   \chapter{Synthèse bibliographique}
   
@@ -77,6 +82,6 @@ Cas du bassin arachidier sénégalais}
 \printglossary[type=\acronymtype]
 
 \bibliographystyle{apalike}
-\bibliography{bibliographie/library}
+\bibliography{bibliographie/serena}
   
 \end{document}          

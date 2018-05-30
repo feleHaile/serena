@@ -265,9 +265,9 @@ ont été rééchantillonnés à la résolution des indices PlanetScope (3m), ce
 \section{Lissage des séries temporelles}
 
 Nous disposons \`a présent d'une série temporelle, pour chaque indice de végétation calculé. Cependant, avant de pouvoir les exploiter pour la suite de notre travail, un autre 
-traitement s'impose : le \emph{lissage} ou \emph{smoothing}. En effet, bien que des prétraitements soient effectuées sur les images satellitaires : calibrations radiométriques et 
+traitement s'impose : le \emph{lissage} ou \emph{smoothing}. En effet, bien que des prétraitements soient effectués sur les images satellitaires : calibrations radiométriques et 
 corrections atmosphériques entre autres, il subsiste du bruit qui affecte l'utilisation des séries temporelles d'images, impactant ainsi les futures analyses et pouvant donc fausser les interprétations
-données aux résultats obtenus \citep{Chen2004}. Ce bruit résiduel peut être lié à plusieurs facteurs notamment les conditions atmosphériques variables et la présence de pixels nuageux
+données aux résultats obtenus \citep{Chen2004}. Ce bruit résiduel peut être lié à plusieurs facteurs notamment les conditions atmosphériques variables ou la présence de pixels nuageux
 indétectés. Les techniques de lissage font l'hypothèse que le bruit résiduel dans les images entraine des chutes soudaines dans le profil temporel des indices de végétation 
 \citep{Bojanowski2009}. Ces valeurs peuvent être ainsi identifiées puis supprimées et des séries temporelles de meilleure qualité reconstruites.
 \\L'une des techniques usuelles adoptée notamment par les fournisseurs d'indices de végétation périodique comme GIMMS-MODIS, SPOT-VEGETATION ou PROBA-V est le \acrshort{mvc}. Cette technique 
@@ -275,7 +275,7 @@ consiste à créer des synthèses d'indices de végétation sur une période don
 D'autres techniques de lissage de séries temporelles d'indices de végétation ont été mises au point. Nous pouvons citer des méthodes de seuillages comme l'algorithme \acrshort{bise}, 
 des méthodes basées sur l'analyse de Fourier comme \acrshort{hants} \citep{Verhoef1996} et d'autres approches par fonction asymétrique notamment gaussienne \citep{Jonsson2002}. 
 \citet{Chen2004} ont introduit une méthode de lissage basée sur le filtre de Savitzky-Golay \citep{Savitzky1964}. D'autres approches ont aussi été distinguées par \citet{Geng2014} et 
-\citet{Liu2017} comme la technique de lissage de Whittaker ou encore la transformation en ondelettes.
+\citet{Liu2017} comme la méthode de lissage de Whittaker ou encore la transformation en ondelettes.
 \\Plusieurs études ont comparées ces différentes techniques de lissage entre elles \citep{Jonsson2002,Chen2004,Hird2009,Geng2014,Shao2016,Liu2017}. La conclusion faite par \citet{
 Geng2014} qui ont comparé notamment 8 méthodes de lissage est qu'il n'y avait pas une meilleure méthode qu'une autre, chacune présentant ses avantages et ses inconvénients. De plus, la
 comparaison entre ces diverses méthodes n'est pas toujours significative du fait des différentes données utilisées et de l'application à des zones différentes. Néanmoins, s'il est vrai qu'il n'y 
@@ -287,7 +287,7 @@ l'amplitude des minima et maxima locaux. Nous avons retenu et comparé 2 techniq
 
 \subsection{Lissage avec le filtre de Savitzky-Golay}
 
-Mois de septembre couvert par une seule image
+reechantilloner et couvrir le Mois de septembre qui a une seule image (fausserait le max)
 
 \section{Extraction des Métriques Phénologiques}
 
