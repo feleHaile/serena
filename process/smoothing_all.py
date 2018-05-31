@@ -20,9 +20,8 @@ from copy import deepcopy
 import math
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
-from scipy.misc import comb
-from scipy import sparse
-from scipy.sparse.linalg import spsolve
+import scipy as sp
+from scipy import sparse, linalg
 
 def create_time_series (inPath, inVectorFile):
     """
@@ -31,6 +30,9 @@ def create_time_series (inPath, inVectorFile):
     - Input should be Folder containing GeoTiff files
     - VI Index Values have 10 000 scale factor
     """
+    # Dates for Sentinel-2A Images deleting
+    S2_Dates = ["20171005","20171015","20171025"]
+     
     # Create Date List
     lstFiles = sorted(glob.glob(inPath+'/*.tif'))
     dicFile = {}
@@ -121,14 +123,8 @@ def create_time_series (inPath, inVectorFile):
     vi_var_PRS = ncds.createVariable('original_PRS_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
     vi_var_PRS.long_name = 'PlanetScope, RapidEye & Sentinel-2 %s Index values'%viIndexName
     
-#    interpolated_var_P = ncds.createVariable('inteprolated_P_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-#    interpolated_var_P.long_name = 'Interpolated PlanetScope %s Index values'%viIndexName
-#    
-#    interpolated_var_PR = ncds.createVariable('inteprolated_PR_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-#    interpolated_var_PR.long_name = 'Interpolated PlanetScope & RapidEye %s Index values'%viIndexName
-#    
-#    interpolated_var_PRS = ncds.createVariable('inteprolated_PRS_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-#    interpolated_var_PRS.long_name = 'Interpolated PlanetScope, RapidEye & Sentinel-2 %s Index values'%viIndexName
+    vi_var_cor = ncds.createVariable('original_PRScor_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
+    vi_var_cor.long_name = 'PlanetScope, RapidEye & Sentinel-2 corrected (Outliers deleted) %s Index values'%viIndexName
     
     print ('Load Variables')
     # Load data
@@ -151,13 +147,8 @@ def create_time_series (inPath, inVectorFile):
             print (File)
             with rasterio.open(File,'r') as ds:
                 band = ds.read(1, window=((yOffset, yOffset+ysize),(xOffset, xOffset+xsize)))
-#                    print (band.shape)
-                array = np.empty((len(lstY),len(lstX)))
-#                    print (array.shape)
-                for j,k in product(range(len(lstY)),range(len(lstX))):
-                    array[j,k]=band[len(lstY)-1-j,k]
-#               array[pd.np.isnan(array)] = fill_val
-                array = np.where(array==np.nan,-9999.,array*10000)
+                array = band * 10000
+                array = np.where(array==np.nan,-9999.,array)
     #            print (array)
                 vi_var_PRS [i,:,:] = array
                 print ("PRS")
@@ -167,45 +158,22 @@ def create_time_series (inPath, inVectorFile):
                 if (dicFile[Date]!='S2' and dicFile[Date]!='RapidEye'):
                     vi_var_P[i,:,:] = array
                     print ("P")
+                if (Date not in S2_Dates):
+                    vi_var_cor[i,:,:] =  array
+                    print ("PRScor")
                 i+=1
 #                print (i)
         else :
             vi_var_PRS [i,:,:] =  empty_vec
             vi_var_PR[i,:,:] =  empty_vec
             vi_var_P[i,:,:] =  empty_vec
+            vi_var_cor[i,:,:] =  empty_vec
             i+=1
 #            print (i)
-    
-#    print ("Load Interpolated")
-#    counter = 1
-#    for m,n in product(range(len(lstY)),range(len(lstX))):
-#        print ('%s/%s'%(counter, len(lstY)*len(lstX)))
-#        s_P = vi_var_P[:,m,n].data
-#        s_P = np.where(s_P==-9999.,np.nan,s_P/10000)
-#        
-#        s_PR = vi_var_PR[:,m,n].data
-#        s_PR = np.where(s_PR==-9999.,np.nan,s_PR/10000)
-#        
-#        s_PRS = vi_var_PRS[:,m,n].data
-#        s_PRS = np.where(s_PRS==-9999.,np.nan,s_PRS/10000)
-#        
-#        series_P = pd.Series(s_P).interpolate(method='linear')
-#        array_P = np.where(series_P.values==np.nan,-9999.,series_P.values*10000)
-#        
-#        series_PR = pd.Series(s_PR).interpolate(method='linear')
-#        array_PR = np.where(series_PR.values==np.nan,-9999.,series_PR.values*10000)
-#        
-#        series_PRS = pd.Series(s_PRS).interpolate(method='linear')
-#        array_PRS = np.where(series_PRS.values==np.nan,-9999.,series_PRS.values*10000)
-#        
-#        interpolated_var_P [:,m,n] = array_P
-#        interpolated_var_PR [:,m,n] = array_PR
-#        interpolated_var_PRS [:,m,n] = array_PRS
-#        counter+=1
 #            
     ncds.close()
     
-    print ('NetCDF file created')
+    print ('###### NetCDF file created ######')
     
     return outFile
 
@@ -313,7 +281,7 @@ def HANTS(ni, nb, nf, y, ts, HiLo, low, high, fet, dod, delta, fill_val):
 
     return [yr, outliers]
     
-def smooth_hants (ncFile, nb=365, nf=3, HiLo='Lo', low=-0.3, high=1, fet=0.05, dod=1, delta=0.25, fill_val=-9999.):
+def smooth_hants (ncFile, variable, nb=365, nf=3, HiLo='Lo', low=-0.3, high=1, fet=0.05, dod=1, delta=0.25, fill_val=-9999.):
     """
     Smooth Time Series in NetCDF4 Format with Harmonic Analysis of Time series
     HANTS parameters are :
@@ -329,60 +297,23 @@ def smooth_hants (ncFile, nb=365, nf=3, HiLo='Lo', low=-0.3, high=1, fet=0.05, d
     """
     # Read netcdfs
     ncds = Dataset(ncFile, 'r+')
-    
     viIndexName = os.path.basename(ncFile).split('_')[0]
-    
-    # Create HANTS variables
-    hants_var_P = ncds.createVariable('hants_P_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    hants_var_P.long_name = 'PlanetScope %s HANTS values'
-    
-    hants_var_PR = ncds.createVariable('hants_PR_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    hants_var_PR.long_name = 'PlanetScope & RapidEye %s HANTS values'
-    
-    hants_var_PRS = ncds.createVariable('hants_PRS_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    hants_var_PRS.long_name = 'PlanetScope, RapidEye and Sentinel-2 %s HANTS values'
-
-    combined_var_P = ncds.createVariable('combined_P_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    combined_var_P.long_name = 'PlanetScope %s combined values'%viIndexName
-
-    combined_var_PR = ncds.createVariable('combined_PR_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    combined_var_PR.long_name = 'PlanetScope & RapidEye %s combined values'%viIndexName
-    
-    combined_var_PRS = ncds.createVariable('combined_PRS_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    combined_var_PRS.long_name = 'PlanetScope, RapidEye and Sentinel-2 %s combined values'%viIndexName
-    
-    outliers_var_P = ncds.createVariable('outliers_P_%s_values'%viIndexName, 'i2',('time', 'Y', 'X'),fill_value=fill_val)
-    outliers_var_P.long_name = 'PlanetScope %s Outliers values '%viIndexName
-    
-    outliers_var_PR = ncds.createVariable('outliers_PR_%s_values'%viIndexName, 'i2',('time', 'Y', 'X'),fill_value=fill_val)
-    outliers_var_PR.long_name = 'PlanetScope & RapidEye %s Outliers values '%viIndexName
-    
-    outliers_var_PRS = ncds.createVariable('outliers_PRS_%s_values'%viIndexName, 'i2',('time', 'Y', 'X'),fill_value=fill_val)
-    outliers_var_PRS.long_name = 'PlanetScope, RapidEye and Sentinel-2 %s Outliers values '%viIndexName
     
     # Get Existing Values
     time_var = ncds.variables['time'][:]
-    original_P_values = ncds.variables['original_P_%s_values'%viIndexName][:]/10000
-    original_PR_values = ncds.variables['original_PR_%s_values'%viIndexName][:]/10000
-    original_PRS_values = ncds.variables['original_PRS_%s_values'%viIndexName][:]/10000
+    original_values = ncds.variables[variable%viIndexName][:]
+    original = original_values/10000
+    
+    # Create HANTS variables
+    hants_varName = 'hants_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
+    hants_var = ncds.createVariable(hants_varName%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
+    hants_var.long_name = 'HANTS Smoothing on %s'%ncds.variables[variable%viIndexName].long_name
 
-    [ztime ,rows, cols] = original_P_values.shape
+    [ztime ,rows, cols] = original.shape
     size_st = cols*rows
-
-    values_hants_P = np.empty((ztime, rows, cols))
-    values_hants_PR = np.empty((ztime, rows, cols))
-    values_hants_PRS = np.empty((ztime, rows, cols))
-    outliers_hants_P = np.empty((ztime, rows, cols))
-    outliers_hants_PR = np.empty((ztime, rows, cols))
-    outliers_hants_PRS = np.empty((ztime, rows, cols))
-
-    values_hants_P[:] = pd.np.nan
-    values_hants_PR[:] = pd.np.nan
-    values_hants_PRS[:] = pd.np.nan
-    outliers_hants_P[:] = pd.np.nan
-    outliers_hants_PR[:] = pd.np.nan
-    outliers_hants_PRS[:] = pd.np.nan
-
+    values_hants = np.empty((ztime, rows, cols))
+    values_hants[:] = pd.np.nan
+    
     # Additional parameters
     ni = len(time_var)
     ts = range(ni)
@@ -393,43 +324,16 @@ def smooth_hants (ncFile, nb=365, nf=3, HiLo='Lo', low=-0.3, high=1, fet=0.05, d
     for m,n in product(range(rows),range(cols)):
         print ('\t{0}/{1}'.format(counter, size_st))
     
-        yp = pd.np.array(original_P_values[:, m, n])
-        yp[pd.np.isnan(yp)] = fill_val
-        [yr_p, outliers_p] = HANTS(ni, nb, nf, yp, ts, HiLo,low, high, fet, dod, delta, fill_val)
-        values_hants_P[:, m, n] = yr_p
-        outliers_hants_P[:, m, n] = outliers_p
-        
-        ypr = pd.np.array(original_PR_values[:, m, n])
-        ypr[pd.np.isnan(ypr)] = fill_val
-        [yr_pr, outliers_pr] = HANTS(ni, nb, nf, ypr, ts, HiLo,low, high, fet, dod, delta, fill_val)
-        values_hants_PR[:, m, n] = yr_pr
-        outliers_hants_PR[:, m, n] = outliers_pr
-        
-        yprs = pd.np.array(original_PRS_values[:, m, n])
-        yprs[pd.np.isnan(yprs)] = fill_val
-        [yr_prs, outliers_prs] = HANTS(ni, nb, nf, yprs, ts, HiLo,low, high, fet, dod, delta, fill_val)
-        values_hants_PRS[:, m, n] = yr_prs
-        outliers_hants_PRS[:, m, n] = outliers_prs
-    
+        y = pd.np.array(original[:, m, n])
+        y[pd.np.isnan(y)] = fill_val
+        [yr, outliers] = HANTS(ni, nb, nf, y, ts, HiLo,low, high, fet, dod, delta, fill_val)
+        values_hants[:, m, n] = yr
+#        outliers_hants[:, m, n] = outliers
+
         counter = counter + 1
     
-    values_hants_P = values_hants_P * 10000
-    values_hants_PR = values_hants_PR * 10000
-    values_hants_PRS = values_hants_PRS * 10000
-    
-    outliers_hants_P = outliers_hants_P * 10000
-    outliers_hants_PR = outliers_hants_PR * 10000
-    outliers_hants_PRS = outliers_hants_PRS * 10000
-    
-    ncds.variables['hants_P_%s_values'%viIndexName][:] = values_hants_P
-    ncds.variables['hants_PR_%s_values'%viIndexName][:] = values_hants_PR
-    ncds.variables['hants_PRS_%s_values'%viIndexName][:] = values_hants_PRS
-    ncds.variables['outliers_P_%s_values'%viIndexName][:] = outliers_hants_P
-    ncds.variables['outliers_PR_%s_values'%viIndexName][:] = outliers_hants_PR
-    ncds.variables['outliers_PRS_%s_values'%viIndexName][:] = outliers_hants_PRS
-    ncds.variables['combined_P_%s_values'%viIndexName][:] = pd.np.where(outliers_hants_P,values_hants_P,original_P_values*10000)
-    ncds.variables['combined_PR_%s_values'%viIndexName][:] = pd.np.where(outliers_hants_PR,values_hants_PR,original_PR_values*10000)
-    ncds.variables['combined_PRS_%s_values'%viIndexName][:] = pd.np.where(outliers_hants_PRS,values_hants_PRS,original_PRS_values*10000)
+    values_hants = values_hants * 10000
+    ncds.variables[hants_varName%viIndexName][:] = values_hants
     # Close netcdf file
     ncds.close()
     
@@ -437,11 +341,11 @@ def smooth_hants (ncFile, nb=365, nf=3, HiLo='Lo', low=-0.3, high=1, fet=0.05, d
 # Smoothing with Savitzky-Golay Filter
 # =============================================================================
 
-def smooth_savgol(ncFile, window_length=31, polyorder=4):
+def smooth_savgol(ncFile, variable, window_size=91, order=2):
     """
     Smooth Time Series in NetCDF4 Format with Savitzky-Golay 
     Savitzky-Golay parameters are :
-       windows_length :
+       windows_length : 
        polyorder : 
     """
     # Read netcdfs
@@ -449,191 +353,135 @@ def smooth_savgol(ncFile, window_length=31, polyorder=4):
     viIndexName = os.path.basename(ncFile).split('_')[0]
     fill_val = -9999.
     
-    # Create Savitzky-Golay variables
-    savgol_var_P = ncds.createVariable('savgol_P_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    savgol_var_P.long_name = 'PlanetScope %s Savitzky-Golay Filter values'
-
-    savgol_var_PR = ncds.createVariable('savgol_PR_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    savgol_var_PR.long_name = 'PlanetScope & RapidEye %s Savitzky-Golay Filter values'
-
-    savgol_var_PRS = ncds.createVariable('savgol_PRS_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    savgol_var_PRS.long_name = 'PlanetScope, RapidEye and Sentinel-2 %s Savitzky-Golay Filter values'
-    
     # Get Existing Values
-    original_P_values = ncds.variables['original_P_%s_values'%viIndexName][:]/10000
-    original_PR_values = ncds.variables['original_PR_%s_values'%viIndexName][:]/10000
-    original_PRS_values = ncds.variables['original_PRS_%s_values'%viIndexName][:]/10000
+    original_values = ncds.variables[variable%viIndexName][:]
+    original = original_values/10000
+    
+    # Create Savitzky-Golay Filter variables
+#    savgol_varName = 'savgol_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
+#    savgol_var = ncds.createVariable(savgol_varName%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
+#    savgol_var.long_name = 'Savitzky-Golay Filter Smoothing on %s'%ncds.variables[variable%viIndexName].long_name
     
     # Filtering
-    [ztime ,rows, cols] = original_P_values.shape
+    [ztime ,rows, cols] = original.shape
     size_st = cols*rows
-
-    values_savgol_P = np.empty((ztime, rows, cols))
-    values_savgol_P[:] = pd.np.nan
-    values_savgol_PR = np.empty((ztime, rows, cols))
-    values_savgol_PR[:] = pd.np.nan
-    values_savgol_PRS = np.empty((ztime, rows, cols))
-    values_savgol_PRS[:] = pd.np.nan
+#    values_savgol = np.empty((ztime, rows, cols))
+#    values_savgol[:] = pd.np.nan
     
     counter = 1
     print ('Running Savitzky-Golay Filter...')
-    for m,n in product(range(1),range(1)): # rows cols 
-        print ('\t{0}/{1}'.format(counter, size_st))
+#    for m,n in product(range(rows),range(cols)): # rows cols 
+#        print ('\t{0}/{1}'.format(counter, size_st))
         
-        yp = pd.Series(original_P_values[:, m, n])
-        yp_inter = yp.interpolate(method='linear')
-        yr_p = savgol_filter(yp_inter,window_length, polyorder)
-        values_savgol_P[:, m, n] = yr_p
-
-        ypr = pd.Series(original_PR_values[:, m, n])
-        ypr_inter = ypr.interpolate(method='linear')
-        yr_pr = savgol_filter(ypr_inter,window_length, polyorder)
-        values_savgol_PR[:, m, n] = yr_pr
-        
-        yprs = pd.Series(original_PRS_values[:, m, n])
-        yprs_inter = yprs.interpolate(method='linear')
-        yr_prs = savgol_filter(yprs_inter,window_length, polyorder)
-        values_savgol_PRS[:, m, n] = yr_prs
-        
-        counter += 1
-        
-    ncds.variables['savgol_P_%s_values'%viIndexName][:] = values_savgol_P*10000
-    ncds.variables['savgol_PR_%s_values'%viIndexName][:] = values_savgol_PR*10000
-    ncds.variables['savgol_PRS_%s_values'%viIndexName][:] = values_savgol_PRS*10000
-    
+    #Review
+    y = pd.np.array(original[:, 926, 551]) # m, n
+    yn = np.where(y==-9999.,np.nan,y)
+    y_inter = pd.Series(yn).interpolate(method='linear')
+#        print (y_inter.values)
+    ys = savgol_filter(y_inter.values,window_size, order)
+#        
+    plt.figure()
+    plt.plot(original[:, 926, 551],'r.',label='Original') # m, n
+#        plt.plot(y_inter.values,'b-',label='Interpolate')
+    plt.plot(ys,'m-',label='Savitzky-Golay Scipy')
+#        plt.plot(ys2,'g-',label='Savitzky-Golay Function')
+    plt.legend()
+#        values_savgol[:, m, n] = yr
+#        counter += 1
+      
+#    values_savgol = values_savgol * 10000
+#    ncds.variables[savgol_varName%viIndexName][:] = values_savgol
     # Close netcdf file
     ncds.close()
 
 # =============================================================================
-# Smoothing with Whittaker-Henderson
+# Smoothing with Whittaker Smoother
 # =============================================================================
-
-def whfilter(a, weights, lamb, p=3):
+def whitsmw (y, w, lamb, d=2):
     """
-    Generalized Whittaker-Handerson Graduation Method
-    Parameters
-    ----------
-    a : array-like
-          The input array, shape (n,)
-    weights : array-like or None
-          Weights
-    lamb : float
-          The relative importance between goodness of fit 
-          and smoothness (smoothness increases with lamb).
-    p : integer, default 3
-          The degree of smoothness. We minimize the p-th 
-          finite-differences of the graduated data. Examples:
-          p=2 Hodrick-Prescott filter;
-          p=3 Whittaker-Henderson method;
-          Note: moments 0..p-1 will be conserved by graduation
+    Whittaker smoother with weights
+    Input:
+       y: data series, sampled at equal intervals (arbitrary values allowed when missing, but not NaN!)
+       w: weights (0/1 for missing/non-missing data)
+       lamb: smoothing parameter; large lambda gives smoother result
+       d: order of differences (default = 2)
+    Output:
+       z: smoothed series
+       cve: RMS leave-one-out prediction error
+       h: diagonal of hat matrix
     
-    Returns
-    -------
-    out : array
-          The smoothed data
-    References
-    ----------
-    implementation of scikits.statsmodels.tsa.filters.hp_filter.py
-    Alicja S. Nocon & William F. Scott (2012): "An extension of the 
-       Whittaker-Henderson method of graduation", Scandinavian 
-       Actuarial Journal, 2012:1, 70-79
-    Whittaker, E. T. (1922). "On a new method of graduation", 
-       Proceedings of the Edinburgh Mathematical Society 41,63-75.
+    Remark: the computation of the hat diagonal for m > 100 is experimental;
+    with many missing observation it may fail.
+    
+    Paul Eilers, 2003
+    
+    For translation : https://docs.scipy.org/doc/numpy/user/numpy-for-matlab-users.html
+    http://www.courspython.com/tableaux-numpy.html
     """
-    # input data
-    a = np.squeeze(a)
-    if a.ndim>1: raise ValueError("input array a must be 1d")
-    n = a.size
+    
+    # Smoothing
+    
+    m = sp.size(y)
+    E = sparse.eye(m).toarray()
+    W = sparse.spdiags(w,0,m,m).toarray()
+    D = sp.diff(E, d, axis=0)
+    C = linalg.cholesky(W + lamb * (D.conj().T).dot(D))
+    z = linalg.solve(C,linalg.solve(C.conj().T,w*y))
+    
+    return z
 
-    # weights
-    W = np.squeeze(weights) if weights is not None else np.ones(n)
-    if np.any(W==0) or not np.all(np.isfinite(W)): 
-      raise ValueError("weights must be non-zero and finite.")
-    W = sparse.dia_matrix((W, 0), shape=(n,n))
 
-    # set up difference Matrix K, shape (n-p, n)
-    # K_ij = k(j-i),  l=j-i
-    # k(l) = (-1)^l Binomial(p,l) if 0<=l<=p else 0
-    l = np.arange(p+1)
-    k = (-1)**l * comb(p,l)       # same as K_0j
-    diags  =np.tile(k,(n,1)).T   # side-diagonal K_i,i+l; n-times k(l)
-    offsets=np.arange(p+1)        # index of side-diagonals
-    K = sparse.dia_matrix((diags,offsets),shape=(n-p,n)) # K_ij
-
-    # solve quadratic optimization problem 
-    return spsolve(W+lamb*K.T.dot(K), W.dot(a))
-
-def smooth_whittaker(ncFile, weights=None, lamb=1000):
+def smooth_whittaker(ncFile, variable, lamb=5000, d=2):
     """
-    Smooth Time Series in NetCDF4 Format with Whittaker-Henderson Smoother
-    Whittaker-Henderson parameters are :
-       weights :
-       lamb : 
+    Smooth Time Series in NetCDF4 Format with Whittaker Smoother
     """
     # Read netcdfs
     ncds = Dataset(ncFile, 'r+')
     viIndexName = os.path.basename(ncFile).split('_')[0]
     fill_val = -9999.
     
-    # Create Whittaker-Henderson variables
-    whittaker_var_P = ncds.createVariable('whittaker_P_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    whittaker_var_P.long_name = 'PlanetScope %s Whittaker-Henderson Smoother values'
-
-    whittaker_var_PR = ncds.createVariable('whittaker_PR_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    whittaker_var_PR.long_name = 'PlanetScope & RapidEye %s Whittaker-Henderson Smoother values'
-
-    whittaker_var_PRS = ncds.createVariable('whittaker_PRS_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    whittaker_var_PRS.long_name = 'PlanetScope, RapidEye and Sentinel-2 %s Whittaker-Henderson Smoother values'
-    
     # Get Existing Values
-    original_P_values = ncds.variables['original_P_%s_values'%viIndexName][:]/10000
-    original_PR_values = ncds.variables['original_PR_%s_values'%viIndexName][:]/10000
-    original_PRS_values = ncds.variables['original_PRS_%s_values'%viIndexName][:]/10000
+    original_values = ncds.variables[variable%viIndexName][:]
+    original = original_values/10000
     
-    # Filtering
-    [ztime ,rows, cols] = original_P_values.shape
+    # Create Whittaker Smoother variables
+    whit_varName = 'whittaker_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
+    whit_var = ncds.createVariable(whit_varName%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
+    whit_var.long_name = 'Whittaker Smoothing on %s'%ncds.variables[variable%viIndexName].long_name
+    
+    # Filtering 
+    
+    [ztime ,rows, cols] = original.shape
     size_st = cols*rows
-
-    values_whittaker_P = np.empty((ztime, rows, cols))
-    values_whittaker_P[:] = pd.np.nan
-    values_whittaker_PR = np.empty((ztime, rows, cols))
-    values_whittaker_PR[:] = pd.np.nan
-    values_whittaker_PRS = np.empty((ztime, rows, cols))
-    values_whittaker_PRS[:] = pd.np.nan
+    values_whit = np.empty((ztime, rows, cols))
+    values_whit[:] = pd.np.nan
     
     counter = 1
-    print ('Running Whittaker-Henderson Smoother...')
-    for m,n in product(range(1),range(1)): # rows cols 
+    print ('Running Whittaker Smoother...')
+    for m,n in product(range(rows),range(cols)): # rows cols 
         print ('\t{0}/{1}'.format(counter, size_st))
         
-        yp = pd.Series(original_P_values[:, m, n])
-        yp_inter = yp.interpolate(method='linear')
-        yr_p = whfilter(yp_inter, weights, lamb)
-        values_whittaker_P[:, m, n] = yr_p
+        y = pd.np.array(original[:, m, n])
+        w = np.where(y==-9999,0,1) # Negative Values to test : ok
+        z = whitsmw (y, w, lamb, d)
+#        plt.figure()
+#        plt.plot(original[:, m, n],'r.',label='Original')
+#        plt.plot(z,'y-',label='Whittaker Smoother')
+#        plt.legend()
 
-        ypr = pd.Series(original_PR_values[:, m, n])
-        ypr_inter = ypr.interpolate(method='linear')
-        yr_pr = whfilter(ypr_inter, weights, lamb)
-        values_whittaker_PR[:, m, n] = yr_pr
-        
-        yprs = pd.Series(original_PRS_values[:, m, n])
-        yprs_inter = yprs.interpolate(method='linear')
-        yr_prs = whfilter(yprs_inter, weights, lamb)
-        values_whittaker_PRS[:, m, n] = yr_prs
-        
+        values_whit[:, m, n] = z
         counter += 1
-        
-    ncds.variables['whittaker_P_%s_values'%viIndexName][:] = values_whittaker_P*10000
-    ncds.variables['whittaker_PR_%s_values'%viIndexName][:] = values_whittaker_PR*10000
-    ncds.variables['whittaker_PRS_%s_values'%viIndexName][:] = values_whittaker_PRS*10000
-    
+
+    values_whit = values_whit * 10000
+    ncds.variables[whit_varName%viIndexName][:] = values_whit
+
     # Close netcdf file
     ncds.close()
 
-def check_fit(ncFile,point):
+def check_fit(ncFile, variable, point, lstMethods):
     """
-    Function to check All Smoothing methods results
-    using Matplotlib in some pixels
+    Function to check Smoothing results on given variable
+    Using Matplotlib in some pixels
     """
     # Read NetCDF File
     ncds = Dataset(ncFile,'r')
@@ -654,90 +502,56 @@ def check_fit(ncFile,point):
     # Read values
     viIndexName = os.path.basename(ncFile).split('_')[0]
     # original
-    values_o_p = ncds.variables['original_P_%s_values'%viIndexName][:,row,col]/10000
-    values_o_pr = ncds.variables['original_PR_%s_values'%viIndexName][:,row,col]/10000
-    values_o_prs = ncds.variables['original_PRS_%s_values'%viIndexName][:,row,col]/10000
+    values_o = ncds.variables[variable%viIndexName][:,row,col]
+    values_o = values_o / 10000
+    
+    minval = []
+    maxval = []
     # Hants
-    values_h_p = ncds.variables['hants_P_%s_values'%viIndexName][:,row,col]/10000
-    values_h_pr = ncds.variables['hants_PR_%s_values'%viIndexName][:,row,col]/10000
-    values_h_prs = ncds.variables['hants_PRS_%s_values'%viIndexName][:,row,col]/10000
-    combined_h_p = ncds.variables['combined_P_%s_values'%viIndexName][:,row,col]/10000
-    combined_h_pr = ncds.variables['combined_PR_%s_values'%viIndexName][:,row,col]/10000
-    combined_h_prs = ncds.variables['combined_PRS_%s_values'%viIndexName][:,row,col]/10000
-    outliers_h_p = ncds.variables['outliers_P_%s_values'%viIndexName][:,row,col]/10000
-    outliers_h_pr = ncds.variables['outliers_PR_%s_values'%viIndexName][:,row,col]/10000
-    outliers_h_prs = ncds.variables['outliers_PRS_%s_values'%viIndexName][:,row,col]/10000
+    if 'hants' in lstMethods :
+        hants_varName = 'hants_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
+        values_h = ncds.variables[hants_varName%viIndexName][:,row,col]
+        values_h = values_h / 10000
+        minval.append(min(values_h))
+        maxval.append(max(values_h))
     # Savitzky-Golay
-#    values_s_p = ncds.variables['savgol_P_%s_values'%viIndexName][:,row,col]/10000
-#    values_s_pr = ncds.variables['savgol_PR_%s_values'%viIndexName][:,row,col]/10000
-#    values_s_prs = ncds.variables['savgol_PRS_%s_values'%viIndexName][:,row,col]/10000
+    if 'savgol' in lstMethods :
+        savgol_varName = 'savgol_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
+        values_s = ncds.variables[savgol_varName%viIndexName][:,row,col]
+        values_s = values_s / 10000
+        minval.append(min(values_s))
+        maxval.append(max(values_s))
     # Whittaker
-#    values_w_p = ncds.variables['whittaker_P_%s_values'%viIndexName][:,row,col]/10000
-#    values_w_pr = ncds.variables['whittaker_PR_%s_values'%viIndexName][:,row,col]/10000
-#    values_w_prs = ncds.variables['whittaker_PRS_%s_values'%viIndexName][:,row,col]/10000
+    if 'whittaker' in lstMethods :
+        whit_varName = 'whittaker_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
+        values_w = ncds.variables[whit_varName%viIndexName][:,row,col]
+        values_w = values_w / 10000
+        minval.append(min(values_w))
+        maxval.append(max(values_w))
     # Time
     times = [pd.to_datetime(Date, format='%Y%m%d') for Date in ncds.variables['time'][:]]
-    
-    # Figure PlanetScope
+
+    # Figure 
     plt.figure() 
-    top = 1.15*max(pd.np.nanmax(values_o_p), pd.np.nanmax(values_h_p))#, pd.np.nanmax(combined_h_p), pd.np.nanmax(outliers_h_p))# ,pd.np.nanmax(values_s_p), pd.np.nanmax(values_w_p))
-    bottom = min(pd.np.nanmin(values_o_p), pd.np.nanmin(values_h_p))#, pd.np.nanmin(combined_h_p), pd.np.nanmin(outliers_h_p))#   , pd.np.nanmin(values_h_p), pd.np.nanmin(values_w_p)) - 0.05
-    ylim = [bottom, top]
-        # Plot
-    plt.plot(times, values_h_p, 'r-', label='HANTS')
-#    plt.plot(times, combined_h_p, 'c--', label='Combined')
-#    plt.plot(times, outliers_h_p, 'm.', label='outliers')
-#    plt.plot(times, values_s_p, 'g-', label='Savitzky-Golay Filter')
-#    plt.plot(times, values_w_p, 'y-', label='Whittaker-Henderson Smoother')
-    plt.plot(times, values_o_p, 'b.', label='Original data')
+    
+    ylim = [min(minval)-0.1, max(maxval)+0.1]
+    
+    # Plot
+    if 'hants' in lstMethods :
+        plt.plot(times, values_h, 'r-', label='HANTS')
+    if 'savgol' in lstMethods :
+        plt.plot(times, values_s, 'g-', label='Savitzky-Golay Filter')
+    if 'whittaker' in lstMethods :
+        plt.plot(times, values_w, 'y-', label='Whittaker Smoother')
+        
+    plt.plot(times, values_o, 'b.', label='Original data')
+    
     plt.ylim(ylim[0], ylim[1])
     plt.legend(loc='best')
     plt.xlabel('time')
     plt.ylabel('values')
     plt.gcf().autofmt_xdate()
-    plt.axes().set_title('Point: X {0:.2f}, Y {1:.2f} \n PlanetScope Time Serie'.format(x,y))
-    plt.axes().set_aspect(0.5*(times[-1] - times[0]).days/(ylim[1] - ylim[0]))
-    plt.show()
-    
-    # Figure PlanetScope & RapidEye
-    plt.figure() 
-    top = 1.15*max(pd.np.nanmax(values_o_pr), pd.np.nanmax(values_h_pr))#,pd.np.nanmax(combined_h_pr), pd.np.nanmax(outliers_h_pr))# ,pd.np.nanmax(values_s_pr), pd.np.nanmax(values_w_pr))
-    bottom = min(pd.np.nanmin(values_o_pr), pd.np.nanmin(values_h_pr))#,pd.np.nanmin(combined_h_pr), pd.np.nanmin(outliers_h_pr))#   , pd.np.nanmin(values_h_pr), pd.np.nanmin(values_w_pr)) - 0.05
-    ylim = [bottom, top]
-        # Plot
-    plt.plot(times, values_h_pr, 'r-', label='HANTS')
-#    plt.plot(times, combined_h_pr, 'c--', label='Combined')
-#    plt.plot(times, outliers_h_pr, 'm.', label='outliers')
-#    plt.plot(times, values_s_pr, 'g-', label='Savitzky-Golay Filter')
-#    plt.plot(times, values_w_pr, 'y-', label='Whittaker-Henderson Smoother')
-    plt.plot(times, values_o_pr, 'b.', label='Original data')
-    plt.ylim(ylim[0], ylim[1])
-    plt.legend(loc='best')
-    plt.xlabel('time')
-    plt.ylabel('values')
-    plt.gcf().autofmt_xdate()
-    plt.axes().set_title('Point: X {0:.2f}, Y {1:.2f} \n PlanetScope and RapidEye Time Serie'.format(x,y))
-    plt.axes().set_aspect(0.5*(times[-1] - times[0]).days/(ylim[1] - ylim[0]))
-    plt.show()
-    
-    # Figure PlanetScope, RapidEye and Sentinel-2
-    plt.figure() 
-    top = 1.15*max(pd.np.nanmax(values_o_prs), pd.np.nanmax(values_h_prs))#,pd.np.nanmax(combined_h_prs), pd.np.nanmax(outliers_h_prs))# ,pd.np.nanmax(values_s_prs), pd.np.nanmax(values_w_prs))
-    bottom = min(pd.np.nanmin(values_o_prs), pd.np.nanmin(values_h_prs))#,pd.np.nanmin(combined_h_prs), pd.np.nanmin(outliers_h_prs))#   , pd.np.nanmin(values_h_prs), pd.np.nanmin(values_w_prs)) - 0.05
-    ylim = [bottom, top]
-        # Plot
-    plt.plot(times, values_h_prs, 'r-', label='HANTS')
-#    plt.plot(times, combined_h_prs, 'c--', label='Combined')
-#    plt.plot(times, outliers_h_prs, 'm.', label='outliers')
-#    plt.plot(times, values_s_prs, 'g-', label='Savitzky-Golay Filter')
-#    plt.plot(times, values_w_prs, 'y-', label='Whittaker-Henderson Smoother')
-    plt.plot(times, values_o_prs, 'b.', label='Original data')
-    plt.ylim(ylim[0], ylim[1])
-    plt.legend(loc='best')
-    plt.xlabel('time')
-    plt.ylabel('values')
-    plt.gcf().autofmt_xdate()
-    plt.axes().set_title('Point: X {0:.2f}, Y {1:.2f} \n Entire Time Serie'.format(x,y))
+    plt.axes().set_title('Point: X {0:.2f}, Y {1:.2f} \n Var : {2}'.format(x,y, variable%viIndexName))
     plt.axes().set_aspect(0.5*(times[-1] - times[0]).days/(ylim[1] - ylim[0]))
     plt.show()
 
@@ -747,17 +561,25 @@ def check_fit(ncFile,point):
 
 if __name__=="__main__":
     
+# =============================================================================
+#     NDVI
+# =============================================================================
+    
     inPath = "D:/Stage/Output/INDICES/NDVI"
     inVectorFile = "D:/Stage/Gbodjo_2018/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
-#
+
 #    ncFile = create_time_series(inPath,inVectorFile)
     ncFile = 'D:/Stage/Output/INDICES/NDVI/NDVI_TIME_SERIES.nc'
-#    smooth_hants(ncFile)
-#    smooth_savgol(ncFile)
-#    smooth_whittaker(ncFile)
+    
+    variable = "original_PRScor_%s_values"
+#    smooth_hants(ncFile, variable)
+#    smooth_whittaker(ncFile, variable)
+    smooth_savgol(ncFile, variable)
+    
+    lstMethods = ['hants','whittaker','savgol']
     
     Points = [(336142.1, 1602889.5), (335329, 1603060), (334582.4, 1600219.6), (334578.5,1600143.5), (336082.9,1603694.0), \
           (336746.3,1603706.7), (336423.9,1603248.0), (336858.4,1603152.2), (337457.6,1603508.4), (337067.1,1603144.3)]
     
-    for point in Points :
-        check_fit(ncFile, point)
+#    for point in Points :
+#        check_fit(ncFile, variable, point, lstMethods)
