@@ -17,6 +17,7 @@
 \usepackage{tikz}
 \usepackage{pgfplots}\usepgfplotslibrary{dateplot}\usetikzlibrary{shapes,arrows}
 \usepackage{pdfpages}
+\usepackage{textcomp}
 
 \title{Evaluation du potentiel d’une série temporelle multi-source à haute résolution spatiale pour le suivi des cultures annuelles en petite agriculture familiale : 
 Cas du bassin arachidier sénégalais}
@@ -28,6 +29,7 @@ Cas du bassin arachidier sénégalais}
 %\renewcommand{\emph}{\textbf}
 
 \makeglossaries
+\pgfplotsset{compat=1.15}
 
 \begin{document}
 
@@ -47,9 +49,13 @@ Cas du bassin arachidier sénégalais}
 
 \mainmatter
 
-  \chapter{Introduction Générale}
+  \chapter{Introduction}
   
   \input{introduction/intro}
+  
+  \chapter{Contexte et Objectifs}
+  
+  \input{introduction/contexte}
 
   \chapter{Synthèse bibliographique}
   
@@ -76,6 +82,6 @@ Cas du bassin arachidier sénégalais}
 \printglossary[type=\acronymtype]
 
 \bibliographystyle{apalike}
-\bibliography{bibliographie/library}
+\bibliography{bibliographie/serena}
   
 \end{document}          
