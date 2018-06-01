@@ -14,7 +14,7 @@ import gdal, ogr, osr
 from osgeo.gdalconst import GA_ReadOnly
 #import geopandas as gpd
 #from shapely.wkt import loads
-#import pandas as pd
+import pandas as pd
 import os
 import numpy as np
 from netCDF4 import Dataset
@@ -242,14 +242,8 @@ def aggregate (inFile, inVectorFile, variable) :
     if variable.startswith('original'):
         time2 = [str(Date)+'_OMean' for Date in time]
         time2.insert(0,"ID")
-    elif variable.startswith('hants'):
-        time2 = [str(Date)+'_HMean' for Date in time]
-        time2.insert(0,"ID")
-    elif variable.startswith('savgol'):
+    else :
         time2 = [str(Date)+'_SMean' for Date in time]
-        time2.insert(0,"ID")
-    elif variable.startswith('whittaker'):
-        time2 = [str(Date)+'_WMean' for Date in time]
         time2.insert(0,"ID")
 #    print (time2)
      
@@ -271,7 +265,29 @@ def aggregate (inFile, inVectorFile, variable) :
         
     # Close netCDF dataset
     ncds = None
+
+def mean_profile (hantsCSV, whitCSV) :
+    """
+    Compute mean value about Hants and Whittaker Smoother for each plot
+    """
+    outFile = os.path.basename(hantsCSV).split('_')[0]+'_'+os.path.basename(hantsCSV).split('_')[1]+'_SmoothAvg_'+os.path.basename(hantsCSV).split('_')[3]
+    hants_df = pd.read_csv(hantsCSV)
+    whit_df = pd.read_csv(whitCSV)
+#    print (hants_values, whit_values)
+    df_concat = pd.concat((hants_df, whit_df))
+    by_row_index = df_concat.groupby(df_concat.index)
+    df_means = by_row_index.mean()
+    df_means['ID'] =  hants_df['ID']
+    df_means.to_csv(os.path.join(os.path.dirname(hantsCSV),outFile))
     
+    # CSVt File for Attribute Join in GIS Software
+    outCSVt = os.path.join(os.path.dirname(hantsCSV),outFile+'t')
+    with open(outCSVt,'w') as csvt_file:
+        csvt_file.write('"String",') 
+        for i in range(len(hants_df.columns)-2) : # ID column are not considered
+            csvt_file.write('"Real",')
+        csvt_file.write('"Real"')
+
 if __name__=="__main__":
     
 # =============================================================================
@@ -281,10 +297,14 @@ if __name__=="__main__":
     inFile = "D:/Stage/Output/INDICES/NDVI/NDVI_TIME_SERIES.nc"
     inVectorFile = "D:/Stage/Gbodjo_2018/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
 
-    variables = ["original_PRScor_%s_values","hants_PRScor_%s_values","whittaker_PRScor_%s_values","savgol_PRScor_%s_values"]
-    for variable in variables :
-        print (variable%os.path.basename(inFile).split('_')[0])
-        aggregate (inFile, inVectorFile, variable)
+    variables = ["original_PRScor_%s_values","hants_PRScor_%s_values","whittaker_PRScor_%s_values"]#,"savgol_PRScor_%s_values"]
+    
+#    variable = "original_PRS_%s_values"
+#    aggregate (inFile, inVectorFile, variable)
+    
+#    for variable in variables :
+#        print (variable%os.path.basename(inFile).split('_')[0])
+#        aggregate (inFile, inVectorFile, variable)
         
 # =============================================================================
 #     MSAVI2
@@ -297,3 +317,10 @@ if __name__=="__main__":
 #    for variable in variables :
 #        print (variable%os.path.basename(inFile).split('_')[0])
 #        aggregate (inFile, inVectorFile, variable)
+    
+# =============================================================================
+#     Mean Profile
+# =============================================================================
+    hantsCSV = "D:/Stage/Output/INDICES/NDVI/Mean_NDVI_hants_PRScor.csv"
+    whitCSV = "D:/Stage/Output/INDICES/NDVI/Mean_NDVI_whittaker_PRScor.csv"
+    mean_profile (hantsCSV, whitCSV)
