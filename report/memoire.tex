@@ -5,7 +5,7 @@
 \usepackage[osf,sc]{mathpazo}
 \usepackage[citecolor=magenta,colorlinks=true,hypertexnames=false,pdftitle=Mémoire SERENA Gbodjo]{hyperref}
 \usepackage{natbib}
-\usepackage[french]{babel}
+\usepackage[english,french]{babel}
 %\usepackage{setspace}
 %\usepackage{makeidx}
 %\usepackage[french]{nomencl}
@@ -31,6 +31,16 @@ Cas du bassin arachidier sénégalais}
 \makeglossaries
 \pgfplotsset{compat=1.15}
 
+\newenvironment{abstract}%
+{\cleardoublepage\thispagestyle{empty}\null\vfill\begin{center}%
+\sffamily\bfseries \abstractname \end{center}}%
+{\vfill\null}
+
+\newenvironment{acknowledgements}%
+{\cleardoublepage\thispagestyle{empty}\null\vfill\begin{center}%
+\sffamily\bfseries Remerciements \end{center}}%
+{\vfill\null}
+
 \begin{document}
 
 \includepdf{Garde.pdf}
@@ -42,6 +52,23 @@ Cas du bassin arachidier sénégalais}
 \frontmatter
   \renewcommand{\contentsname}{Sommaire}
   \setcounter{tocdepth}{2}
+  \selectlanguage {french}
+    \begin{abstract}
+
+    \end {abstract}
+    
+  \selectlanguage {english}
+    \begin {abstract}
+
+    \end{abstract}
+
+  \selectlanguage {french}
+  
+    \begin{acknowledgements}
+
+    \end{acknowledgements}
+
+
   \tableofcontents
   \listoffigures
   \listoftables
@@ -81,6 +108,9 @@ Cas du bassin arachidier sénégalais}
 
 \printglossary[type=\acronymtype]
 
+\cleardoublepage
+\refstepcounter{chapter}
+\addcontentsline{toc}{chapter}{\bibname}
 \bibliographystyle{apalike}
 \bibliography{bibliographie/serena}
   
