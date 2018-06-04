@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt,openany,chapterprefix=true]{scrbook}
+\documentclass[a4paper,12pt,oneside,chapterprefix=true]{scrbook}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
@@ -19,10 +19,10 @@
 \usepackage{pdfpages}
 \usepackage{textcomp}
 
-\title{Evaluation du potentiel d’une série temporelle multi-source à haute résolution spatiale pour le suivi des cultures annuelles en petite agriculture familiale : 
-Cas du bassin arachidier sénégalais}
-\author{\textsc{Gbodjo} Yawogan Jean Eudes}
-\date{\today}
+%\title{Evaluation du potentiel d’une série temporelle multi-source à haute résolution spatiale pour le suivi des cultures annuelles en petite agriculture familiale : 
+%Cas du bassin arachidier sénégalais}
+%\author{\textsc{Gbodjo} Yawogan Jean Eudes}
+%\date{\today}
 
 %\onehalfspacing
 \pagestyle{plain}
@@ -42,10 +42,8 @@ Cas du bassin arachidier sénégalais}
 {\vfill\null}
 
 \begin{document}
-
-\includepdf{Garde.pdf}
-
-\input{acronymes}
+\let\cleardoublepage\clearpage
+\includepdf[pages=1]{Garde.pdf}
 
 %\maketitle
 
@@ -105,7 +103,7 @@ Cas du bassin arachidier sénégalais}
 \chapter{Diagramme de Gantt}\label{annexe-a}
 
 \backmatter
-
+\input{acronymes}
 \printglossary[type=\acronymtype]
 
 \cleardoublepage
