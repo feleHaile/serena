@@ -13,11 +13,13 @@
 \usepackage{graphicx}
 \usepackage{cleveref}
 \usepackage{amsmath,amssymb,mathrsfs}
-%\usepackage{siunitx}
 \usepackage{tikz}
 \usepackage{pgfplots}\usepgfplotslibrary{dateplot}\usetikzlibrary{shapes,arrows}
 \usepackage{pdfpages}
 \usepackage{textcomp}
+%\usepackage{shorttoc}
+\usepackage{siunitx}
+%\usepackage{fancyhdr}
 
 %\title{Evaluation du potentiel d’une série temporelle multi-source à haute résolution spatiale pour le suivi des cultures annuelles en petite agriculture familiale : 
 %Cas du bassin arachidier sénégalais}
@@ -41,6 +43,8 @@
 \sffamily\bfseries Remerciements \end{center}}%
 {\vfill\null}
 
+\addto\captionsfrench{\renewcommand{\contentsname}{Sommaire}}
+
 \begin{document}
 \let\cleardoublepage\clearpage
 \includepdf[pages=1]{Garde.pdf}
@@ -48,7 +52,7 @@
 %\maketitle
 
 \frontmatter
-  \renewcommand{\contentsname}{Sommaire}
+  
   \setcounter{tocdepth}{2}
   \selectlanguage {french}
     \begin{abstract}
@@ -66,7 +70,7 @@
 
     \end{acknowledgements}
 
-
+  %\shorttoc{Sommaire}{2}
   \tableofcontents
   \listoffigures
   \listoftables

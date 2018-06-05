@@ -32,7 +32,7 @@ s'agit de compte numérique ou \emph{16 bits} dans le cas des radiances TOA. Ell
 \label{planetscope}
  \begin{tabular}{ccc}
   \hline
-  Bande spectrale & Domaine spectral & Longueurs d'onde (\textmu m)\\
+  Bande spectrale & Domaine spectral & Longueurs d'onde (\SI{}{\micro\meter})\\
   \hline
   1 & Bleu & 0,455 --- 0,515 \\
   2 & Vert & 0,500 --- 0,590 \\
@@ -65,7 +65,7 @@ radiométrique de \emph{16 bits}. Elles disposent de 5 bandes spectrales (\Cref{
 \label{rapideye}
  \begin{tabular}{ccc}
   \hline
-  Bande spectrale & Domaine spectral & Longueurs d'onde (\textmu m)\\
+  Bande spectrale & Domaine spectral & Longueurs d'onde (\SI{}{\micro\meter})\\
   \hline
   1 & Bleu & 0,440 --- 0,510 \\
   2 & Vert & 0,520 --- 0,590 \\
@@ -111,7 +111,7 @@ naturelles notamment les inondations.
 \label{msi}
  \begin{tabular}{cccc}
   \hline
-  Bande spectrale & Domaine spectral & Longueurs d'onde (\textmu m) & R. spatiale (m)\\
+  Bande spectrale & Domaine spectral & Longueurs d'onde (\SI{}{\micro\meter}) & R. spatiale (m)\\
   \hline
   \phantom{1}1 & Aérosols & 0,433 --- 0,453 & 60 \\
   \phantom{1}2 & Bleu & 0,4575 --- 0,5225 & 10 \\
@@ -248,15 +248,15 @@ Chronologie des acquisitions (\Cref{Chronologie}) est la suivante :
 \section{Données de terrain}
 
 Notre jeu de données terrain est basé sur des enquêtes agronomiques réalisées courant 2017 sur 53 parcelles agricoles. Ces enquêtes ont été menées pour la plupart dans le cadre des projets Oracle \footnote{\url{https://afrique-ouest.cirad.fr/actualites/projet-oracle-2017-2020}} et ANR CERAO \footnote{\url{http://www.agence-nationale-recherche.fr/Projet-ANR-13-AGRO-0002}}. Le jeu du projet Oracle provient de la thèse de Sophie \textsc{Djiba} et consiste en un réseau de 30 parcelles enquêtées en milieu paysan où les pratiques agricoles sont 
-axées sur des rotations entre céréales et légumineuses (mil/arachide et/ou niébé) et des associations entre légumineuses (arachide/niébé). Par contre, celui du projet ANR CERAO, mis au point par Adama \textsc{Tounkara} lors de sa thèse, est un réseau de 19 parcelles enquêtées également en milieu paysan mais présentant chacune sur une partie, des essais relatifs à l'efficience de l'utilisation de l'azote par le mil en fonction de différents niveaux d'apports ou non en fertilisants,et ce indépendamment des pratiques de l'agriculteur. Nous émettons donc l'hypothèse de la représentativité de ces essais vis-à-vis des parcelles concernées. Néanmoins, conscients de l'incertitude potentielle dans cette généralisation, nous envisageons d'analyser nos résultats séparement en tenant compte de la source des parcelles. Pour chaque parcelle enquêtée, différentes informations sont collectées. Celles qui nous interessent principalement sont :
+axées sur des rotations entre céréales et légumineuses (mil/arachide et/ou niébé) et des associations entre légumineuses (arachide/niébé). Par contre, celui du projet ANR CERAO, mis au point par Adama \textsc{Tounkara} lors de sa thèse, est un réseau de 19 parcelles enquêtées également en milieu paysan mais présentant chacune sur une partie, des essais relatifs à l'efficience de l'utilisation de l'azote par le mil en fonction de différents niveaux d'apports ou non en fertilisants, et ce indépendamment des pratiques de l'agriculteur. Nous émettons l'hypothèse que ces essais sont représentatifs des parcelles concernées, néanmoins, conscients de l'incertitude potentielle dans cette généralisation, nous envisageons d'analyser nos résultats séparement en tenant compte de la source des données de terrain. Pour chaque parcelle enquêtée, différentes informations sont collectées. Celles qui nous interessent principalement sont :
 \begin{itemize}
  \item le système de culture et les espèces cultivées
- \item les pratiques culturales (fertilisant, date de semis et de récoltes)
+ \item les pratiques culturales (fertilisant, dates de semis et de récoltes)
  \item la biomasse (fraîche et sèche) et le rendement (frais et sec)
  \item la géolocalisation des parcelles
  \item ou encore le nombre et les espèces d'arbres présentes au sein des parcelles.
 \end{itemize}
-La \Cref{terrain} présente les principales statistiques descriptives pour les parcelles suivies où nous pouvons nous apercevoir de \ldots{} comme espéré. La \ldots{} la localisation des parcelles suivant leurs cultures et système de culture ainsi que la biomasse fraîche et les rendements frais observés.
+La \Cref{terrain} présente les principales statistiques descriptives pour les parcelles enquêtées. Comme nous pouvons nous en apercevoir \ldots{} comme espéré. La \ldots{} présente la localisation des parcelles suivant leur culture et système de culture ainsi que leur biomasse fraîche et les rendements frais observés.
 
 \begin{table}[htbp]
 %\begin{center}
@@ -295,28 +295,18 @@ ont été rééchantillonnés à la résolution des indices PlanetScope (3m), ce
 
 \section{Lissage des séries temporelles}
 
-\`A présent, nous disposons  d'une série temporelle pour chaque indice de végétation calculé. Cependant, avant de pouvoir les exploiter pour la suite de notre travail, un autre 
-traitement s'impose : le \emph{lissage} ou \emph{smoothing}. En effet, bien que des prétraitements soient effectués sur les images satellitaires : calibrations radiométriques et 
-corrections atmosphériques entre autres, il subsiste du bruit qui affecte l'utilisation des séries temporelles d'images, impactant ainsi les futures analyses et pouvant donc fausser les interprétations
-données aux résultats obtenus \citep{Chen2004}. Ce bruit résiduel peut être lié à plusieurs facteurs notamment les conditions atmosphériques variables ou la présence de pixels nuageux
-indétectés. Les techniques de lissage font l'hypothèse que le bruit résiduel dans les images entraine des chutes soudaines dans le profil temporel des indices de végétation 
-\citep{Bojanowski2009}. Ces valeurs peuvent être ainsi identifiées puis supprimées et des séries temporelles de meilleure qualité reconstruites.
-\\L'une des techniques usuelles adoptée notamment par les fournisseurs d'indices de végétation périodique comme GIMMS-MODIS, SPOT-VEGETATION ou PROBA-V est le \acrshort{mvc}. Cette technique 
+\`A présent que nous disposons d'une série temporelle pour chaque indice de végétation calculé, nous pouvons les exploiter pour la suite de notre travail. Cependant, un autre traitement s'impose : le \emph{lissage} ou \emph{smoothing}. En effet, bien que des prétraitements soient effectués sur les images satellitaires : calibrations radiométriques et corrections atmosphériques entre autres, il subsiste du bruit qui affecte l'utilisation des séries temporelles d'images, impactant ainsi les futures analyses et pouvant donc fausser les interprétations données aux résultats obtenus \citep{Chen2004}. Ce bruit résiduel peut être lié à plusieurs facteurs notamment les conditions atmosphériques variables ou la présence de pixels nuageux indétectés. Les techniques de lissage font l'hypothèse que le bruit résiduel dans les images entraine des chutes soudaines dans le profil temporel des indices de végétation \citep{Bojanowski2009}. Ces valeurs peuvent être ainsi identifiées puis supprimées et des séries temporelles de meilleure qualité reconstruites.
+\\L'une des techniques usuelles adoptée notamment par les fournisseurs d'indices de végétation périodique comme GIMMS-MODIS, SPOT-VEGETATION ou PROBA-V est le \acrshort{mvc} \citep{Holben1986}. Cette technique 
 consiste à créer des synthèses d'indices de végétation sur une période donnée, généralement une décade en considérant pour chaque pixel la plus grande valeur enrégistrée sur la période.
-D'autres techniques de lissage de séries temporelles d'indices de végétation ont été mises au point. Nous pouvons citer des méthodes de seuillages comme l'algorithme \acrshort{bise}, 
-des méthodes basées sur l'analyse de Fourier comme \acrshort{hants} \citep{Verhoef1996} et d'autres approches par fonction asymétrique notamment gaussienne \citep{Jonsson2002}. 
-\citet{Chen2004} ont introduit une méthode de lissage basée sur le filtre de Savitzky-Golay \citep{Savitzky1964}. D'autres approches ont aussi été distinguées par \citet{Geng2014} et 
-\citet{Liu2017} comme la méthode de lissage de Whittaker ou encore la transformation en ondelettes.
-\\Plusieurs études ont comparées ces différentes techniques de lissage entre elles \citep{Jonsson2002,Chen2004,Hird2009,Geng2014,Shao2016,Liu2017}. La conclusion faite par \citet{
-Geng2014} qui ont comparé notamment 8 méthodes de lissage est qu'il n'y avait pas une meilleure méthode qu'une autre, chacune présentant ses avantages et ses inconvénients. De plus, la
-comparaison entre ces diverses méthodes n'est pas toujours significative du fait des différentes données utilisées et de l'application à des zones différentes. Néanmoins, s'il est vrai qu'il n'y 
-a pas de méthode idéale de lissage, il n'en demeure pas moins que le filtre de Savitzky-Golay est une méthode qui revient souvent dans la littérature et qui est connue pour ses 
-résultats consistants. En effet, le filtre de Savitzky-Golay est apprécié pour sa capacité à conserver la forme du profil temporel des indices de végétation ainsi que le timing et 
-l'amplitude des minima et maxima locaux. Nous avons retenu et comparé 2 techniques de lissage pour nos séries temporelles : HANTS et le filtre de Savitzky-Golay.
+D'autres techniques de lissage de séries temporelles d'indices de végétation ont été mises au point. Nous pouvons citer des méthodes par seuillage comme les algorithmes \acrshort{bise} \citep{Viovy1992} ou \acrshort{idr} \citep{Julien2010} qui utilisent un seuil pour contrôler le degré de lissage des séries reconstruites, des méthodes qui définissent un filtre pour lisser les données dans une fenêtre mobile comme le filtre de Savitzky-Golay \citep{Savitzky1964, Chen2004} ou le filtre à poids variable de \citet{Zhu2012} ou encore d'autres méthodes qui ajustent des fonctions mathématiques au profil saisonnier de la végétation telles que la fonction asymétrique gaussienne \citep{Jonsson2002} et les doubles fonctions logistiques \citep{Beck2006}. Il existe également des méthodes basées sur l'analyse de Fourier comme \acrshort{hants} \citep{Verhoef1996, Roerink2000} et la transformée de Fourier rapide \citep{Menenti1993} ou d'autres approches comme la méthode de lissage de Whittaker \citep{Eilers2003,Atzberger2011} et la transformation en ondelettes \citep{Lu2007}.
+\\Plusieurs études ont comparé ces différentes techniques de lissage \citep{Jonsson2002,Chen2004,Hird2009,Kandasamy2013,Geng2014,Shao2016,Liu2017} et beaucoup ont conclu qu'il n'y avait pas de méthode de lissage idéale, chacune présentant ses avantages et inconvénients. C'est notamment le cas de \citet{Geng2014} qui ont comparé pas moins de 8 méthodes de lissage pour reconstruire des séries temporelles de NDVI. De plus, la comparaison entre les méthodes de lissage n'est pas toujours significative du fait de l'objet de l'étude (simple comparaison, classification \ldots{}), des différentes données utilisées et de l'application à des zones parfois caractérisées par des facteurs environnementaux opposés. 
+Néanmoins, s'il est vrai qu'aucun classement absolu des méthodes de lissage n'ait été établi, il n'en demeure pas moins que certaines reviennent souvent dans la littérature et ont donné de bons résultats. Le filtre de Savitzky-Golay notamment est connu pour ses résultats consistants \citep{Chen2004,Geng2014} et apprécié pour sa capacité à conserver la forme du profil temporel des indices de végétation ainsi que le timing et l'amplitude des minima et maxima locaux \citep{}. HANTS a également. La méthode de lissage de Whittaker a été utilisée
 
-\subsection{Lissage avec HANTS}
+Nous avons retenu et comparé 2 techniques de lissage pour nos séries temporelles : HANTS et le filtre de Savitzky-Golay.
 
-\subsection{Lissage avec le filtre de Savitzky-Golay}
+\paragraph{Lissage avec HANTS}
+
+\paragraph{Lissage avec le filtre de Savitzky-Golay}
 
 reechantilloner et couvrir le Mois de septembre qui a une seule image (fausserait le max)
 
