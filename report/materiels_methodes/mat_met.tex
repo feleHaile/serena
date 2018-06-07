@@ -109,9 +109,9 @@ naturelles notamment les inondations.
 \begin{center}
 \caption{Caractéristiques spectrales de l'instrument MSI des Sentinel-2}
 \label{msi}
- \begin{tabular}{cccc}
+ \begin{tabular}{ccc>{\centering\arraybackslash}p{3cm}}
   \hline
-  Bande spectrale & Domaine spectral & Longueurs d'onde (\SI{}{\micro\meter}) & R. spatiale (m)\\
+  Bande spectrale & Domaine spectral & Longueurs d'onde (\SI{}{\micro\meter}) & Résolution spatiale (m)\\
   \hline
   \phantom{1}1 & Aérosols & 0,433 --- 0,453 & 60 \\
   \phantom{1}2 & Bleu & 0,4575 --- 0,5225 & 10 \\
@@ -259,10 +259,10 @@ axées sur des rotations entre céréales et légumineuses (mil/arachide et/ou n
 La \Cref{terrain} présente les principales statistiques descriptives pour les parcelles enquêtées. Comme nous pouvons nous en apercevoir \ldots{} comme espéré. La \ldots{} présente la localisation des parcelles suivant leur culture et système de culture ainsi que leur biomasse fraîche et les rendements frais observés.
 
 \begin{table}[htbp]
-%\begin{center}
+\begin{center}
 \caption{Statistiques descriptives des données de terrain}
 \label{terrain}
- \begin{tabular}{ccccc}
+ \begin{tabular}{>{\centering\arraybackslash}p{2.2cm}>{\centering\arraybackslash}p{2.2cm}>{\centering\arraybackslash}p{2.2cm}>{\centering\arraybackslash}p{3cm}>{\centering\arraybackslash}p{2.5cm}}
   \hline
   Culture majoritaire & Système de culture & Nombre de parcelles & Biomasse fraiche (kg/ha) & Rendement frais (kg/ha)\\
   \hline
@@ -270,8 +270,9 @@ La \Cref{terrain} présente les principales statistiques descriptives pour les p
   Mil & Pure & 19 & 0 & 0 \\
   Mil & Mixte & 19 & 0 & 0 \\
   \hline
+
  \end{tabular}
-%\end{center}
+\end{center}
 \end{table}
 
 
@@ -306,7 +307,7 @@ Néanmoins, s'il est vrai qu'aucun classement absolu des méthodes de lissage n'
 
 \subsection{HANTS}
 
-HANTS est un algorithme fondé sur l'analyse harmonique qui est une branche des mathématiques étudiant la représentation des fonctions ou signaux comme une superposition de fonctions périodiques. L’analyse en harmonique décompose le signal en une somme de fonctions sinusoïdales. Quand elle est utilisée pour reconstruire une série temporelle d’observations satellitaires, la série reconstruite \tilde{y} s’écrit :
+HANTS est un algorithme fondé sur l'analyse harmonique qui est une branche des mathématiques étudiant la représentation des fonctions ou signaux comme une superposition de fonctions périodiques. L’analyse en harmonique décompose le signal en une somme de fonctions sinusoïdales. Quand elle est utilisée pour reconstruire une série temporelle d’observations satellitaires, la série reconstruite $\tilde{y}$ s’écrit :
 
 \begin{align}   
     \tilde{y}(t_{j}) = a_{0} + \sum_{i=1}^{n_{f}} a_{i}\cos(2\pi f_{i} t_{j}) + b_{i}\sin(2\pi f_{i} t_{j})
