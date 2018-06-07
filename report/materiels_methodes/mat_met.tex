@@ -79,8 +79,8 @@ radiométrique de \emph{16 bits}. Elles disposent de 5 bandes spectrales (\Cref{
 
 La conversion des données RapidEye en réflectance TOA s'effectue en 2 étapes à savoir la conversion en radiance puis la conversion en réflectance :
 
-\begin{align} Radiance (i) = &  DN(i) \times radiometricScaleFactor(i) \\
-Reflectance(i) = &  Radiance(i) \times \frac{\pi \times SunDist^2}{EAI(i) \times \cos(SolarZenith)} 
+\begin{align} Radiance (i) &=   DN(i) \times radiometricScaleFactor(i) \\
+Reflectance(i) &=   Radiance(i) \times \frac{\pi \times SunDist^2}{EAI(i) \times \cos(SolarZenith)} 
 \end{align}
 
 où :\\
@@ -311,8 +311,8 @@ Néanmoins, s'il est vrai qu'aucun classement absolu des méthodes de lissage n'
 HANTS est un algorithme fondé sur l'analyse harmonique qui est une branche des mathématiques étudiant la représentation des fonctions ou signaux comme une superposition de fonctions périodiques. L’analyse en harmonique décompose le signal en une somme de fonctions sinusoïdales. Quand elle est utilisée pour reconstruire une série temporelle d’observations satellitaires, la série reconstruite $\tilde{y}$ s’écrit :
 
 \begin{align}   
-    \tilde{y}(t_{j}) = a_{0} + \sum_{i=1}^{n_{f}} a_{i}\cos(2\pi f_{i} t_{j}) + b_{i}\sin(2\pi f_{i} t_{j}) \\
- y(t_{j}) = \tilde{y}(t_{j}) + \varepsilon(t_{j})
+    \tilde{y}(t_{j}) &= a_{0} + \sum_{i=1}^{n_{f}} a_{i}\cos(2\pi f_{i} t_{j}) + b_{i}\sin(2\pi f_{i} t_{j}) \\
+    y(t_{j}) &= \tilde{y}(t_{j}) + \varepsilon(t_{j})
 \end{align}
 
 où : \\
@@ -329,9 +329,9 @@ composantes trigonométriques de la fréquence $f_{i}$. $a_{0}$ est le c\oe ffic
 Le lissage de Whittaker est une méthode basée sur les moindres carrés pénalisés dont l'idée est de reconstruire les données en minimisant une quantité $Q$ exprimant l'équilibre entre la fidélité aux données brutes et la rugosité des données reconstruites \citep{Eilers2003,Atzberger2011,Atkinson2012}. Plus les données sont lissées, plus elles dévient des données brutes. \\
 Considérons un ensemble de $n$ observations d'une série $y$. Les valeurs de la série reconstruite $z$ doivent minimiser la quantité $Q$ exprimée comme suit :
 \begin{align}
- Q = S + \lambda R \\
- S = \underbrace{\sum_{i=1}^{n} (y_{i} - z_{i})^2}_{D\acute{e}viation} \\
- R = \underbrace{\sum_{i=1}^{n-d} (\Delta^d z_{i})^2}_{Rugosit\acute{e}}
+ Q &= S + \lambda R \\
+ S &= \underbrace{\sum_{i=1}^{n} (y_{i} - z_{i})^2}_{D\acute{e}viation} \\
+ R &= \underbrace{\sum_{i=1}^{n-d} (\Delta^d z_{i})^2}_{Rugosit\acute{e}}
 \end{align}
 où $\Delta^d z_{i}^2$ représente la différence d'ordre $d$ des valeurs $z_{i}$, $S$ la somme des carrés des écarts, $R$ la somme des carrés des différences d'ordre $d$ des valeurs reconstruites et $\lambda$ le paramètre de lissage qui donne un poids relatif à la rugosité : plus il est élevé, plus le lissage de la série reconstruite sera important.\\
 En adoptant un formalisme matriciel, la série $z$ qui minimise $Q$ devient :
@@ -344,7 +344,7 @@ Cette méthode gère également le cas des valeurs manquantes dans les données 
  z = (W + \lambda D^{T}D)^{-1} Wy
 \end{align}
 où $W$ est une matrice diagonale contenant les valeurs $w_{i}$.\\
-Comme évoqué par \citet{Atzberger2011}, l'interpolation des valeurs manquantes peut être utilisée pour réduire le pas d'échantillonnage des données (pas journalier par exemple) ou à des fins d'extrapolation ou de prédiction de données. L'une des façons de fixer le paramètre de lissage $\lambda$ est de procéder par tatonnement en appréciant les résultats obtenus. Une autre façon plus objective de procéder consiste à se référer au processus de validation croisée de l'algorithme décrit par \citet{Eilers2003}. Quant à l'ordre de $d$ de la différence des valeurs $z_{i}$, la valeur 2 est assignée par défaut. Quand le lissage est important, la série reconstruite tend vers une ligne horizontale pour $d=1$, une droite inclinée pour $d=2$ et une parabole pour $d=3$.
+Comme évoqué par \citet{Atzberger2011}, l'interpolation des valeurs manquantes peut être utilisée pour réduire le pas d'échantillonnage des données (pas journalier par exemple) ou à des fins d'extrapolation ou de prédiction de données. L'une des façons de fixer le paramètre de lissage $\lambda$ est de procéder par tâtonnement en appréciant les résultats obtenus. Une autre façon plus objective de procéder consiste à se référer au processus de validation croisée de l'algorithme décrit par \citet{Eilers2003}. Quant à l'ordre $d$ de la différence des valeurs $z_{i}$, la valeur 2 est assignée par défaut. Quand le lissage est important, la série reconstruite tend vers une ligne horizontale pour $d=1$, une droite inclinée pour $d=2$ et une parabole pour $d=3$.
 
 \subsection{Evaluation du lissage}
 
