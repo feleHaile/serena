@@ -20,40 +20,12 @@ import numpy as np
 from netCDF4 import Dataset
 import sys
 #from pprint import pprint
-import csv
 
-def create_csv(outCSV, time, time2, xsize, ysize, originX, originY, Proj, rGeoT, v_values) :
+def create_csv(outCSV, time, suffix, xsize, ysize, originX, originY, Proj, rGeoT, v_values) :
     """
     Aggregate Parcels Mean Values and Write them in CSV
     
     """
-    # Create Lists for Attributes Table to write GeoJSON from GeoPandas Geodataframe
-#    lstGeom = []
-#    original_ID = []
-#    original_Projet = []
-#    original_CropSyst = []
-#    original_joint_SC = []
-#    original_FieldType = []
-#    original_joint_Semi = []
-#    original_joint_Reco = []
-#    original_joint_Cult = []
-#    original_joint_Biom = []
-#    original_joint_Rdt = []
-#    original_Crop_1 = []
-#    original_Crop_2 = []
-#    original_Crop_3 = []
-#    original_Harvest = []
-#    original_Residus = []
-#    original_Nb_Trees = []
-#    original_Nb_Species = []
-#    original_Specie_1 = []
-#    original_Specie_2 = []
-#    original_Specie_3 = []
-#    original_Nb_Spe_1 = []
-#    original_Nb_Spe_2 = []
-#    original_Nb_Spe_3 = []
-#    original_Terrain = []
-    
     # Read ShapeFile 
     shpds = ogr.Open(inVectorFile,GA_ReadOnly)
     if shpds is None:
@@ -65,46 +37,16 @@ def create_csv(outCSV, time, time2, xsize, ysize, originX, originY, Proj, rGeoT,
     # Create in Memory Gdal and Ogr Driver 
     rmem_drv = gdal.GetDriverByName("MEM")
     vmem_drv = ogr.GetDriverByName("MEMORY")
-    
-    # Create CSV File
-    csvfile = open(outCSV,'w')
-    writer = csv.writer(csvfile, delimiter=',')
-    # Write header
-    writer.writerow(time2)
-    
+       
     # For each Feature, Get Geometry, attributes and Compute Zonal Stats
+    csvDict = {}
     for i in range(layer.GetFeatureCount()):
         feature = layer.GetFeature(i)
         print ("Feature %s ID %s"%(i,feature.GetField('ID')))
         geometry = feature.GetGeometryRef()
         extent = geometry.GetEnvelope()
         
-        # Load Feature Attribute to List
-#        lstGeom.append(str(geometry))
-#        original_ID.append(feature.GetField('ID'))
-#        original_Projet.append(feature.GetField('Projet'))
-#        original_CropSyst.append(feature.GetField('CropSyst'))
-#        original_joint_SC.append(feature.GetField('joint_SC'))
-#        original_FieldType.append(feature.GetField('FieldType'))
-#        original_joint_Semi.append(feature.GetField('joint_Semi'))
-#        original_joint_Reco.append(feature.GetField('joint_Reco'))
-#        original_joint_Cult.append(feature.GetField('joint_Cult'))
-#        original_joint_Biom.append(feature.GetField('joint_Biom'))
-#        original_joint_Rdt.append(feature.GetField('joint_Rdt'))
-#        original_Crop_1.append(feature.GetField('Crop_1'))
-#        original_Crop_2.append(feature.GetField('Crop_2'))
-#        original_Crop_3.append(feature.GetField('Crop_3'))
-#        original_Harvest.append(feature.GetField('Harvest'))
-#        original_Residus.append(feature.GetField('Residus'))
-#        original_Nb_Trees.append(feature.GetField('Nb_Trees'))
-#        original_Nb_Species.append(feature.GetField('Nb_Species'))
-#        original_Specie_1.append(feature.GetField('Specie_1'))
-#        original_Specie_2.append(feature.GetField('Specie_2'))
-#        original_Specie_3.append(feature.GetField('Specie_3'))
-#        original_Nb_Spe_1.append(feature.GetField('Nb_Spe_1'))
-#        original_Nb_Spe_2.append(feature.GetField('Nb_Spe_2'))
-#        original_Nb_Spe_3.append(feature.GetField('Nb_Spe_3'))
-#        original_Terrain.append(feature.GetField('Date'))
+        csvDict.setdefault('ID',[]).append(feature.GetField('ID'))
         
 #        print (extent)
         ulx = extent[0]
@@ -121,18 +63,11 @@ def create_csv(outCSV, time, time2, xsize, ysize, originX, originY, Proj, rGeoT,
         col_nb = int((lrx - ulx)/cellsize) # Raster xsize col
         row_nb = int((uly - lry)/cellsize)  # Raster ysize lines
         
-        lstMean = []
+#        lstMean = []
         counter = 0
         for Date in time : 
 #            print (Date)
             # Create in memory Raster for current date
-#            if counter == 0 :
-#                drv = gdal.GetDriverByName('GTiff')
-#                dest0 = drv.Create('/home/je/Bureau/test.tif', xsize, ysize, 1, gdal.GDT_Float64) # 7 is Float_64 Gdal datatype
-#                dest0.SetGeoTransform(rGeoT)
-#                dest0.SetProjection(Proj.ExportToWkt())
-#                dest0.GetRasterBand(1).WriteArray(v_values[counter,:,:])
-                
             dest = rmem_drv.Create('', xsize, ysize, 1, gdal.GDT_Float64) # 7 is Float_64 Gdal datatype
             dest.SetGeoTransform(rGeoT)
             dest.SetProjection(Proj.ExportToWkt())
@@ -162,45 +97,21 @@ def create_csv(outCSV, time, time2, xsize, ysize, originX, originY, Proj, rGeoT,
 #            print (masked)
             
             mean = masked.mean()
-            lstMean.append(mean)
-#            feature_stats = {
-#            'min': float(masked.min()),
-#            'mean': float(masked.mean()),
-#            'max': float(masked.max()),
-#            'std': float(masked.std()),
-#            'sum': float(masked.sum()),
-#            'count': int(masked.count()),
-#            'fid': int(feature.GetFID())}
-#            print (feature_stats)
-            
+            std = masked.std()
+#            masked.max()
+#            masked.sum()
+#            masked.count()
+            csvDict.setdefault(str(Date)+suffix%'Mean',[]).append(mean)
+            csvDict.setdefault(str(Date)+suffix%'Std',[]).append(std)
+    
             rfeat_ds = None
             vfeat_ds = None
             
             counter += 1
-        
-        lstMean.insert(0,feature.GetField('ID'))
-        writer.writerow(lstMean)
     
-    csvfile.close()
-    
-#    csv_df = pd.read_csv(outCSV_original)
-    
-#    data = {'ID':pd.Series(original_ID),'Projet':pd.Series(original_Projet),'CropSyst':pd.Series(original_CropSyst),'SC':pd.Series(original_joint_SC),
-#            'FieldType':pd.Series(original_FieldType), 'DateSemi':pd.Series(original_joint_Semi), 'DateReco':pd.Series(original_joint_Reco),
-#            'Culture':pd.Series(original_joint_Cult), 'Biom':pd.Series(original_joint_Biom), 'Rdt':pd.Series(original_joint_Rdt),
-#            'Crop_1':pd.Series(original_Crop_1), 'Crop_2':pd.Series(original_Crop_2), 'Crop_3':pd.Series(original_Crop_3),
-#            'Harvest':pd.Series(original_Harvest),'Residus':pd.Series(original_Residus), 'Nb_Trees':pd.Series(original_Nb_Trees),
-#            'Nb_Species':pd.Series(original_Nb_Species), 'Specie_1':pd.Series(original_Specie_1), 'Specie_2':pd.Series(original_Specie_2),
-#            'Specie_3':pd.Series(original_Specie_3), 'Nb_Spe_1':pd.Series(original_Nb_Spe_1), 'Nb_Spe_2':pd.Series(original_Nb_Spe_2),
-#            'Nb_Spe_3':pd.Series(original_Nb_Spe_3),'DateTerrain':pd.Series(original_Terrain)}
-    
-#    data.update (csv_df.to_dict())
-#    print (data)
-    
-#    geom_column = [loads(geom) for geom in lstGeom]
-#    gdf = gpd.GeoDataFrame(data, geometry = geom_column)
-#    gdf.crs = {'init': 'epsg:32628'}
-#    gdf.to_file(os.path.join(os.path.dirname(inFile),'SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.geojson'), driver='GeoJSON')
+    # Create CSV with pandas from dict
+    outdf = pd.DataFrame.from_dict(csvDict)
+    outdf.to_csv(outCSV,index=False)
 
     rmem_drv = None
     vmem_drv = None
@@ -240,11 +151,13 @@ def aggregate (inFile, inVectorFile, variable) :
     # CSV Header
 #    for variable in lstVariables :
     if variable.startswith('original'):
-        time2 = [str(Date)+'_OMean' for Date in time]
-        time2.insert(0,"ID")
+        suffix = '_O%s'
+#        time2 = [str(Date)+'_OMean' for Date in time]
+#        time2.insert(0,"ID")
     else :
-        time2 = [str(Date)+'_SMean' for Date in time]
-        time2.insert(0,"ID")
+        suffix = '_S%s'
+#        time2 = [str(Date)+'_SMean' for Date in time]
+#        time2.insert(0,"ID")
 #    print (time2)
      
     # Extract Original and Hants Values
@@ -252,11 +165,11 @@ def aggregate (inFile, inVectorFile, variable) :
     v_values = np.where(variable_values==-9999.,np.nan,variable_values)
     v_values = v_values / 10000
     # CSV Name
-    outCSV = os.path.join(os.path.dirname(inFile),'Mean_%s_%s_%s.csv'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
-    create_csv(outCSV, time, time2, xsize, ysize, originX, originY, Proj, rGeoT, v_values)
+    outCSV = os.path.join(os.path.dirname(inFile),'Mean_%s_%s_%s_iter.csv'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
+    create_csv(outCSV, time, suffix, xsize, ysize, originX, originY, Proj, rGeoT, v_values)
     
     # CSVt File for Attribute Join in GIS Software
-    outCSVt = os.path.join(os.path.dirname(inFile),'Mean_%s_%s_%s.csvt'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
+    outCSVt = os.path.join(os.path.dirname(inFile),'Mean_%s_%s_%s_iter.csvt'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
     with open(outCSVt,'w') as csvt_file:
         csvt_file.write('"String",') 
         for i in range(len(time)-1) :
@@ -270,15 +183,15 @@ def mean_profile (hantsCSV, whitCSV) :
     """
     Compute mean value about Hants and Whittaker Smoother for each plot
     """
-    outFile = os.path.basename(hantsCSV).split('_')[0]+'_'+os.path.basename(hantsCSV).split('_')[1]+'_SmoothAvg_'+os.path.basename(hantsCSV).split('_')[3]
+    outFile = os.path.basename(hantsCSV).split('_')[0]+'_'+os.path.basename(hantsCSV).split('_')[1]+'_SmoothAvg_'+os.path.basename(whitCSV).split('_')[3]+'_'+os.path.basename(whitCSV).split('_')[4]
     hants_df = pd.read_csv(hantsCSV)
     whit_df = pd.read_csv(whitCSV)
 #    print (hants_values, whit_values)
     df_concat = pd.concat((hants_df, whit_df))
     by_row_index = df_concat.groupby(df_concat.index)
     df_means = by_row_index.mean()
-    df_means['ID'] =  hants_df['ID']
-    df_means.to_csv(os.path.join(os.path.dirname(hantsCSV),outFile))
+    df_means['ID'] =  hants_df['ID'] # Create ID Column
+    df_means.to_csv(os.path.join(os.path.dirname(hantsCSV),outFile),index = False)
     
     # CSVt File for Attribute Join in GIS Software
     outCSVt = os.path.join(os.path.dirname(hantsCSV),outFile+'t')
@@ -297,9 +210,10 @@ if __name__=="__main__":
     inFile = "D:/Stage/Output/INDICES/NDVI/NDVI_TIME_SERIES.nc"
     inVectorFile = "D:/Stage/Gbodjo_2018/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
 
-    variables = ["original_PRScor_%s_values","hants_PRScor_%s_values","whittaker_PRScor_%s_values"]#,"savgol_PRScor_%s_values"]
+#    variables = ["original_PRScor_%s_values","hants_PRScor_%s_values"]#,"whittaker_PRScor_%s_values"]#,"savgol_PRScor_%s_values"]
     
 #    variable = "original_PRS_%s_values"
+    variable = "whittaker_PRScor_%s_values"
 #    aggregate (inFile, inVectorFile, variable)
     
 #    for variable in variables :
@@ -322,5 +236,5 @@ if __name__=="__main__":
 #     Mean Profile
 # =============================================================================
     hantsCSV = "D:/Stage/Output/INDICES/NDVI/Mean_NDVI_hants_PRScor.csv"
-    whitCSV = "D:/Stage/Output/INDICES/NDVI/Mean_NDVI_whittaker_PRScor.csv"
+    whitCSV = "D:/Stage/Output/INDICES/NDVI/Mean_NDVI_whittaker_PRScor_iter.csv"
     mean_profile (hantsCSV, whitCSV)
