@@ -101,8 +101,9 @@ def create_csv(outCSV, time, suffix, xsize, ysize, originX, originY, Proj, rGeoT
 #            masked.max()
 #            masked.sum()
 #            masked.count()
-            csvDict.setdefault(str(Date)+suffix%'Mean',[]).append(mean)
-            csvDict.setdefault(str(Date)+suffix%'Std',[]).append(std)
+            if np.isnan(mean) == False :
+                csvDict.setdefault(str(Date)+suffix%'Mean',[]).append(mean)
+                csvDict.setdefault(str(Date)+suffix%'Std',[]).append(std)
     
             rfeat_ds = None
             vfeat_ds = None
@@ -165,11 +166,11 @@ def aggregate (inFile, inVectorFile, variable) :
     v_values = np.where(variable_values==-9999.,np.nan,variable_values)
     v_values = v_values / 10000
     # CSV Name
-    outCSV = os.path.join(os.path.dirname(inFile),'Mean_%s_%s_%s_iter.csv'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
+    outCSV = os.path.join(os.path.dirname(inFile),'Mean_%s_%s_%s.csv'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
     create_csv(outCSV, time, suffix, xsize, ysize, originX, originY, Proj, rGeoT, v_values)
     
     # CSVt File for Attribute Join in GIS Software
-    outCSVt = os.path.join(os.path.dirname(inFile),'Mean_%s_%s_%s_iter.csvt'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
+    outCSVt = os.path.join(os.path.dirname(inFile),'Mean_%s_%s_%s.csvt'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
     with open(outCSVt,'w') as csvt_file:
         csvt_file.write('"String",') 
         for i in range(len(time)-1) :
@@ -183,7 +184,8 @@ def mean_profile (hantsCSV, whitCSV) :
     """
     Compute mean value about Hants and Whittaker Smoother for each plot
     """
-    outFile = os.path.basename(hantsCSV).split('_')[0]+'_'+os.path.basename(hantsCSV).split('_')[1]+'_SmoothAvg_'+os.path.basename(whitCSV).split('_')[3]+'_'+os.path.basename(whitCSV).split('_')[4]
+    outFile = os.path.basename(hantsCSV).split('_')[0]+'_'+os.path.basename(hantsCSV).split('_')[1]+'_SmoothAvg_'+os.path.basename(hantsCSV).split('_')[3]
+    #outFile = os.path.basename(hantsCSV).split('_')[0]+'_'+os.path.basename(hantsCSV).split('_')[1]+'_SmoothAvg_'+os.path.basename(whitCSV).split('_')[3]+'_'+os.path.basename(whitCSV).split('_')[4]
     hants_df = pd.read_csv(hantsCSV)
     whit_df = pd.read_csv(whitCSV)
 #    print (hants_values, whit_values)
@@ -207,13 +209,13 @@ if __name__=="__main__":
 #     NDVI
 # =============================================================================
     
-    inFile = "D:/Stage/Output/INDICES/NDVI/NDVI_TIME_SERIES.nc"
-    inVectorFile = "D:/Stage/Gbodjo_2018/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
-
-#    variables = ["original_PRScor_%s_values","hants_PRScor_%s_values"]#,"whittaker_PRScor_%s_values"]#,"savgol_PRScor_%s_values"]
-    
-#    variable = "original_PRS_%s_values"
-    variable = "whittaker_PRScor_%s_values"
+#    inFile = "/home/je/Bureau/Stage/Output/INDICES/NDVI/NDVI_TIME_SERIES.nc"
+#    inVectorFile = "/home/je/Bureau/Stage/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
+#
+##    variables = ["original_PRScor_%s_values","hants_PRScor_%s_values"]#,"whittaker_PRScor_%s_values"]#,"savgol_PRScor_%s_values"]
+#    
+##    variable = "original_PRS_%s_values"
+#    variable = "original_PRScor_%s_values"
 #    aggregate (inFile, inVectorFile, variable)
     
 #    for variable in variables :
@@ -224,9 +226,12 @@ if __name__=="__main__":
 #     MSAVI2
 # =============================================================================
     
-#    inFile = "D:/Stage/Output/INDICES/NDVI/SAVI_TIME_SERIES.nc"
-#    inVectorFile = "D:/Stage/Gbodjo_2018/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
-#
+    inFile = "/home/je/Bureau/Stage/Output/INDICES/MSAVI2/MSAVI2_TIME_SERIES.nc"
+    inVectorFile = "/home/je/Bureau/Stage/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
+    
+    variable = "original_PRS_%s_values"
+    aggregate (inFile, inVectorFile, variable)
+    
 #    variables = ["original_PRScor_%s_values","hants_PRScor_%s_values","whittaker_PRScor_%s_values","savgol_PRScor_%s_values"]
 #    for variable in variables :
 #        print (variable%os.path.basename(inFile).split('_')[0])
@@ -235,6 +240,6 @@ if __name__=="__main__":
 # =============================================================================
 #     Mean Profile
 # =============================================================================
-    hantsCSV = "D:/Stage/Output/INDICES/NDVI/Mean_NDVI_hants_PRScor.csv"
-    whitCSV = "D:/Stage/Output/INDICES/NDVI/Mean_NDVI_whittaker_PRScor_iter.csv"
-    mean_profile (hantsCSV, whitCSV)
+#    hantsCSV = "D:/Stage/Output/INDICES/NDVI/Mean_NDVI_hants_PRScor.csv"
+#    whitCSV = "D:/Stage/Output/INDICES/NDVI/Mean_NDVI_whittaker_PRScor_iter.csv"
+#    mean_profile (hantsCSV, whitCSV)
