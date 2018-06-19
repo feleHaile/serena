@@ -4,15 +4,13 @@
   
 Les périodes ou dates les plus appropriés pour semer dépendent de nombreux facteurs.  Nous pouvons considérer les espèces et leurs variétés, les températures 
 selon la zone de production, l'humidité du sol, les objectifs de la production (date de récolte souhaitée) ou encore les pratiques culturales (semi direct sans labour, semi en sec avant les premières pluies \ldots{}). Cependant, l'on peut
-s'accorder sur le rôle prépondérant que joue le facteur climatique. Au Sénégal comme dans d'autres pays d'Afrique où l'agriculture est pluviale, le comportement des agriculteurs est
-généralement celui de semer après les premiers épisodes pluvieux importants. Ceux-ci peuvent être néanmoins amenés à semer de nouveau quand survient un épisode sec qui risque de
-mettre en péril les premières semences.\\ \'Etant donné l'étroite relation entre les rendements agricoles et la durée du cycle de développement pour les céréales comme le Mil, 
+s'accorder sur le rôle prépondérant que joue le facteur climatique et plus précisement le début de la saison des pluies \citep{Ingram2002, Barbier2009}. En effet, au Sénégal comme dans d'autres pays d'Afrique où l'agriculture est pluviale, le comportement des agriculteurs est
+généralement celui de semer après les premiers épisodes pluvieux importants \citep{Bacci1999}. Néanmoins, il existe un risque d'échec des premières semences en cas d'avènement d'une période sèche \citep{Marteau2011} qui peut emmener les agriculteurs à semer de nouveau.\\ \'Etant donné l'étroite relation entre les rendements agricoles et la durée du cycle de développement des céréales comme le Mil, 
 des semis tardifs sont susceptibles de 
-conduire à des rendements faibles en fin de saison. Le suivi du démarrage de la saison agricole permet donc de fournir aux décideurs, une évaluation précoce des menaces potentielles 
-à la production et à la sécurité alimentaire. L'une des méthodes les plus courantes pour l'estimation des dates de semis dans les pays d'Afrique de l'Ouest est un approche agrométéorologique 
-qui consiste à appliquer des seuils sur les quantités de précipitations survenues pendant une période définie \citep{Marinho2014}. Cependant, cette méthode présente des inconvénients liés 
-à la résolution spatiale des données qui est souvent grossière (de l'ordre des kilomètres) et à l'estimation en elle même des quantités de précipitations qui peut être imprécise. 
-Compte tenu de notre échelle de travail qui est parcellaire, cette méthode n'est pas adaptée à notre étude et ne sera pas considérée. \\Une autre approche par télédection cette fois-ci
+conduire à des rendements faibles en fin de saison \citep{Sivakumar1990}. Le suivi du démarrage de la saison agricole permet donc de fournir aux décideurs, une évaluation précoce des menaces potentielles 
+à la production et à la sécurité alimentaire. L'une des méthodes les plus courantes pour l'estimation des dates de semis dans les pays d'Afrique de l'Ouest repose sur une approche agrométéorologique ou agroclimatiques
+qui consiste à appliquer des seuils sur les quantités de précipitations survenues pendant une période définie \citep{Marinho2014}. Cependant, cette méthode est limitée par les inconvénients qu'elle présente : la résolution spatiale des données qui est souvent grossière (de l'ordre des kilomètres) et l'estimation en elle même des quantités de précipitations qui peut être imprécise. 
+Compte tenu de notre échelle de travail qui est celle de la parcelle, cette méthode n'est pas adaptée à notre étude et ne peut être considérée. \\Une autre approche par télédection cette fois-ci
 consiste à dériver les dates du début de croissance de la végétation ou en général les \emph{métriques phénologiques} à partir de séries temporelles d'indices de végétation comme le \acrshort{ndvi} ou le \acrshort{evi} 
 et à en déduire les dates de semis. Ces indices de végétation rendent compte entre autres de l’activité photosynthétique de la
 végétation, de l’intensité de son métabolisme ainsi que de sa verdure \citep{Duarte2018}. Cette approche par télédétection présente non seulement l'avantage d'avoir une résolution 
@@ -65,10 +63,13 @@ végétation utilisé par exemple le NDVI. D'autres métriques en plus peuvent �
  \begin{center}
   \includegraphics[scale=0.45]{synthese_biblio/metrics.png} 
  \end{center}
- \caption{Métriques phénologiques \citep{Eklundh2017} : a-SOS b-EOS c-Length of season d-Base value e-Middle of season f-Maximum NDVI g-Amplitude of NDVI}
+ \caption{Illustration de quelques métriques phénologiques, Source : \citet{Eklundh2017}}
  \label{metrics}
 \end{figure}
 %\clearpage
+\vspace{5mm}
+avec : a- SOS b- EOS c- Durée de la saison d- Valeur de Base (unité d'indice de végétation) e- Milieu de la saison f- Maximum de l'indice de végétation et g- Amplitude de l'indice de végétation.
+
 \vspace{5mm}
 
 Outre leur utilisation comme proxy à l'évaluation des dates de semis, les métriques phénologiques peuvent être employées à d'autres fins comme l'estimation de rendements, exploitant 
