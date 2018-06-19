@@ -5,7 +5,7 @@
 Les périodes ou dates les plus appropriés pour semer dépendent de nombreux facteurs.  Nous pouvons considérer les espèces et leurs variétés, les températures 
 selon la zone de production, l'humidité du sol, les objectifs de la production (date de récolte souhaitée) ou encore les pratiques culturales (semi direct sans labour, semi en sec avant les premières pluies \ldots{}). Cependant, l'on peut
 s'accorder sur le rôle prépondérant que joue le facteur climatique et plus précisement le début de la saison des pluies \citep{Ingram2002, Barbier2009}. En effet, au Sénégal comme dans d'autres pays d'Afrique où l'agriculture est pluviale, le comportement des agriculteurs est
-généralement celui de semer après les premiers épisodes pluvieux importants \citep{Bacci1999}. Néanmoins, il existe un risque d'échec des premières semences en cas d'avènement d'une période sèche \citep{Marteau2011} qui peut emmener les agriculteurs à semer de nouveau.\\ \'Etant donné l'étroite relation entre les rendements agricoles et la durée du cycle de développement des céréales comme le Mil, 
+généralement celui de semer après les premiers épisodes pluvieux importants \citep{Bacci1999}. Néanmoins, il existe un risque d'échec des premières semences en cas d'avènement d'une sécheresse \citep{Marteau2011} qui peut emmener les agriculteurs à semer de nouveau.\\ \'Etant donné l'étroite relation entre les rendements agricoles et la durée du cycle de développement des céréales comme le Mil, 
 des semis tardifs sont susceptibles de 
 conduire à des rendements faibles en fin de saison \citep{Sivakumar1990}. Le suivi du démarrage de la saison agricole permet donc de fournir aux décideurs, une évaluation précoce des menaces potentielles 
 à la production et à la sécurité alimentaire. L'une des méthodes les plus courantes pour l'estimation des dates de semis dans les pays d'Afrique de l'Ouest repose sur une approche agrométéorologique ou agroclimatiques
@@ -32,7 +32,7 @@ petits grains, épis non aristés et et peu photosensibles) ou de 130 à 150 jou
 \\L'\'etude de la phénologie des plantes sur une échelle régionale à globale à partir d’observations satellitaires est désignée par \acrfull{lsp} \citep{Helman2018}. Le terme LSP 
 vient tenir compte du fait que le signal intercepté par les satellites provient d’une surface hétérogène et n’est pas représentatif de la réponse spectrale d’une seule espèce 
 \citep{Kimball2014}. L'analyse de la LSP contribue entre autres à diverses applications comme l’étude des changements climatiques \citep{Begue2014} ou encore le suivi des
-cultures. Les séries temporelles d’indices de végétation provenant de capteurs à basse résolution comme AVHRR, MODIS, SPOT VEGETATION ou encore PROBA-V permettent d’évaluer 
+cultures. Les séries temporelles d’indices de végétation provenant de capteurs à basse résolution comme AVHRR, MODIS, SPOT Vegetation ou encore PROBA-V permettent d’évaluer 
 la phénologie de la végétation sur une échelle régionale à globale. Plus récemment, quelques auteurs ont étudié la phénologie de la végétation à une échelle beaucoup plus fine en utilisant des données
 à haute et très haute résolution comme ceux du satellite chinois HJ-1 A/B \citep{Pan2015} ou du satellite RapidEye \citep{Vrieling2017}.
 
@@ -55,8 +55,8 @@ végétation utilisé par exemple le NDVI. D'autres métriques en plus peuvent �
  \item le milieu de croissance de la végétation,
  \item le taux de croissance de la végétation au début du cycle
  \item le taux de décroissance de la végétation à la fin du cycle
- \item la petite intégrale saisonnière (intégrale du SOS au EOS pour les valeurs au dessus de la base)
- \item la grande intégrale saisonnière (intégrale du SOS au EOS en considérant toutes les valeurs).
+ \item la petite intégrale saisonnière (cumul du SOS au EOS pour les valeurs au dessus de la base)
+ \item la grande intégrale saisonnière (cumul du SOS au EOS en totalité).
 \end{itemize}
 
 \begin{figure}[htbp]
@@ -68,7 +68,7 @@ végétation utilisé par exemple le NDVI. D'autres métriques en plus peuvent �
 \end{figure}
 %\clearpage
 \vspace{5mm}
-avec : a- SOS b- EOS c- Durée de la saison d- Valeur de Base (unité d'indice de végétation) e- Milieu de la saison f- Maximum de l'indice de végétation et g- Amplitude de l'indice de végétation.
+avec : a- SOS b- EOS c- Durée de la saison d- Valeur de Base (en unité d'indice de végétation) e- Milieu de la saison f- Maximum de l'indice de végétation et g- Amplitude de l'indice de végétation.
 
 \vspace{5mm}
 
@@ -79,18 +79,14 @@ historique de saisons culturales.
 \vspace{5mm}
 
 Comme évoqué dans la \cref{general}, plusieurs méthodes ont été mises au point pour dériver les métriques phénologiques à partir de séries temporelles d'indices de végétation.
-\citet{Atzberger2013} les a classé en 2 catégories : 
+\citet{Beck2006} et \citet{Atzberger2013} les ont classé en 2 catégories : 
 \begin{itemize}
- \item un premier groupe de méthodes qui estime les métriques phénologiques de manière indépendante à un instant donné 
- \item et un second groupe qui modélise le cycle entier par une fonction mathématique pour estimer les métriques phénologiques.
+ \item un premier groupe de méthodes qui estime le timing des métriques phénologiques de manière isolée et indépendante les unes des autres
+ \item et un second groupe qui modélise la série temporelle entière par une fonction mathématique pour estimer les métriques phénologiques.
 \end{itemize}
-
-Dans le premier groupe, sont classées surtout les méthodes par seuillage des indices de végétation. Dans leur revue, \citet{deBeurs2010} en ont décrit quelques unes notamment le NDVI 
-Ratios \citep{White1997}. Les méthodes par seuillage sont les plus simples et les plus communes \citep{Pan2015}. En effet, elles supposent qu’un stade phénologique a commencé quand 
-la valeur de l'indice de végétation atteint un certain seuil fixé \citep{Jonsson2002}. Cependant, cette approche par seuillage peut s'avérer inconsistante quand le couvert n'est 
-pas homogène. De plus, un seuil n'est pas toujours transposable du fait qu'il est bien souvent lié à sa zone d'application. La seconde catégorie regroupe  des méthodes comme
-l'analyse de Fourier, la transformation en ondelettes, l'analyse en composantes principales ou encore les modèles logistiques. Ces dernières méthodes sont plus poussées et plus 
-complexes à mettre en \oe uvre. 
+Dans le premier groupe, sont classées surtout les méthodes par seuillage sur les valeurs d'indices de végétation ou sur leurs amplitudes. Dans leur revue, \citet{deBeurs2010} en ont décrit quelques unes notamment le seuillage basé sur les ratios de NDVI \citep{White1997}. Les méthodes par seuillage sont les plus simples et les plus communes \citep{Pan2015}. En effet, elles supposent qu’un stade phénologique a commencé quand 
+la valeur de l'indice de végétation atteint un certain seuil fixé \citep{Jonsson2002}. Cependant, cette approche peut s'avérer inconsistante quand le couvert végétal n'est 
+pas homogène. De plus, un seuil n'est pas toujours transposable du fait qu'il soit bien souvent lié à sa zone d'application. La seconde catégorie regroupe des méthodes qui ajustent une fonction mathématique au profil temporel de la végétation pour estimer les métriques phénologiques. Nous pouvons citer les fonctions gaussiennes, les modèles logistiques et quadratiques \citep{Zhang2003,Jonsson2004}. L'analyse en composantes principales, l'analyse harmonique ou encore la transformation en ondelettes sont également classées dans cette catégorie. Ces dernières méthodes sont plus poussées et plus complexes à mettre en \oe uvre. Il existe également une autre catégorie de méthodes dite de dérivées de courbes qui définissent généralement le SOS et le EOS respectivement comme les moments où l'on observe la plus grande hausse et la plus grande chute dans les valeurs de l'indice de végétation \citep{Moulin1997,tateishi2004}.
 
 \vspace{5mm}
 
