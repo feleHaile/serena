@@ -11,7 +11,6 @@
 %\usepackage[french]{nomencl}
 \usepackage[acronyms,xindy,toc,nomain]{glossaries}
 \usepackage{graphicx}
-\usepackage{cleveref}
 \usepackage{amsmath,amssymb,mathrsfs}
 \usepackage{tikz}
 \usepackage{pgfplots}\usepgfplotslibrary{dateplot}\usetikzlibrary{shapes,arrows}
@@ -21,6 +20,9 @@
 \usepackage{siunitx}
 %\usepackage{fancyhdr}
 \usepackage{multirow}
+%\usepackage{ccaption}
+%\usepackage{varioref}
+\usepackage{cleveref}
 
 %\title{Evaluation du potentiel d’une série temporelle multi-source à haute résolution spatiale pour le suivi des cultures annuelles en petite agriculture familiale : 
 %Cas du bassin arachidier sénégalais}
@@ -46,7 +48,13 @@
 
 \addto\captionsfrench{\renewcommand{\contentsname}{Sommaire}}
 \addto\captionsfrench{\renewcommand{\listfigurename}{Liste des figures}}
-\newcommand{\crefpairconjunction}{et}
+%\addto\captionsfrench{\renewcommand{\appendixname}{Annexe}}
+\newcommand{\crefpairconjunction}{ et }
+\addto\captionsfrench{\renewcommand{\tablename}{Tableau}}
+\addto\captionsfrench{\renewcommand{\figurename}{Figure}}
+%\addto\captionsfrench{\renewcommand\bibname{Références bibliographiques}}
+
+%\labelformat{appendix}{l'annexe~#1}
 
 \begin{document}
 \let\cleardoublepage\clearpage
@@ -107,6 +115,7 @@
 \appendix
 
 \chapter{Diagramme de Gantt}\label{annexe-a}
+\chapter{Essais de lissage par le filtre de Savitzky-Golay}\label{annexe-b}
 
 \backmatter
 \input{acronymes}
