@@ -383,7 +383,7 @@ Comme évoqué par \citet{Atzberger2011}, l'interpolation des valeurs manquantes
 
 \subsection{Evaluation du lissage}
 
-Nous avons testé les 3 méthodes de lissage décrites précédemment. Afin d'optimiser le temps de traitement, le nombre de pixels à lisser a été réduit en ne considérant que l'étendue de la zone d'étude couverte par les parcelles suivies (\cref{carte-lissage}). Une chaîne de traitement englobant les 3 méthodes de lissage a été mise en place avec le langage \texttt{Python}. Le lissage par le filtre de Savitzky-Golay a été implémenté dans la chaîne grâce à la fonction \texttt{savgol\_filter} du module \texttt{scipy.signal}. Le lissage avec l'algorithme HANTS a été implémenté grâce à la fonction \texttt{Python} de HANTS transcrite du programme originel écrit en \texttt{Fortran} puis \texttt{Matlab} par \citet{Espinoza2017}. Enfin, la méthode de lissage de Whittaker a été 
+Nous avons testé les 3 méthodes de lissage décrites ci dessus. Afin d'optimiser le temps de traitement, le nombre de pixels à lisser a été réduit en ne considérant que l'étendue de la zone d'étude couverte par les parcelles suivies (\cref{carte-lissage}). Une chaîne de traitement englobant les 3 méthodes de lissage a été mise en place avec le langage \texttt{Python}. Le lissage par le filtre de Savitzky-Golay a été implémenté dans la chaîne grâce à la fonction \texttt{savgol\_filter} du module \texttt{scipy.signal}. Le lissage avec l'algorithme HANTS a été implémenté grâce à la fonction \texttt{Python} de HANTS transcrite du programme originel écrit en \texttt{Fortran} puis \texttt{Matlab} par \citet{Espinoza-Davalos2017}. Enfin, la méthode de lissage de Whittaker a été 
 
 \begin{figure}[htbp]
  \begin{center}
