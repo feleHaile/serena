@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt,oneside,chapterprefix=true]{scrbook}
+\documentclass[a4paper,12pt,twoside,chapterprefix=true]{scrbook}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
@@ -23,6 +23,9 @@
 %\usepackage{ccaption}
 %\usepackage{varioref}
 \usepackage{cleveref}
+\usepackage[automark,headsepline=false,markcase=upper]{scrlayer-scrpage} %autooneside=false,
+%\usepackage{scrpage2}
+%\usepackage[Sonny]{fncychap}
 
 %\title{Evaluation du potentiel d’une série temporelle multi-source à haute résolution spatiale pour le suivi des cultures annuelles en petite agriculture familiale : 
 %Cas du bassin arachidier sénégalais}
@@ -30,7 +33,7 @@
 %\date{\today}
 
 %\onehalfspacing
-\pagestyle{plain}
+%\pagestyle{plain}
 %\renewcommand{\emph}{\textbf}
 
 \makeglossaries
@@ -55,6 +58,24 @@
 %\addto\captionsfrench{\renewcommand\bibname{Références bibliographiques}}
 
 %\labelformat{appendix}{l'annexe~#1}
+%\pagestyle{scrheadings}
+\addtokomafont{pagehead}{\small}%\scriptsize}
+\renewcommand*{\headfont}{\sffamily\bfseries} 
+\clearpairofpagestyles
+\lehead{\leftmark}%{} \hrulefill}
+\lohead{\rightmark}
+%\ihead{\leftmark}
+%\ohead{\rightmark}
+\cfoot*{\pagemark}
+
+%\ohead{\ifstr{\rightmark}{\leftmark}{}{\rightmark}}
+
+%\ifoot{}
+%\ofoot{}
+%\cfoot[\pagemark]{\pagemark}
+%\ihead{\headmark}
+%\chead{}
+%\ohead{}
 
 \begin{document}
 \let\cleardoublepage\clearpage
