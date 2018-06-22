@@ -24,12 +24,12 @@ Trois niveaux de traitements sont disponibles pour les images PlanetScope. Ce so
 \acrshort{utm}. Comme pour le niveau 1B, les valeurs numériques ont été calibrées en radiance TOA. Le niveau 3A est similaire au 3B à la différence que les images sont tuilées pour 
 couvrir un système de grilles de $25\times25$ kilomètres.\\
 Les images PlanetScope sont distribuées en format \emph{GeoTiff}. Au niveau 3B, elles ont une résolution au sol de \emph{3 mètres} et une résolution radiométrique de \emph{12 bits} s'il 
-s'agit de compte numérique ou \emph{16 bits} dans le cas des radiances TOA. Elles disposent de 4 bandes spectrales (\Cref{planetscope}). 
+s'agit de compte numérique ou \emph{16 bits} dans le cas des radiances TOA. Elles disposent de 4 bandes spectrales (\Cref{tab-planetscope}). 
 
 \begin{table}[htbp]
 \begin{center}
 \caption{Caractéristiques spectrales des images PlanetScope}
-\label{planetscope}
+\label{tab-planetscope}
  \begin{tabular}{ccc}
   \hline
   Bande spectrale & Domaine spectral & Longueurs d'onde (\SI{}{\micro\meter})\\
@@ -57,12 +57,12 @@ et \emph{reflectanceFactor(i)} = Facteur de conversion en réflectance pour une 
 
 Les images RapidEye sont pour leur part, disponibles en 2 niveaux de traitements : 1B et 3A. Ces niveaux de traitements sont identiques à ceux des produits PlanetScope. Les images
 RapidEye utilisées sont traitées au niveau 3A. Elles sont distribuées également en format \emph{GeoTiff}. Leur résolution au sol est de \emph{5 mètres} et leur résolution 
-radiométrique de \emph{16 bits}. Elles disposent de 5 bandes spectrales (\Cref{rapideye}).
+radiométrique de \emph{16 bits}. Elles disposent de 5 bandes spectrales (\Cref{tab-rapideye}).
 
 \begin{table}[htbp]
 \begin{center}
 \caption{Caractéristiques spectrales des images RapidEye}
-\label{rapideye}
+\label{tab-rapideye}
  \begin{tabular}{ccc}
   \hline
   Bande spectrale & Domaine spectral & Longueurs d'onde (\SI{}{\micro\meter})\\
@@ -99,7 +99,7 @@ opérationnelle en matière d'observation de la Terre notamment pour la surveill
 devant fournir une imagerie optique haute résolution permettant l’observation des sols (utilisation, végétation, zones côtières, fleuves \ldots) ainsi que la mise en place de services 
 de traitement des situations d'urgence notamment les catastrophes naturelles. Cette mission est composée des satellites \emph{Sentinel-2A} et \emph{Sentinel-2B} qui circulent
 en déphasage de 180\textdegree{} sur la même orbite héliosynchrone de 10h30. Ces 2 satellites sont identiques et embarquent l'instrument \acrshort{msi} qui fournit des images dans 13 bandes spectrales 
-du Visible à l'Infrarouge (\Cref{msi}) avec une résolution spatiale comprise entre 10 et 60 mètres et une résolution radiométrique de 12 bits. Les satellites Sentinel-2 sont configurés pour une période 
+du Visible à l'Infrarouge (\Cref{tab-msi}) avec une résolution spatiale comprise entre 10 et 60 mètres et une résolution radiométrique de 12 bits. Les satellites Sentinel-2 sont configurés pour une période 
 de revisite de 5 jours au nadir et doivent acquérir au moins une donnée claire par mois sur la plupart des terres émergées. 
 Cette grande richesse spectrale couplée à cette capacité d'observation temporelle élevée constituent le véritable apport de la mission Sentinel-2. Les données sont principalement 
 utilisées pour l'agriculture, la sylviculture, l'occupation des sols, la biodiversité, la caractérisation des habitats ou encore l'observation et la prévention des catastrophes 
@@ -108,7 +108,7 @@ naturelles notamment les inondations.
 \begin{table}[htbp]
 \begin{center}
 \caption{Caractéristiques spectrales de l'instrument MSI des Sentinel-2}
-\label{msi}
+\label{tab-msi}
  \begin{tabular}{ccc>{\centering\arraybackslash}p{3cm}}
   \hline
   Bande spectrale & Domaine spectral & Longueurs d'onde (\SI{}{\micro\meter}) & Résolution spatiale (m)\\
@@ -159,7 +159,7 @@ météorologiques n'ont pas été considérées dans le cadre de ce stage.
 
   \subsection{Chronologie des images acquises}
   
-Les 27 images utilisées ont été acquises entre Juin et Novembre 2017, soit en théorie une image tous les 7 jours sur la période couvrant la saison agricole 2017. Cependant, nous ne disposons que d'une image (PlanetScope) en Septembre. La \Cref{Chronologie} présente la chronologie des acquisitions.
+Les 27 images utilisées ont été acquises entre Juin et Novembre 2017, soit en théorie une image tous les 7 jours sur la période couvrant la saison agricole 2017. Cependant, nous ne disposons que d'une image (PlanetScope) en Septembre. La \cref{fig-Chronologie} illustre la chronologie des acquisitions.
 
 \begin{figure}[htbp]
   \begin{center}
@@ -241,13 +241,13 @@ Les 27 images utilisées ont été acquises entre Juin et Novembre 2017, soit en
    
   \end{center}
   \caption{Chronologie des images acquises}
-  \label{Chronologie}
+  \label{fig-Chronologie}
 \end{figure}
 
 \section{Données de terrain}
 
-Notre jeu de données terrain est basé sur des enquêtes agronomiques réalisées courant 2017 sur 53 parcelles agricoles. Ces enquêtes ont été menées pour la plupart dans le cadre des projets Oracle \footnote{\url{https://afrique-ouest.cirad.fr/actualites/projet-oracle-2017-2020}} et ANR CERAO \footnote{\url{http://www.agence-nationale-recherche.fr/Projet-ANR-13-AGRO-0002}}. Le jeu du projet Oracle provient de la thèse de \textsc{Djiba} Sophie et consiste en un réseau de 30 parcelles enquêtées en milieu paysan où les pratiques agricoles sont 
-axées sur des rotations entre céréales et légumineuses (mil/arachide et/ou niébé) et des associations entre légumineuses (arachide/niébé). Par contre, celui du projet ANR CERAO, mis au point par \textsc{Tounkara} Adama lors de sa thèse, est un réseau de 19 parcelles enquêtées également en milieu paysan mais présentant chacune sur une partie, des essais relatifs à l'efficience de l'utilisation de l'azote par le mil en fonction de différents niveaux d'apports ou non en fertilisants, et ce indépendamment des pratiques de l'agriculteur. Nous émettons l'hypothèse que ces essais sont représentatifs des parcelles concernées, néanmoins, conscients de l'incertitude potentielle dans cette généralisation, nous envisageons d'analyser nos résultats séparement en tenant compte de la source des données de terrain. Pour chaque parcelle enquêtée, différentes informations sont collectées. Celles qui nous interessent principalement sont :
+Notre jeu de données terrain est basé sur des enquêtes agronomiques réalisées courant 2017 sur 47 parcelles agricoles. Ces enquêtes ont été menées pour la plupart dans le cadre des projets Oracle \footnote{\url{https://afrique-ouest.cirad.fr/actualites/projet-oracle-2017-2020}} et ANR CERAO \footnote{\url{http://www.agence-nationale-recherche.fr/Projet-ANR-13-AGRO-0002}}. Le jeu du projet Oracle provient de la thèse de \textsc{Djiba} Sophie et consiste en un réseau de 30 parcelles enquêtées en milieu paysan où les pratiques agricoles sont 
+axées sur des rotations entre céréales et légumineuses (mil/arachide et/ou niébé) et des associations entre légumineuses (arachide/niébé). Par contre, celui du projet ANR CERAO, mis au point par \textsc{Tounkara} Adama lors de sa thèse, est un réseau de 17 parcelles enquêtées également en milieu paysan mais présentant chacune sur une partie, des essais relatifs à l'efficience de l'utilisation de l'azote par le mil en fonction de différents niveaux d'apports ou non en fertilisants, et ce indépendamment des pratiques de l'agriculteur. Nous émettons l'hypothèse que ces essais sont représentatifs des parcelles concernées, néanmoins, conscients de l'incertitude potentielle dans cette généralisation, nous envisageons d'analyser nos résultats séparement en tenant compte de la source des données de terrain. Pour chaque parcelle enquêtée, différentes informations sont collectées. Celles qui nous interessent principalement sont :
 \begin{itemize}
  \item le système de culture et les espèces cultivées
  \item les pratiques culturales (fertilisant, dates de semis et de récoltes)
@@ -255,26 +255,26 @@ axées sur des rotations entre céréales et légumineuses (mil/arachide et/ou n
  \item la géolocalisation des parcelles
  \item ou encore le nombre et les espèces d'arbres présentes au sein des parcelles.
 \end{itemize}
-La \Cref{terrain} présente les principales statistiques descriptives pour les parcelles enquêtées et comme nous pouvons nous en apercevoir, le rendement du mil est meilleur quand il est associé avec une légumineuse ($1559$ \si[per-mode=symbol]
-{\kilogram\per\hectare} en système de culture mixte contre $1117$ \si[per-mode=symbol]
+Le \cref{tab-terrain} présente les principales statistiques descriptives pour les parcelles enquêtées et comme nous pouvons nous en apercevoir, le rendement du mil est meilleur quand il est associé avec une légumineuse ($1670,21$ \si[per-mode=symbol]
+{\kilogram\per\hectare} en système de culture mixte contre $989,51$ \si[per-mode=symbol]
 {\kilogram\per\hectare} en système de culture pure).
-\\Les \Cref{carte-terrain-1,carte-terrain-2} présente la localisation des parcelles suivant leur culture et système de culture ainsi que leur biomasse fraîche et les rendements frais observés.
+\\Les ~\crefs{fig-terrain1,fig-terrain2} présentent la localisation des parcelles suivant leur culture et système de culture ainsi que leur biomasse fraîche et les rendements frais observés.
 
 \begin{table}[htbp]
 \begin{center}
 \caption{Statistiques descriptives des données de terrain}
-\label{terrain}
+\label{tab-terrain}
  \begin{tabular}{>{\centering\arraybackslash}p{2.2cm}>{\centering\arraybackslash}p{2.2cm}>{\centering\arraybackslash}p{2.2cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{1.5cm}>{\centering\arraybackslash}p{1cm}}
   \hline
   Culture majoritaire & Système de culture & Nombre de parcelles & \multicolumn{2}{>{\centering\arraybackslash}p{3cm}}{Biomasse fraiche (kg/ha)} & \multicolumn{2}{>{\centering\arraybackslash}p{2.5cm}}{Rendement frais (kg/ha)}\\
   %\hline
   & & & {\centering\arraybackslash}{$\bar{X}$} & {\centering\arraybackslash}{$\sigma$} & {\centering\arraybackslash}{$\bar{X}$} & {\centering\arraybackslash}{$\sigma$}\\                        
   \hline
-  Arachide & Mixte & $12$ & $6289$ & $2041$ & $1487$ & $596$ \\
+  Arachide & Mixte & $12$ & $6288,89$ & $2041,67$ & $1487,76$ & $596,52$ \\
   \hline
-  \multirow{2}*{Mil} & Pure & $8$ & $6759$ & $5835$ & $1117$ & $675$ \\
-  & Mixte & $29$ & $8143$ & $4801$ & $1559$ & $730$ \\
-  \hline  
+  \multirow{2}*{Mil} & Pure & $9$ & $5296,09$ & $2662,75$ & $989,51$ & $398,27$ \\
+  & Mixte & $26$ & $8981,77$ & $5381,86$ & $1670,21$ & $757,49$ \\
+  \hline
 
  \end{tabular}
 \end{center}
@@ -285,7 +285,7 @@ La \Cref{terrain} présente les principales statistiques descriptives pour les p
   %\includegraphics[scale=0.45]{synthese_biblio/metrics.png} 
  \end{center}
  \caption{Localisation des parcelles suivies }
- \label{carte-terrain-1}
+ \label{fig-terrain1}
 \end{figure}
 
 \begin{figure}[htbp]
@@ -293,7 +293,7 @@ La \Cref{terrain} présente les principales statistiques descriptives pour les p
   %\includegraphics[scale=0.45]{synthese_biblio/metrics.png} 
  \end{center}
  \caption{Caractéristiques agronomiques des parcelles suivies }
- \label{carte-terrain-2}
+ \label{fig-terrain2}
 \end{figure}
 
 
@@ -383,50 +383,50 @@ Comme évoqué par \citet{Atzberger2011}, l'interpolation des valeurs manquantes
 
 \subsection{Evaluation du lissage}
 
-Nous avons testé les 3 méthodes décrites ci-dessus pour lisser les séries temporelles de NDVI et MSAVI$2$. En nous interrogeant au premier abord sur l'influence de l'utilisation des données mutlisources sur le profil temporel des cultures, nous avons calculé et tracé les moyennes parcellaires de NDVI en fonction du temps. Il nous est alors apparu que les valeurs Sentinel-2 des 05, 15 et 25 Octobre étaient aberrantes car elles étaient plus hautes que les valeurs PlanetScope et RapidEye mais surtout qu'elles étaient localisées après les dates de récolte \ldots{}. Nous avons dès lors considéré 2 séries temporelles à lisser par indice de végétation : la série d'origine et la série sans les valeurs Sentinel-2 jugées aberrantes. 
-\\Afin d'optimiser le temps de traitement (au final réduit approximativement à 2 heures par méthode de lissage avec une station de travail HP de processeur Intel® Core™ i7-7700 CPU @ 3.60 GHz avec 8 c\oe urs et 16 Go de mémoire RAM)  de chaque série temporelle, le nombre de pixels en entrée a été réduit de façon à ne considérer que l'étendue de la zone d'étude couverte par les parcelles suivies (une taille de $1056\times1384$ soit $1\,461\,504$ pixels sur $41\,990\,000$ ou une taille de $6500\times6460$ \cref{carte-lissage}). Une chaîne de traitement incluant les 3 méthodes de lissage a été mise en place avec le langage \texttt{Python}. Le filtre de Savitzky-Golay a été implémenté dans la chaîne de traitement grâce à la fonction \texttt{savgol\_filter} du module \texttt{scipy.signal}. L'algorithme HANTS implémenté est la transcription en \texttt{Python} du programme originel écrit en \texttt{Fortran} et \texttt{Matlab} effectuée par \citet{Espinoza-Davalos2017}. Enfin, pour implémenter la méthode de Whittaker, nous avons transcrit en langage \texttt{Python}, le programme \texttt{Matlab} développé par \citet{Eilers2003} \footnote{\url{https://pubs.acs.org/doi/abs/10.1021/ac034173t}}. Les valeurs originales et lissées pour l'ensemble des pixels et pour chaque série temporelle sont stockées comme variables d'un fichier \texttt{netCDF4}. 
-\\Afin de définir le paramétrage optimal pour chaque méthode de lissage, nous avons adopté 3 critères d'évaluation qualitative tels que définis par \citet{Klisch2006} : 
+Nous avons testé les 3 méthodes décrites ci-dessus pour lisser les séries temporelles de NDVI et MSAVI$2$. En nous interrogeant au premier abord sur l'influence de l'utilisation des données multisources sur le profil temporel des cultures, nous avons calculé et tracé les moyennes parcellaires de NDVI et MSAVI$2$ en fonction du temps. Il nous est alors apparu que les valeurs Sentinel-2 des 05, 15 et 25 Octobre étaient aberrantes puisqu'elles étaient largement au dessus des valeurs PlanetScope et RapidEye situées dans la même plage et surtout parce qu'elles étaient localisées après les dates de récolte \ldots{}. Nous avons dès lors considéré 2 séries temporelles à lisser par indice de végétation : la série d'origine et la série sans les valeurs Sentinel-2 jugées aberrantes. 
+\\Afin d'optimiser le temps de traitement \footnote{Deux heures approximativement par méthode de lissage avec une station de travail HP possédant un processeur Intel® Core™ i7-7700 CPU @ 3.60 GHz de 8 c\oe urs et 16 Go de mémoire RAM} de chaque série temporelle, le nombre de pixels en entrée a été réduit de façon à ne considérer que l'emprise des parcelles suivies sur la zone d'étude (une taille de $1056\times1384$ soit $1\,461\,504$ pixels sur $41\,990\,000$ ou une taille de $6500\times6460$ ~\Cref{fig-carte-lissage}). Une chaîne de traitement incluant les 3 méthodes de lissage a été mise en place avec le langage \texttt{Python}. Le filtre de Savitzky-Golay a été implémenté dans la chaîne de traitement grâce à la fonction \texttt{savgol\_filter} du module \texttt{scipy.signal}. L'algorithme HANTS implémenté est la transcription en \texttt{Python} effectuée par \citet{Espinoza-Davalos2017} du programme originel écrit en \texttt{Fortran} et \texttt{Matlab}. Enfin, pour implémenter la méthode de Whittaker, nous avons transcrit en langage \texttt{Python}, le programme \texttt{Matlab} développé par \citet{Eilers2003} \footnote{\url{https://pubs.acs.org/doi/abs/10.1021/ac034173t}}. Les valeurs originales et lissées par série temporelle pour l'ensemble des pixels et  sont stockées comme variables d'un fichier \texttt{netCDF4}. 
+\\En vue de définir le paramétrage optimal pour chaque méthode de lissage, nous avons adopté 3 critères d'évaluation qualitative tels que définis par \citet{Klisch2006} : 
 \begin{enumerate}
  \item Conserver la temporalité des profils notamment que les dates de début et de fin de saison ne soient pas influencées par le lissage
  \item Conserver le plus possible les valeurs hautes en raison de la rareté de valeurs aberrantes hautes
- \item Réduire le plus possible les bruits à hautes fréquences
+ \item Réduire le plus possible les bruits à hautes fréquences.
 \end{enumerate}
-Notons également que nous avons reconstruit les séries temporelles avec un pas journalier en interpolant les dates manquantes. L'algorithme HANTS et la méthode de Whittaker interpolent automatiquement les valeurs manquantes d'une série, le filtre de Savitzky-Golay non. Avec ce dernier, nous avons d'abord effectué une interpolation linéaire des valeurs manquantes avant de procéder au lissage comme effectué aussi par \citet{Chen2004} et \citet{Liu2017}. 
-En dépit de différents essais faisant varier la largeur de la fenêtre de lissage et le degré du polynôme d'ajustement, le filtre de Savitzky-Golay n'a pas donné les résultats escomptés. Les résultats de quelques essais de lissage par le filtre de Savitzky-Golay sur des pixels appartenant à des parcelles agricoles sont présentés en annexe  \ref{annexe-b}.
-\\Le paramétrage adopté pour les autres méthodes est reporté dans la \Cref{param-hants-whit}. Notons que pour la méthode de Whittaker, une procédure d'ajustement à l'enveloppe supérieure du profil temporel des données d'origine a été mise en place. Cette procédure est la même que celle utilisée par \citet{Chen2004} qui consiste : 
+Notons également que nous avons reconstruit les séries temporelles avec un pas journalier en interpolant les dates manquantes. L'algorithme HANTS et la méthode de Whittaker interpolent automatiquement les valeurs manquantes d'une série, le filtre de Savitzky-Golay non. Avec ce dernier, nous avons d'abord effectué une interpolation linéaire des valeurs manquantes avant de procéder au lissage comme ont eu à le faire également \citet{Chen2004} et \citet{Liu2017}. 
+En dépit de différents essais où nous avons fait varier la largeur de la fenêtre de lissage et le degré du polynôme d'ajustement, le filtre de Savitzky-Golay n'a pas donné les résultats escomptés. Quelques sorties des essais effectués sur des pixels appartenant à des parcelles agricoles sont présentés dans l'\cref{annexe-b}.
+\\Le paramétrage adopté pour les autres méthodes est reporté dans le \cref{tab-param-hants-whit}. Notons que pour la méthode de Whittaker, nous avons mis en place une procédure d'ajustement à l'enveloppe supérieure du profil temporel des données d'origine. Cette procédure d'ajustement est la même que celle proposée par \citet{Chen2004} qui consiste : 
 \begin{itemize}
  \item à lisser une première fois les valeurs de la série d'origine et à considérer le résultat comme un profil de référence 
- \item à attribuer ensuite des poids aux valeurs de la série d'origine selon qu'elles soient au dessus ou en dessous du profil de référence
- \item à générer alors une nouvelle série temporelle reprenant les valeurs d'origine si elles sont au dessus du profil de référence et les valeurs de référence pour les valeurs d'origine qui sont en dessous du profil
- \item et à lisser enfin la nouvelle série générée à travers une procédure itérative qui se poursuit tant qu'un indicateur de l'effet d'ajustement n'est pas supérieur à sa valeur précédente. L'indicateur de l'effet d'ajustement est donné par :
+ \item à attribuer ensuite des poids aux valeurs de la série d'origine selon qu'elles soient au dessus (poids plus important) ou en dessous du profil de référence (poids moins important)
+ \item à générer alors une nouvelle série temporelle reprenant les valeurs d'origine si elles sont au dessus du profil de référence et les valeurs de référence si les valeurs d'origine sont en dessous du profil
+ \item et à procéder de nouveau au lissage à travers une procédure itérative : le premier lissage est effectué sur la série temporelle nouvellement générée; un indicateur de l'ajustement détermine ensuite si l'itération doit être poursuivie, si oui un second lissage est effectué sur le résultat de la première itération mais en remplaçant les valeurs qui sont toujours inférieures aux valeurs d'origine par ces dernières et ainsi de suite. L'itération se poursuit tant que la valeur de l'indicateur d'ajustement n'est pas supérieure à celle calculée précédemment. Cet indicateur est donné par :
  \begin{align}
    F_{k} = \sum_{i=1}^{n} (|N_{i}^{k+1} - N_{i}^{0}|) \times W_{i}
  \end{align}
- où $N_{i}^{k+1}$ est la i\up{ème} valeur du k\up{ème} ajustement de la série générée, $N_{i}^{0}$ la i\up{ème} valeur de la série d'origine, et $W_{i}$ le poids associé à cette i\up{ème} valeur. La définition de l'indicateur $F_{k}$ est telle que plus il est faible, plus la courbe ajustée se rapproche des valeurs à fort poids et donc de l'enveloppe supérieure du profil temporel des valeurs d'origine.
+ où $N_{i}^{k+1}$ est la i\up{ème} valeur du k\up{ème} ajustement de la série générée, $N_{i}^{0}$ la i\up{ème} valeur de la série d'origine, et $W_{i}$ le poids associé à cette i\up{ème} valeur. La définition de l'indicateur $F_{k}$ est telle que plus il est faible, plus la courbe ajustée se rapprochera des valeurs à fort poids et donc de l'enveloppe supérieure du profil temporel des valeurs d'origine.
 \end{itemize}
 
 \vspace{5mm}
 
-Cette procédure d'ajustement n'a pas eu d'effet notable sur la reconstruction du signal opéré par HANTS. 
+Cette procédure d'ajustement n'a pas eu d'effet notable sur la reconstruction du signal par analyse harmonique et n'a donc pas été appliquée avec HANTS. 
 
 \begin{figure}[htbp]
  \begin{center}
   %\includegraphics[scale=0.45]{synthese_biblio/metrics.png} 
  \end{center}
- \caption{Zone d'application des méthodes de lissage}
- \label{carte-lissage}
+ \caption{Emprise de l'application du lissage}
+ \label{fig-carte-lissage}
 \end{figure}
 
 \begin{table}[htbp]
 \begin{center}
 \caption{Paramétrage des méthodes de lissage}
-\label{param-hants-whit}
- \begin{tabular}{cc}
+\label{tab-param-hants-whit}
+ \begin{tabular}{c>{\centering\arraybackslash}p{10cm}}
   \hline
   Méthode & Paramétrage\\
   \hline
-  HANTS & \\
-  Whittaker & \\
+  HANTS & $P\acute{e}riode = 365$; $nf = 3$; $HiLo = Lo$; $Low=-0.3$; $High=1$; $FET=0.05$; $DOD=1$; $Delta=0.25$ \\
+  Whittaker & $\lambda = 5000$ ($1000$ pour les itérations); $d = 2$ \\
   \hline
  \end{tabular}
 \end{center}

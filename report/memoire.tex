@@ -22,8 +22,8 @@
 %\usepackage{fancyhdr}
 \usepackage{multirow}
 %\usepackage{ccaption}
-%\usepackage{varioref}
-\usepackage{cleveref}
+%\usepackage[french]{varioref}
+\usepackage[french]{cleveref}
 \usepackage[automark,headsepline=true,autooneside=false,markcase=used]{scrlayer-scrpage} 
 %\usepackage{scrpage2}
 
@@ -71,14 +71,8 @@
 
 \ohead{\ifstr{\rightmark}{\leftmark}{}{\rightmark}}
 
-%\ifoot{}
-%\ofoot{}
-%\cfoot[\pagemark]{\pagemark}
-%\ihead{\headmark}
-%\chead{}
-%\ohead{}
-
 \begin{document}
+
 \let\cleardoublepage\clearpage
 \includepdf[pages=1]{Garde.pdf}
 %\maketitle
@@ -137,7 +131,7 @@
 \appendix
 
 \chapter{Diagramme de Gantt}\label{annexe-a}
-\chapter{Essais de lissage par le filtre de Savitzky-Golay}\label{annexe-b}
+\chapter{Essais de lissage avec le filtre de Savitzky-Golay}\label{annexe-b}
 
 \backmatter
 \input{acronymes}
