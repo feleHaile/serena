@@ -246,7 +246,7 @@ Les 27 images utilisées ont été acquises entre Juin et Novembre 2017, soit en
 
 \section{Données de terrain}
 
-Notre jeu de données terrain est basé sur des enquêtes agronomiques réalisées courant 2017 sur 47 parcelles agricoles. Ces enquêtes ont été menées pour la plupart dans le cadre des projets Oracle \footnote{\url{https://afrique-ouest.cirad.fr/actualites/projet-oracle-2017-2020}} et ANR CERAO \footnote{\url{http://www.agence-nationale-recherche.fr/Projet-ANR-13-AGRO-0002}}. Le jeu du projet Oracle provient de la thèse de \textsc{Djiba} Sophie et consiste en un réseau de 30 parcelles enquêtées en milieu paysan où les pratiques agricoles sont 
+Notre jeu de données terrain est basé sur des enquêtes agronomiques réalisées courant 2017 sur 47 parcelles agricoles. Ces enquêtes ont été menées dans le cadre des projets Oracle \footnote{\url{https://afrique-ouest.cirad.fr/actualites/projet-oracle-2017-2020}} et ANR CERAO \footnote{\url{http://www.agence-nationale-recherche.fr/Projet-ANR-13-AGRO-0002}}. Le jeu du projet Oracle provient de la thèse de \textsc{Djiba} Sophie et consiste en un réseau de 30 parcelles enquêtées en milieu paysan où les pratiques agricoles sont 
 axées sur des rotations entre céréales et légumineuses (mil/arachide et/ou niébé) et des associations entre légumineuses (arachide/niébé). Par contre, celui du projet ANR CERAO, mis au point par \textsc{Tounkara} Adama lors de sa thèse, est un réseau de 17 parcelles enquêtées également en milieu paysan mais présentant chacune sur une partie, des essais relatifs à l'efficience de l'utilisation de l'azote par le mil en fonction de différents niveaux d'apports ou non en fertilisants, et ce indépendamment des pratiques de l'agriculteur. Nous émettons l'hypothèse que ces essais sont représentatifs des parcelles concernées, néanmoins, conscients de l'incertitude potentielle dans cette généralisation, nous envisageons d'analyser nos résultats séparement en tenant compte de la source des données de terrain. Pour chaque parcelle enquêtée, différentes informations sont collectées. Celles qui nous interessent principalement sont :
 \begin{itemize}
  \item le système de culture et les espèces cultivées
@@ -258,7 +258,7 @@ axées sur des rotations entre céréales et légumineuses (mil/arachide et/ou n
 Le \cref{tab-terrain} présente les principales statistiques descriptives pour les parcelles enquêtées et comme nous pouvons nous en apercevoir, le rendement du mil est meilleur quand il est associé avec une légumineuse ($1670,21$ \si[per-mode=symbol]
 {\kilogram\per\hectare} en système de culture mixte contre $989,51$ \si[per-mode=symbol]
 {\kilogram\per\hectare} en système de culture pure).
-\\Les ~\crefs{fig-terrain1,fig-terrain2} présentent la localisation des parcelles suivant leur culture et système de culture ainsi que leur biomasse fraîche et les rendements frais observés.
+\\Les \cref{fig-terrain1,fig-terrain2} présentent la localisation des parcelles suivant leur culture et système de culture ainsi que leur biomasse fraîche et les rendements frais observés.
 
 \begin{table}[htbp]
 \begin{center}
@@ -300,8 +300,8 @@ Le \cref{tab-terrain} présente les principales statistiques descriptives pour l
   
 \section{Extraction d'indices spectraux}
 
-Sur base des images de réflectance, nous avons extrait 2 indices de végétation. Il importe de noter que les indices dérivés d'images RapidEye (5m) ou Sentinel-2 (10m) 
-ont été rééchantillonnés à la résolution des indices PlanetScope (3m), ce afin de pouvoir considérer une série temporelle par indice calculé. 
+Sur base des images de réflectance, nous avons extrait l'indice de végétation par différence normalisé NDVI. Il importe de noter que les indices dérivés d'images RapidEye (5m) ou Sentinel-2 (10m) 
+ont été rééchantillonnés à la résolution des indices PlanetScope (3m), ce afin de pouvoir considérer une série temporelle uniforme.
 
 \paragraph{NDVI} \citep{Rouse1974,Tucker1979} 
 
@@ -309,11 +309,11 @@ ont été rééchantillonnés à la résolution des indices PlanetScope (3m), ce
  NDVI = \frac{PIR - R}{PIR + R}
 \end{align}
 
-\paragraph{MSAVI2} \citep{Qi1994}
+%\paragraph{MSAVI2} \citep{Qi1994}
 
-\begin{align}
- MSAVI2 = \frac{2 \times (PIR + 1) - \sqrt{((2 \times PIR + 1)^2 - 8 \times (PIR - R))}}{2}
-\end{align}
+%\begin{align}
+ %MSAVI2 = \frac{2 \times (PIR + 1) - \sqrt{((2 \times PIR + 1)^2 - 8 \times (PIR - R))}}{2}
+%\end{align}
 
 \section{Lissage des séries temporelles}
 
@@ -383,7 +383,7 @@ Comme évoqué par \citet{Atzberger2011}, l'interpolation des valeurs manquantes
 
 \subsection{Evaluation du lissage}
 
-Nous avons testé les 3 méthodes décrites ci-dessus pour lisser les séries temporelles de NDVI et MSAVI$2$. En nous interrogeant au premier abord sur l'influence de l'utilisation des données multisources sur le profil temporel des cultures, nous avons calculé et tracé les moyennes parcellaires de NDVI et MSAVI$2$ en fonction du temps. Il nous est alors apparu que les valeurs Sentinel-2 des 05, 15 et 25 Octobre étaient aberrantes puisqu'elles étaient largement au dessus des valeurs PlanetScope et RapidEye situées dans la même plage et surtout parce qu'elles étaient localisées après les dates de récolte \ldots{}. Nous avons dès lors considéré 2 séries temporelles à lisser par indice de végétation : la série d'origine et la série sans les valeurs Sentinel-2 jugées aberrantes. 
+Nous avons testé les 3 méthodes décrites ci-dessus pour lisser la série temporelle de NDVI. En nous questionnant au premier abord sur l'influence de l'utilisation des données multisources sur le profil temporel des cultures, nous avons calculé et tracé les moyennes parcellaires de NDVI et leur écart type en fonction du temps. Il nous est alors apparu que les valeurs Sentinel-2 des 05, 15 et 25 Octobre étaient aberrantes puisqu'elles étaient largement au dessus des autres valeurs situées dans la même plage mais surtout parce qu'elles étaient localisées après les dates de récolte notamment sur les parcelles de mil (\Cref{fig-multisource}). Nous avons dès lors considéré 2 séries temporelles de NDVI pour le lissage : la série d'origine et la série sans les valeurs Sentinel-2 jugées aberrantes. 
 \\Afin d'optimiser le temps de traitement \footnote{Deux heures approximativement par méthode de lissage avec une station de travail HP possédant un processeur Intel® Core™ i7-7700 CPU @ 3.60 GHz de 8 c\oe urs et 16 Go de mémoire RAM} de chaque série temporelle, le nombre de pixels en entrée a été réduit de façon à ne considérer que l'emprise des parcelles suivies sur la zone d'étude (une taille de $1056\times1384$ soit $1\,461\,504$ pixels sur $41\,990\,000$ ou une taille de $6500\times6460$ ~\Cref{fig-carte-lissage}). Une chaîne de traitement incluant les 3 méthodes de lissage a été mise en place avec le langage \texttt{Python}. Le filtre de Savitzky-Golay a été implémenté dans la chaîne de traitement grâce à la fonction \texttt{savgol\_filter} du module \texttt{scipy.signal}. L'algorithme HANTS implémenté est la transcription en \texttt{Python} effectuée par \citet{Espinoza-Davalos2017} du programme originel écrit en \texttt{Fortran} et \texttt{Matlab}. Enfin, pour implémenter la méthode de Whittaker, nous avons transcrit en langage \texttt{Python}, le programme \texttt{Matlab} développé par \citet{Eilers2003} \footnote{\url{https://pubs.acs.org/doi/abs/10.1021/ac034173t}}. Les valeurs originales et lissées par série temporelle pour l'ensemble des pixels et  sont stockées comme variables d'un fichier \texttt{netCDF4}. 
 \\En vue de définir le paramétrage optimal pour chaque méthode de lissage, nous avons adopté 3 critères d'évaluation qualitative tels que définis par \citet{Klisch2006} : 
 \begin{enumerate}
@@ -411,6 +411,14 @@ Cette procédure d'ajustement n'a pas eu d'effet notable sur la reconstruction d
 
 \begin{figure}[htbp]
  \begin{center}
+  \includegraphics[scale=0.6]{materiels_methodes/multisource.png} 
+ \end{center}
+ \caption{Influence des données multisources sur le profil temporel des cultures de quelques parcelles}
+ \label{fig-multisource}
+\end{figure}
+
+\begin{figure}[htbp]
+ \begin{center}
   %\includegraphics[scale=0.45]{synthese_biblio/metrics.png} 
  \end{center}
  \caption{Emprise de l'application du lissage}
@@ -431,6 +439,8 @@ Cette procédure d'ajustement n'a pas eu d'effet notable sur la reconstruction d
  \end{tabular}
 \end{center}
 \end{table}
+
+
 
 
 
