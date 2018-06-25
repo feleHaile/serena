@@ -159,90 +159,98 @@ météorologiques n'ont pas été considérées dans le cadre de ce stage.
 
   \subsection{Chronologie des images acquises}
   
-Les 27 images utilisées ont été acquises entre Juin et Novembre 2017, soit en théorie une image tous les 7 jours sur la période couvrant la saison agricole 2017. Cependant, nous ne disposons que d'une image (PlanetScope) en Septembre. La \cref{fig-Chronologie} illustre la chronologie des acquisitions.
+Les 26 images utilisées ont été acquises entre Juin et Novembre 2017, soit en théorie une image tous les 7 jours sur la période couvrant la saison agricole 2017. Nous ne disposons, cependant, que d'une image (PlanetScope) en Septembre. La chronologie des acquisitions est représentée sur la \cref{fig-Chronologie}.
 
 \begin{figure}[htbp]
-  \begin{center}
-    \begin{tikzpicture}
-     \begin{axis}[hide y axis,axis lines=middle,
-      date coordinates in=x,
-      xticklabel={\texttt{\month}},
-      xlabel=RapidEye,
-      xlabel style={at={(current axis.right of origin)}, xshift=7.5ex, anchor=center},
-      %x tick label style={},
-      date ZERO=2017-05-01,
-      xmin=2017-05-25,
-      xmax=2017-12-05,
-      ymin=0,ymax=0.1,
-      xtick=\empty,clip=false]
-      \addplot [magenta,thick,mark=*,only marks]coordinates{
-        (2017-07-27,0)
-        (2017-10-06,0)
-        (2017-10-26,0)
-        (2017-11-09,0)
-        };
-      \end{axis}
-  \end{tikzpicture}
-  
-  \begin{tikzpicture}
-    \begin{axis}[hide y axis,axis lines=middle,
-      date coordinates in=x,
-      xticklabel={\texttt{\month}},
-      xlabel=Sentinel-2,
-      xlabel style={at={(current axis.right of origin)}, xshift=7.5ex, anchor=center},
-      %x tick label style={},
-      date ZERO=2017-05-01,
-      xmin=2017-05-25,
-      xmax=2017-12-05,
-      ymin=0,ymax=0.1,
-      xtick=\empty,clip=false]
-      \addplot [magenta,thick,mark=*,only marks]coordinates{
-        (2017-06-07,0)
-        (2017-06-17,0)
-        (2017-07-27,0)
-        (2017-08-06,0)
-        (2017-10-05,0)
-        (2017-10-15,0)
-        (2017-10-25,0)
-        (2017-11-04,0)
-        (2017-11-14,0)};
-     \end{axis}
-    \end{tikzpicture}
-  
-  \begin{tikzpicture}
-    \begin{axis}[hide y axis,axis lines=middle,
-      date coordinates in=x,
-      xticklabel={\texttt{\month}},
-      xlabel={PlanetScope},
-      xlabel style={at={(current axis.right of origin)}, xshift=7.5ex, anchor=center},
-      %x label style={},
-      date ZERO=2017-05-01,
-      xmin=2017-05-25,
-      xmax=2017-12-05,
-      ymin=0,ymax=0.1,
-      xtick={{2017-06-01},{2017-07-01},{2017-08-01},{2017-09-01},{2017-10-01},{2017-11-01},{2017-12-01}},clip=false]
-      \addplot [magenta,thick,mark=*,only marks]coordinates{
-        (2017-06-04,0)
-        (2017-06-18,0)
-        (2017-07-09,0)
-        (2017-07-16,0)
-        (2017-07-27,0)
-        (2017-08-15,0)
-        (2017-09-19,0)
-        (2017-10-01,0)
-        (2017-10-11,0)
-        (2017-10-16,0)
-        (2017-10-23,0)
-        (2017-10-30,0)
-        (2017-11-15,0)
-        (2017-11-19,0)};
-    \end{axis}
-   \end{tikzpicture}
-   
-  \end{center}
-  \caption{Chronologie des images acquises}
+ \begin{center}
+  \includegraphics[scale=0.7]{materiels_methodes/chronologie.png} 
+ \end{center}
+ \caption{Chronologie des images acquises}
   \label{fig-Chronologie}
 \end{figure}
+
+%\begin{figure}[htbp]
+  %\begin{center}
+    %\begin{tikzpicture}
+     %\begin{axis}[hide y axis,axis lines=middle,
+      %date coordinates in=x,
+      %xticklabel={\texttt{\month}},
+      %xlabel=RapidEye,
+      %xlabel style={at={(current axis.right of origin)}, xshift=7.5ex, anchor=center},
+      %%x tick label style={},
+      %date ZERO=2017-05-01,
+      %xmin=2017-05-25,
+      %xmax=2017-12-05,
+      %ymin=0,ymax=0.1,
+      %xtick=\empty,clip=false]
+      %\addplot [magenta,thick,mark=*,only marks]coordinates{
+        %(2017-07-27,0)
+        %(2017-10-06,0)
+        %(2017-10-26,0)
+        %(2017-11-09,0)
+        %};
+      %\end{axis}
+  %\end{tikzpicture}
+  %
+  %\begin{tikzpicture}
+    %\begin{axis}[hide y axis,axis lines=middle,
+      %date coordinates in=x,
+      %xticklabel={\texttt{\month}},
+      %xlabel=Sentinel-2,
+      %xlabel style={at={(current axis.right of origin)}, xshift=7.5ex, anchor=center},
+      %%x tick label style={},
+      %date ZERO=2017-05-01,
+      %xmin=2017-05-25,
+      %xmax=2017-12-05,
+      %ymin=0,ymax=0.1,
+      %xtick=\empty,clip=false]
+      %\addplot [magenta,thick,mark=*,only marks]coordinates{
+        %(2017-06-07,0)
+        %(2017-06-17,0)
+        %(2017-07-27,0)
+        %(2017-08-06,0)
+        %(2017-10-05,0)
+        %(2017-10-15,0)
+        %(2017-10-25,0)
+        %(2017-11-04,0)
+        %(2017-11-14,0)};
+     %\end{axis}
+    %\end{tikzpicture}
+  %
+  %\begin{tikzpicture}
+    %\begin{axis}[hide y axis,axis lines=middle,
+      %date coordinates in=x,
+      %xticklabel={\texttt{\month}},
+      %xlabel={PlanetScope},
+      %xlabel style={at={(current axis.right of origin)}, xshift=7.5ex, anchor=center},
+      %%x label style={},
+      %date ZERO=2017-05-01,
+      %xmin=2017-05-25,
+      %xmax=2017-12-05,
+      %ymin=0,ymax=0.1,
+      %xtick={{2017-06-01},{2017-07-01},{2017-08-01},{2017-09-01},{2017-10-01},{2017-11-01},{2017-12-01}},clip=false]
+      %\addplot [magenta,thick,mark=*,only marks]coordinates{
+        %(2017-06-04,0)
+        %(2017-06-18,0)
+        %(2017-07-09,0)
+        %(2017-07-16,0)
+        %(2017-07-27,0)
+        %(2017-08-15,0)
+        %(2017-09-19,0)
+        %(2017-10-01,0)
+        %(2017-10-11,0)
+        %(2017-10-16,0)
+        %(2017-10-23,0)
+        %(2017-10-30,0)
+        %(2017-11-15,0)
+        %(2017-11-19,0)};
+    %\end{axis}
+   %\end{tikzpicture}
+   %
+  %\end{center}
+  %\caption{Chronologie des images acquises}
+  %\label{fig-Chronologie}
+%\end{figure}
 
 \section{Données de terrain}
 
@@ -383,7 +391,7 @@ Comme évoqué par \citet{Atzberger2011}, l'interpolation des valeurs manquantes
 
 \subsection{Evaluation du lissage}
 
-Nous avons testé les 3 méthodes décrites ci-dessus pour lisser la série temporelle de NDVI. En nous questionnant au premier abord sur l'influence de l'utilisation des données multisources sur le profil temporel des cultures, nous avons calculé et tracé les moyennes parcellaires de NDVI et leur écart type en fonction du temps. Il nous est alors apparu que les valeurs Sentinel-2 des 05, 15 et 25 Octobre étaient aberrantes puisqu'elles étaient largement au dessus des autres valeurs situées dans la même plage mais surtout parce qu'elles étaient localisées après les dates de récolte notamment sur les parcelles de mil (\Cref{fig-multisource}). Nous avons dès lors considéré 2 séries temporelles de NDVI pour le lissage : la série d'origine et la série sans les valeurs Sentinel-2 jugées aberrantes. 
+Nous avons testé les 3 méthodes décrites ci-dessus pour lisser la série temporelle de NDVI. En nous questionnant au premier abord sur l'influence de l'utilisation des données multisources sur le profil temporel des cultures, nous avons calculé et tracé les moyennes parcellaires de NDVI et leur écart type en fonction du temps. Il nous est alors apparu que les valeurs Sentinel-2 des 05, 15 et 25 Octobre étaient aberrantes puisqu'elles étaient largement au dessus des autres valeurs situées dans la même plage mais surtout parce qu'elles étaient localisées après les dates de récolte notamment sur les parcelles de mil (\Cref{fig-multisource}). Nous avons alors considéré 2 séries temporelles de NDVI pour le lissage : la série d'origine et la série sans les valeurs Sentinel-2 jugées aberrantes. 
 \\Afin d'optimiser le temps de traitement \footnote{Deux heures approximativement par méthode de lissage avec une station de travail HP possédant un processeur Intel® Core™ i7-7700 CPU @ 3.60 GHz de 8 c\oe urs et 16 Go de mémoire RAM} de chaque série temporelle, le nombre de pixels en entrée a été réduit de façon à ne considérer que l'emprise des parcelles suivies sur la zone d'étude (une taille de $1056\times1384$ soit $1\,461\,504$ pixels sur $41\,990\,000$ ou une taille de $6500\times6460$ ~\Cref{fig-carte-lissage}). Une chaîne de traitement incluant les 3 méthodes de lissage a été mise en place avec le langage \texttt{Python}. Le filtre de Savitzky-Golay a été implémenté dans la chaîne de traitement grâce à la fonction \texttt{savgol\_filter} du module \texttt{scipy.signal}. L'algorithme HANTS implémenté est la transcription en \texttt{Python} effectuée par \citet{Espinoza-Davalos2017} du programme originel écrit en \texttt{Fortran} et \texttt{Matlab}. Enfin, pour implémenter la méthode de Whittaker, nous avons transcrit en langage \texttt{Python}, le programme \texttt{Matlab} développé par \citet{Eilers2003} \footnote{\url{https://pubs.acs.org/doi/abs/10.1021/ac034173t}}. Les valeurs originales et lissées par série temporelle pour l'ensemble des pixels et  sont stockées comme variables d'un fichier \texttt{netCDF4}. 
 \\En vue de définir le paramétrage optimal pour chaque méthode de lissage, nous avons adopté 3 critères d'évaluation qualitative tels que définis par \citet{Klisch2006} : 
 \begin{enumerate}
@@ -402,18 +410,18 @@ En dépit de différents essais où nous avons fait varier la largeur de la fen�
  \begin{align}
    F_{k} = \sum_{i=1}^{n} (|N_{i}^{k+1} - N_{i}^{0}|) \times W_{i}
  \end{align}
- où $N_{i}^{k+1}$ est la i\up{ème} valeur du k\up{ème} ajustement de la série générée, $N_{i}^{0}$ la i\up{ème} valeur de la série d'origine, et $W_{i}$ le poids associé à cette i\up{ème} valeur. La définition de l'indicateur $F_{k}$ est telle que plus il est faible, plus la courbe ajustée se rapprochera des valeurs à fort poids et donc de l'enveloppe supérieure du profil temporel des valeurs d'origine.
+ où $N_{i}^{k+1}$ est la i\up{ème} valeur du k\up{ème} ajustement de la série générée, $N_{i}^{0}$ la i\up{ème} valeur de la série d'origine, et $W_{i}$ le poids associé à cette i\up{ème} valeur. La définition de l'indicateur $F_{k}$ est telle que plus sa valeur est faible, plus la courbe ajustée aura tendance à se rapprocher des valeurs à fort poids et donc de l'enveloppe supérieure du profil temporel des valeurs d'origine.
 \end{itemize}
 
 \vspace{5mm}
 
-Cette procédure d'ajustement n'a pas eu d'effet notable sur la reconstruction du signal par analyse harmonique et n'a donc pas été appliquée avec HANTS. 
+Remarquons que cette procédure d'ajustement n'a pas eu d'effet notable sur la reconstruction du signal par analyse harmonique et n'a donc pas été appliquée avec HANTS. Les résultats du lissage des séries temporelles de NDVI en l'occurrence avec et sans les valeurs Sentinel-2 jugées aberrantes, sont reportés sur les \cref{fig-lissage-prs,fig-lissage-prscor}. De même que les valeurs d'origine, les valeurs reconstruites ont été agrégées à l'échelle parcellaire.
 
 \begin{figure}[htbp]
  \begin{center}
-  \includegraphics[scale=0.6]{materiels_methodes/multisource.png} 
+  \includegraphics[scale=0.7]{materiels_methodes/multisource.png} 
  \end{center}
- \caption{Influence des données multisources sur le profil temporel des cultures de quelques parcelles}
+ \caption{Moyenne et Ecart type du NDVI sur quelques parcelles}
  \label{fig-multisource}
 \end{figure}
 
@@ -434,15 +442,27 @@ Cette procédure d'ajustement n'a pas eu d'effet notable sur la reconstruction d
   Méthode & Paramétrage\\
   \hline
   HANTS & $P\acute{e}riode = 365$; $nf = 3$; $HiLo = Lo$; $Low=-0.3$; $High=1$; $FET=0.05$; $DOD=1$; $Delta=0.25$ \\
-  Whittaker & $\lambda = 5000$ ($1000$ pour les itérations); $d = 2$ \\
+  Whittaker & $\lambda = 5000$ ($2500$ pour les itérations); $d = 2$ \\
   \hline
  \end{tabular}
 \end{center}
 \end{table}
 
+\begin{figure}[htbp]
+ \begin{center}
+  %\includegraphics[scale=0.7]{materiels_methodes/multisource.png} 
+ \end{center}
+ \caption{Lissage de la série temporelle intacte}
+ \label{fig-lissage-prs}
+\end{figure}
 
-
-
+\begin{figure}[htbp]
+ \begin{center}
+  %\includegraphics[scale=0.7]{materiels_methodes/multisource.png} 
+ \end{center}
+ \caption{Lissage de la série temporelle rectifiée}
+ \label{fig-lissage-prscor}
+\end{figure}
 
 \section{Extraction des Métriques Phénologiques}
 
