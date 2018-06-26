@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Apr 12 15:52:19 2018
+Created on Sat Jun 16 14:12:41 2018
 
-@author: je
+@author: JE
 
 Fonctions de conversion de DN en Radiance puis Reflectance TOA puis Mosaiquage et Clip 
 pour les images :
@@ -16,6 +15,7 @@ pour les images :
 
 Fonctions de calcul des indices spectraux /et texturaux?
 
+
 """
 
 import gdal
@@ -27,13 +27,11 @@ import os
 import re
 import xml.etree.ElementTree as ET
 import json
-#from lxml import etree
-from multiprocessing import Pool
 from math import cos,pi
 import sys
 import subprocess
 import time
-#import concurrent.futures
+import concurrent.futures
 
 def get_datatype (dataset):
     
@@ -238,11 +236,6 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
         sys.exit (1)
 #    print (ds)
     layer = ds.GetLayer()
-
-#    print (layer.GetFeatureCount())
-#    for i in range(1, layer.GetFeatureCount()):
-#        feature = layer.GetFeature(i)
-
 # layer Extent Case
     extent = layer.GetExtent()
 #    print (extent)
@@ -252,65 +245,6 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
     lry = extent[2]
     
     ds.Destroy()
-    
-    """
-    feature = layer.GetFeature(0)
-    geometry = feature.GetGeometryRef()
-#    print (geometry)
-    
-    # Get Envelope returns a tuple (minX, maxX, minY, maxY)
-    env = geometry.GetEnvelope()
-#    print (env)
-    ulx = env[0]
-    uly = env[3]
-    lrx = env[1]
-    lry = env[2]
-#    print (ulx,uly,lrx,lry)
-    
-
-    coordSys = osr.SpatialReference()
-    coordSys.ImportFromEPSG(32628)
-
-    # write New Shapefile and GeoJSON with feature
-    
-    # Shapefile
-    outDS = driver.CreateDataSource('/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone_Corr.shp')
-    if outDS is None:
-        print ('Could not create file')
-        sys.exit (1)
-    outLayer = outDS.CreateLayer('/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone_Corr.shp', srs=coordSys, geom_type=ogr.wkbPolygon)
-    featureDefn = outLayer.GetLayerDefn()
-    # Creation d’une forme par recopie
-    outFeature = ogr.Feature(featureDefn)
-    outFeature.SetGeometry(geometry)
-    # Ajouter de la forme a la couche de sortie
-    outLayer.CreateFeature(outFeature)
-    # destruction des formes
-    geometry.Destroy()
-    outFeature.Destroy()
-    outDS.Destroy()
-    
-    #GeoJSON
-    # Create the output Driver
-    outDriver = ogr.GetDriverByName('GeoJSON')
-    # Create the output GeoJSON
-    outDataSource = outDriver.CreateDataSource('/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone.geojson')
-    outLayer = outDataSource.CreateLayer('/home/je/Bureau/Stage/Gbodjo_2018/Data/Process/Extent_Zone.geojson', srs=coordSys, geom_type=ogr.wkbPolygon )
-    # Get the output Layer's Feature Definition
-    featureDefn = outLayer.GetLayerDefn()
-    # create a new feature
-    outFeature = ogr.Feature(featureDefn)
-    # Set new geometry
-    outFeature.SetGeometry(geometry)
-    # Add new feature to output Layer
-    outLayer.CreateFeature(outFeature)
-    #destroy Geometry
-    geometry.Destroy()
-    # dereference the feature
-    outFeature = None
-    # Save and close DataSources
-    outDataSource = None
-    """
     
     # Define some lists
     if option == "SRE":
@@ -377,7 +311,7 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
                     pixelHeight2 = geoT2[5]
                     
                     xOffset2 = int((ulx- originX2) / pixelWidth2)
-                    yOffset2 = int((uly - originY2) / pixelHeight2) # valeur pixel negative
+                    yOffset2 = int((uly - originY2) / pixelHeight2)
                     
                     xsize2 = int((lrx - ulx)/pixelWidth2)  # Raster xsize col
                     ysize2 = int((uly - lry)/pixelWidth2)  # Raster ysize lines
@@ -486,107 +420,103 @@ def Mos_Resize (inPath,outPath, inShpFile, sensor) :
     
     
 if  __name__=='__main__':
-    
+    '''
     ################################## PLANETSCOPE  #####################################
 #                              TOA Reflectance, MOSAIC AND RESIZE
-#    inPath="/home/je/Bureau/Stage/Data/Brutes/PLANET/"
-#    outPath="/home/je/Bureau/Stage/Output/MOS_RESIZE/PLANETSCOPE"
-#    inShpFile="/home/je/Bureau/Stage/Data/Process/Extent_Zone_Corr.shp"
-#    sensor=0
-#    lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
-#    lstSubfolders = []
-#    for parentFolder in lstFolders :
-#        lstSubfolders += [os.path.join(parentFolder,subfolder) for subfolder in os.listdir(parentFolder) if os.path.isdir(os.path.join(parentFolder,subfolder))]
-##    print(lstSubfolders)
-#    
-#    def process_folder(foldername) :
-#        dnToTOA (foldername, outPath, sensor)
-#        return foldername
-#    
-#    pool = Pool()
-#    
-#    start_time = time.time()
-#    results = pool.imap(process_folder, lstSubfolders)
-#    for result in results :
-#        print (result)
-#    end_time = time.time() 
-#    print("Time for proccess : %ssecs" % (end_time - start_time))
-#    
-#    inPath2="/home/je/Bureau/Stage/Output/MOS_RESIZE/PLANETSCOPE"
-#    lstNewfolders = [os.path.join(inPath2,folder) for folder in os.listdir(inPath2) if os.path.isdir(os.path.join(inPath2,folder))]
-#    
-#    def process_folder(folderName) :
-#        Mos_Resize(folderName,outPath,inShpFile,sensor)
-#        return folderName
-#    pool = Pool()
-#    
-#    start_time = time.time()
-#    results = pool.imap(process_folder, lstNewfolders)
-#    for result in results :
-#        print (result)
-#    end_time = time.time() 
-#    print("Time for proccess : %ssecs" % (end_time - start_time)) 
+    inPath="E:/Stage2018/Brutes/RAPIDEYE"
+    outPath="E:/Stage2018/Output/RAPIDEYE"
+    inShpFile="E:/Stage2018/Extent_Zone_Corr.shp"
+    sensor=1
     
+    lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+    lstSubfolders = []
+    for parentFolder in lstFolders :
+        lstSubfolders += [os.path.join(parentFolder,subfolder) for subfolder in os.listdir(parentFolder) if os.path.isdir(os.path.join(parentFolder,subfolder))]
+#    print(lstSubfolders)
+    
+    import concurrent.futures
+    
+    NUM_WORKERS = 3
+
+    def work(folderName):
+        """
+        Thread Function
+        """
+        dnToTOA (folderName, outPath, sensor)
+        return folderName
+    
+    start_time = time.time()
+    
+    # Submit the jobs to the thread pool executor.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
+    # Map the futures returned from executor.submit() to their destination windows.
+    # The _example.compute function modifies no Python objects and releases the GIL. It can execute concurrently.
+        futures = {executor.submit(work, folderName) for folderName in lstSubfolders}
+        concurrent.futures.wait(futures)
+        
+    end_time = time.time()        
+         
+    print("Time for proccess : %ssecs" % (end_time - start_time)) 
+    '''
     
      ################################## RAPIDEYE #####################################
-#                              TOA Reflectance, MOSAIC AND RESIZE
-#    inPath="/home/je/Bureau/Stage/Data/Brutes/RAPIDEYE/"
-#    outPath="/home/je/Bureau/Stage/Output/MOS_RESIZE/RAPIDEYE"
-#    inShpFile="/home/je/Bureau/Stage/Data/Process/Extent_Zone_Corr.shp"
-#    sensor=1
-#    lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
-#    lstSubfolders = []
-#    for parentFolder in lstFolders :
-#        lstSubfolders += [os.path.join(parentFolder,subfolder) for subfolder in os.listdir(parentFolder) if os.path.isdir(os.path.join(parentFolder,subfolder))]
-##    print(lstSubfolders)
-#    
-#    def process_folder(foldername) :
-#        dnToTOA (foldername, outPath, sensor)
-#        return foldername
-#    
-#    pool = Pool()
-#    
-#    start_time = time.time()
-#    results = pool.imap(process_folder, lstSubfolders)
-#    for result in results :
-#        print (result)
-#    end_time = time.time() 
-#    print("Time for proccess : %ssecs" % (end_time - start_time))
-#    
-#    inPath2="/home/je/Bureau/Stage/Output/MOS_RESIZE/RAPIDEYE"
-#    lstNewfolders = [os.path.join(inPath2,folder) for folder in os.listdir(inPath2) if os.path.isdir(os.path.join(inPath2,folder))]
-#    
-#    def process_folder(folderName) :
-#        Mos_Resize(folderName,outPath,inShpFile,sensor)
-#        return folderName
-#    pool = Pool()
-#    
-#    start_time = time.time()
-#    results = pool.imap(process_folder, lstNewfolders)
-#    for result in results :
-#        print (result)
-#    end_time = time.time() 
-#    print("Time for proccess : %ssecs" % (end_time - start_time))
+    inPath="E:/Stage2018/Output/PLANETSCOPE"
+    outPath="E:/Stage2018/Output/PLANETSCOPE"
+    inShpFile="E:/Stage2018/Extent_Zone_Corr.shp"
+    sensor=0
+    
+    lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+    
+    NUM_WORKERS = 3
+
+    def work(folderName):
+        """
+        Thread Function
+        """
+        Mos_Resize (folderName, outPath, inShpFile, sensor)
+        return folderName
+    
+    start_time = time.time()
+    
+    # Submit the jobs to the thread pool executor.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
+    # Map the futures returned from executor.submit() to their destination windows.
+    # The _example.compute function modifies no Python objects and releases the GIL. It can execute concurrently.
+        futures = {executor.submit(work, folderName) for folderName in lstFolders}
+        concurrent.futures.wait(futures)
+        
+    end_time = time.time()
 #
 #    ################################### SENTINEL-2 ######################################
-#    
-#    inPath="/home/je/Bureau/Stage/Data/Brutes/S2/"
-#    outPath="/home/je/Bureau/Stage/Output/MOS_RESIZE/SENTINEL-2"
-#    inShpFile="/home/je/Bureau/Stage/Data/Process/Extent_Zone_Corr.shp"
-##    Resample_Resize_Stack_S2 (inPath, outPath, inShpFile)
-#    lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
-#    
-#    def process_folder(foldername) :
-#        Resample_Resize_Stack_S2 (foldername, outPath, inShpFile)
-#        return foldername
-#    
-#    pool = Pool()
-#    
-#    start_time = time.time()
-#    results = pool.imap(process_folder, lstFolders)
-#    for result in results :
-#        print (result)
-#    end_time = time.time() 
-#    print("Time for proccess : %ssecs" % (end_time - start_time))
-     
-     print ("end")
+    '''
+    inPath="E:/Stage2018/Brutes/S2"
+    outPath="E:/Stage2018/Output/SENTINEL-2"
+    inShpFile="E:/Stage2018/Extent_Zone_Corr.shp"
+
+    lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+        
+    import concurrent.futures
+    
+    NUM_WORKERS = 3
+
+    def work(folderName):
+        """
+        Thread Function
+        """
+        Resample_Resize_Stack_S2 (folderName, outPath, inShpFile)
+        return folderName
+    
+    start_time = time.time()
+    
+    # Submit the jobs to the thread pool executor.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
+    # Map the futures returned from executor.submit() to their destination windows.
+    # The _example.compute function modifies no Python objects and releases the GIL. It can execute concurrently.
+        futures = {executor.submit(work, folderName) for folderName in lstFolders}
+        concurrent.futures.wait(futures)
+        
+    end_time = time.time()        
+         
+    print("Time for proccess : %ssecs" % (end_time - start_time))
+    '''
+
