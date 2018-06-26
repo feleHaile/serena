@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Jun 16 17:06:31 2018
+
+@author: JE
+"""
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -21,7 +28,7 @@ from netCDF4 import Dataset
 import sys
 #from pprint import pprint
 
-def create_csv(outCSV, time, suffix, xsize, ysize, originX, originY, Proj, rGeoT, v_values) :
+def create_csv(outCSV, time, origin_time, xsize, ysize, originX, originY, Proj, rGeoT, v_values) :
     """
     Aggregate Parcels Mean Values and Write them in CSV
     
@@ -66,50 +73,55 @@ def create_csv(outCSV, time, suffix, xsize, ysize, originX, originY, Proj, rGeoT
 #        lstMean = []
         counter = 0
         for Date in time : 
-#            print (Date)
-            # Create in memory Raster for current date
-            dest = rmem_drv.Create('', xsize, ysize, 1, gdal.GDT_Float64) # 7 is Float_64 Gdal datatype
-            dest.SetGeoTransform(rGeoT)
-            dest.SetProjection(Proj.ExportToWkt())
-            dest.GetRasterBand(1).WriteArray(v_values[counter,:,:])
+            if (os.path.basename(outCSV).split('_')[2]=='original' and Date in origin_time) or (os.path.basename(outCSV).split('_')[2]=='hants' or os.path.basename(outCSV).split('_')[2]=='whittaker' or os.path.basename(outCSV).split('_')[2]=='savgol') :
+    #            print (Date)
+                # Create in memory Raster for current date
+                dest = rmem_drv.Create('', xsize, ysize, 1, gdal.GDT_Float64) # 7 is Float_64 Gdal datatype
+                dest.SetGeoTransform(rGeoT)
+                dest.SetProjection(Proj.ExportToWkt())
+                dest.GetRasterBand(1).WriteArray(v_values[counter,:,:])
+                dest.GetRasterBand(1).SetNoDataValue(np.nan)
+    
+                valuesArray = dest.ReadAsArray(xOffset,yOffset,col_nb,row_nb)
+                
+                # Create Raster in Memory for feature Rasterization
+                rfeat_ds = rmem_drv.Create('', col_nb, row_nb, 1, gdal.GDT_Byte)
+                rfeat_ds.SetGeoTransform(vGeoT)
+                rfeat_ds.SetProjection(Proj.ExportToWkt())
+                
+                # Create a temporary vector layer in memory containing current feature
+                vfeat_ds = vmem_drv.CreateDataSource('Out')
+                vfeat_layer = vfeat_ds.CreateLayer('Polygon', Proj, ogr.wkbPolygon)
+                vfeat_layer.CreateFeature(feature.Clone())
+                # Rasterize feature
+                gdal.RasterizeLayer(rfeat_ds, [1], vfeat_layer, burn_values=[1])
+                
+                # Now check raster feature pixel value to select valid extent pixels for Zonal Stats
+                    # Mask the source data array with our current feature
+                    # we take the logical_not to flip 0<->1 to get the correct mask effect
+                    # we also mask out nodata values explictly
+                rfeatArray = rfeat_ds.ReadAsArray()
+                nodata = np.nan
+                masked = np.ma.MaskedArray(valuesArray,mask=np.logical_or(valuesArray == nodata,np.logical_not(rfeatArray)))
+    #            print (masked)
+                
+                mean = masked.mean()
+                csvDict.setdefault(str(Date)+'Mean',[]).append(mean)
+                if np.isnan(mean) == False : 
+                    std = masked.std()
+                    csvDict.setdefault(str(Date)+'Std',[]).append(std)
+                else :
+                    csvDict.setdefault(str(Date)+'Std',[]).append(np.nan)
+                
+    #            masked.max()
+    #            masked.sum()
+    #            masked.count()
 
-            valuesArray = dest.ReadAsArray(xOffset,yOffset,col_nb,row_nb)
-            
-            # Create Raster in Memory for feature Rasterization
-            rfeat_ds = rmem_drv.Create('', col_nb, row_nb, 1, gdal.GDT_Byte)
-            rfeat_ds.SetGeoTransform(vGeoT)
-            rfeat_ds.SetProjection(Proj.ExportToWkt())
-            
-            # Create a temporary vector layer in memory containing current feature
-            vfeat_ds = vmem_drv.CreateDataSource('Out')
-            vfeat_layer = vfeat_ds.CreateLayer('Polygon', Proj, ogr.wkbPolygon)
-            vfeat_layer.CreateFeature(feature.Clone())
-            # Rasterize feature
-            gdal.RasterizeLayer(rfeat_ds, [1], vfeat_layer, burn_values=[1])
-            
-            # Now check raster feature pixel value to select valid extent pixels for Zonal Stats
-                # Mask the source data array with our current feature
-                # we take the logical_not to flip 0<->1 to get the correct mask effect
-                # we also mask out nodata values explictly
-            rfeatArray = rfeat_ds.ReadAsArray()
-            nodata = np.nan
-            masked = np.ma.MaskedArray(valuesArray,mask=np.logical_or(valuesArray == nodata,np.logical_not(rfeatArray)))
-#            print (masked)
-            
-            mean = masked.mean()
-            std = masked.std()
-#            masked.max()
-#            masked.sum()
-#            masked.count()
-            if np.isnan(mean) == False :
-                csvDict.setdefault(str(Date)+suffix%'Mean',[]).append(mean)
-                csvDict.setdefault(str(Date)+suffix%'Std',[]).append(std)
-    
-            rfeat_ds = None
-            vfeat_ds = None
-            
+                rfeat_ds = None
+                vfeat_ds = None
+                
             counter += 1
-    
+#    print (csvDict)
     # Create CSV with pandas from dict
     outdf = pd.DataFrame.from_dict(csvDict)
     outdf.to_csv(outCSV,index=False)
@@ -129,13 +141,14 @@ def aggregate (inFile, inVectorFile, variable) :
     # Read NetCDF File 
     # Extract some parameters for Zonal Stats
     ncds = Dataset(inFile)
-    viIndexName = os.path.basename(inFile).split('_')[0]
+    viIndexName = variable.split('_')[2]
     
     Y = ncds.variables['Y'][:]
     X = ncds.variables['X'][:]
     xsize = len(X)
     ysize = len(Y)
     time = [Date for Date in ncds.variables['time'][:]]
+    origin_time = ncds.variables['time_origin'][:]
 #    print (time)
     Proj = osr.SpatialReference()
     Proj.ImportFromEPSG(32628)
@@ -144,33 +157,21 @@ def aggregate (inFile, inVectorFile, variable) :
     originY = max(Y)-0.5*3.
     
     rGeoT = (originX,3.,0,originY,0,-3.)
-    
-#    lstVariables = [variable%viIndexName], 'original_PR_%s_values'%viIndexName, 'original_PRS_%s_values'%viIndexName,
-#                 'hants_P_%s_values'%viIndexName, 'hants_PR_%s_values'%viIndexName, 'hants_PRS_%s_values'%viIndexName]
-#                 ,'savgol_P_%s_values'%viIndexName, 'savgol_PR_%s_values'%viIndexName, 'savgol_PRS_%s_values'%viIndexName,
-#                 'whittaker_P_%s_values'%viIndexName, 'whittaker_PR_%s_values'%viIndexName, 'whittaker_PRS_%s_values'%viIndexName]
-    # CSV Header
-#    for variable in lstVariables :
-    if variable.startswith('original'):
-        suffix = '_O%s'
-#        time2 = [str(Date)+'_OMean' for Date in time]
-#        time2.insert(0,"ID")
-    else :
-        suffix = '_S%s'
-#        time2 = [str(Date)+'_SMean' for Date in time]
-#        time2.insert(0,"ID")
-#    print (time2)
      
     # Extract Original and Hants Values
-    variable_values = np.array(ncds.variables[variable%viIndexName][:])
+    variable_values = np.array(ncds.variables[variable][:])
     v_values = np.where(variable_values==-9999.,np.nan,variable_values)
     v_values = v_values / 10000
+    #outName
+    outFolder = os.path.join(os.path.dirname(inFile),str(viIndexName)+'_aggregate')
+    if not os.path.isdir(outFolder):
+        os.makedirs(outFolder)
     # CSV Name
-    outCSV = os.path.join(os.path.dirname(inFile),'Mean_%s_%s_%s.csv'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
-    create_csv(outCSV, time, suffix, xsize, ysize, originX, originY, Proj, rGeoT, v_values)
+    outCSV = os.path.join(outFolder,'agg_%s_%s_%s.csv'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
+    create_csv(outCSV, time, origin_time, xsize, ysize, originX, originY, Proj, rGeoT, v_values)
     
     # CSVt File for Attribute Join in GIS Software
-    outCSVt = os.path.join(os.path.dirname(inFile),'Mean_%s_%s_%s.csvt'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
+    outCSVt = os.path.join(outFolder,'agg_%s_%s_%s.csvt'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
     with open(outCSVt,'w') as csvt_file:
         csvt_file.write('"String",') 
         for i in range(len(time)-1) :
@@ -180,66 +181,22 @@ def aggregate (inFile, inVectorFile, variable) :
     # Close netCDF dataset
     ncds = None
 
-def mean_profile (hantsCSV, whitCSV) :
-    """
-    Compute mean value about Hants and Whittaker Smoother for each plot
-    """
-    outFile = os.path.basename(hantsCSV).split('_')[0]+'_'+os.path.basename(hantsCSV).split('_')[1]+'_SmoothAvg_'+os.path.basename(hantsCSV).split('_')[3]
-    #outFile = os.path.basename(hantsCSV).split('_')[0]+'_'+os.path.basename(hantsCSV).split('_')[1]+'_SmoothAvg_'+os.path.basename(whitCSV).split('_')[3]+'_'+os.path.basename(whitCSV).split('_')[4]
-    hants_df = pd.read_csv(hantsCSV)
-    whit_df = pd.read_csv(whitCSV)
-#    print (hants_values, whit_values)
-    df_concat = pd.concat((hants_df, whit_df))
-    by_row_index = df_concat.groupby(df_concat.index)
-    df_means = by_row_index.mean()
-    df_means['ID'] =  hants_df['ID'] # Create ID Column
-    df_means.to_csv(os.path.join(os.path.dirname(hantsCSV),outFile),index = False)
-    
-    # CSVt File for Attribute Join in GIS Software
-    outCSVt = os.path.join(os.path.dirname(hantsCSV),outFile+'t')
-    with open(outCSVt,'w') as csvt_file:
-        csvt_file.write('"String",') 
-        for i in range(len(hants_df.columns)-2) : # ID column are not considered
-            csvt_file.write('"Real",')
-        csvt_file.write('"Real"')
 
 if __name__=="__main__":
     
 # =============================================================================
-#     NDVI
+#     NDVI & MSAVI2
 # =============================================================================
     
-#    inFile = "/home/je/Bureau/Stage/Output/INDICES/NDVI/NDVI_TIME_SERIES.nc"
-#    inVectorFile = "/home/je/Bureau/Stage/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
-#
-##    variables = ["original_PRScor_%s_values","hants_PRScor_%s_values"]#,"whittaker_PRScor_%s_values"]#,"savgol_PRScor_%s_values"]
+    inFile = "D:/TIME_SERIES.nc"
+    inVectorFile = "F:/Gbodjo_2018/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOINCor.shp"
+    
+#    variables = ["original_PRScor_NDVI_values","original_PRS_NDVI_values","original_PRScor_MSAVI2_values","original_PRS_MSAVI2_values",
+#                 "hants_PRScor_NDVI_values","hants_PRS_NDVI_values","hants_PRScor_MSAVI2_values", "hants_PRS_MSAVI2_values",
+#                 "whittaker_PRScor_NDVI_values","whittaker_PRS_NDVI_values","whittaker_PRScor_MSAVI2_values", "whittaker_PRS_MSAVI2_values"]
 #    
-##    variable = "original_PRS_%s_values"
-#    variable = "original_PRScor_%s_values"
-#    aggregate (inFile, inVectorFile, variable)
+    variables = ["whittaker_PRScor_NDVI_values","whittaker_PRS_NDVI_values"]
     
-#    for variable in variables :
-#        print (variable%os.path.basename(inFile).split('_')[0])
-#        aggregate (inFile, inVectorFile, variable)
-        
-# =============================================================================
-#     MSAVI2
-# =============================================================================
-    
-    inFile = "/home/je/Bureau/Stage/Output/INDICES/MSAVI2/MSAVI2_TIME_SERIES.nc"
-    inVectorFile = "/home/je/Bureau/Stage/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
-    
-    variable = "original_PRS_%s_values"
-    aggregate (inFile, inVectorFile, variable)
-    
-#    variables = ["original_PRScor_%s_values","hants_PRScor_%s_values","whittaker_PRScor_%s_values","savgol_PRScor_%s_values"]
-#    for variable in variables :
-#        print (variable%os.path.basename(inFile).split('_')[0])
-#        aggregate (inFile, inVectorFile, variable)
-    
-# =============================================================================
-#     Mean Profile
-# =============================================================================
-#    hantsCSV = "D:/Stage/Output/INDICES/NDVI/Mean_NDVI_hants_PRScor.csv"
-#    whitCSV = "D:/Stage/Output/INDICES/NDVI/Mean_NDVI_whittaker_PRScor_iter.csv"
-#    mean_profile (hantsCSV, whitCSV)
+    for variable in variables :
+        print (variable)
+        aggregate (inFile, inVectorFile, variable)

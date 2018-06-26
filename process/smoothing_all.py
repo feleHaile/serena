@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Mon May 28 09:46:49 2018
-
 @author: je
-
 Create Time Series from VI Index in NetCDF4 Format
 And Smooth values by Hants, Savitzky-Golay and Whittaker-Henderson
 """
@@ -23,7 +20,7 @@ from scipy.signal import savgol_filter
 import scipy as sp
 from scipy import sparse, linalg
 
-def create_time_series (inPath, inVectorFile):
+def create_time_series (inFolder, inVectorFile):
     """
     - Function to create Vegetation Index Time Series in NetCDF4 Format 
     - 3 Time Series variables are created : PlanetScope - PlanetScope & RapidEye - PlanetScope, RapidEye & Sentinel-2
@@ -32,6 +29,12 @@ def create_time_series (inPath, inVectorFile):
     """
     # Dates for Sentinel-2A Images deleting
     S2_Dates = ["20171005","20171015","20171025"]
+    
+    # Index Folders
+    indexFolders = [os.path.join(inFolder,folder) for folder in os.listdir(inFolder) if os.path.isdir(os.path.join(inFolder,folder))]
+#    print (indexFolders)
+    
+    inPath = indexFolders[0]
      
     # Create Date List
     lstFiles = sorted(glob.glob(inPath+'/*.tif'))
@@ -40,10 +43,8 @@ def create_time_series (inPath, inVectorFile):
 #        print (File)
         dicFile.update({os.path.basename(File).split('_')[1]:os.path.basename(File).split('_')[2]})
 #    print (dicFile)
-    FileName = os.path.basename(lstFiles[0]).split('_')[0]+'_%s_%s_'+\
-               os.path.basename(lstFiles[0]).split('_')[3]+'_'+os.path.basename(lstFiles[0]).split('_')[4]
-#    print (FileName)
-    viIndexName = FileName.split('_')[0]
+    origin_time = list(dicFile.keys())
+               
     start = dt.date(int(os.path.basename(lstFiles[0]).split('_')[1][:4]),int(os.path.basename(lstFiles[0]).split('_')[1][4:6]),
                     int(os.path.basename(lstFiles[0]).split('_')[1][6:]))
     
@@ -82,18 +83,19 @@ def create_time_series (inPath, inVectorFile):
     # Create Time Series in netCDF4
     
     # Create netcdf file
-    outFile = os.path.join(inPath,viIndexName+'_TIME_SERIES.nc')
+    outFolder = os.path.join(os.path.dirname(inFolder),'TS')
+    if not os.path.isdir(outFolder):
+        os.makedirs(outFolder)
+    outFile = os.path.join(outFolder,'TIME_SERIES_2.nc')
     ncds = Dataset(outFile ,'w',format='NETCDF4')
 #    print (ncds)
     
     # Create Dimensions 
     print ('Creating Dimensions')
-#    level = ncds.createDimension("level",None)
     ncds.createDimension("time",len(lstDate))
     ncds.createDimension("X", len(lstX))
     ncds.createDimension("Y", len(lstY))
-#    ncds.createDimension("sensor",len(lstDate))#len(lstFiles))
-#    print (ncds.dimensions)
+    ncds.createDimension("time_origin", len(origin_time))
     
     # Create Variables
     print ('Create Variables')
@@ -113,24 +115,17 @@ def create_time_series (inPath, inVectorFile):
     time_var = ncds.createVariable('time', 'l', ('time'),fill_value=fill_val)
     time_var.standard_name = 'time'
     time_var.calendar = 'gregorian'
-
-    vi_var_P = ncds.createVariable('original_P_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    vi_var_P.long_name = 'PlanetScope %s Index values'%viIndexName
     
-    vi_var_PR = ncds.createVariable('original_PR_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    vi_var_PR.long_name = 'PlanetScope & RapidEye %s Index values'%viIndexName
+    time_origin_var = ncds.createVariable('time_origin', 'l', ('time_origin'),fill_value=fill_val)
+    time_origin_var.standard_name = 'Origin Times in Time Serie'
+    time_origin_var.calendar = 'gregorian'
     
-    vi_var_PRS = ncds.createVariable('original_PRS_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    vi_var_PRS.long_name = 'PlanetScope, RapidEye & Sentinel-2 %s Index values'%viIndexName
-    
-    vi_var_cor = ncds.createVariable('original_PRScor_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    vi_var_cor.long_name = 'PlanetScope, RapidEye & Sentinel-2 corrected (Outliers deleted) %s Index values'%viIndexName
-    
-    print ('Load Variables')
+    print ('Load General Variables')
     # Load data
     y_var[:] = lstY
     x_var[:] = lstX
     time_var[:] = lstDate
+    time_origin_var[:] = origin_time
         
     xOffset = int((ulx- originX) / cellsize)
     yOffset = int((uly - originY) / -cellsize)
@@ -139,42 +134,46 @@ def create_time_series (inPath, inVectorFile):
     empty_vec = np.empty((len(lstY),len(lstX)))
     empty_vec[:] = -9999.
     
-    i = 0
-    for Date in lstDate :
-        print (Date)
-        if (Date in dicFile) : # and dicFile[Date]!='S2')  : # Exclude Sentinel-2 Imagery         
-            File = os.path.join(inPath,FileName%(Date,dicFile[Date]))
-            print (File)
-            with rasterio.open(File,'r') as ds:
-                band = ds.read(1, window=((yOffset, yOffset+ysize),(xOffset, xOffset+xsize)))
-                array = band * 10000
-                array = np.where(array==np.nan,-9999.,array)
-    #            print (array)
-                vi_var_PRS [i,:,:] = array
-                print ("PRS")
-                if (dicFile[Date]!='S2') :
-                    vi_var_PR[i,:,:] = array
-                    print ("PR")
-                if (dicFile[Date]!='S2' and dicFile[Date]!='RapidEye'):
-                    vi_var_P[i,:,:] = array
-                    print ("P")
-                if (Date not in S2_Dates):
-                    vi_var_cor[i,:,:] =  array
-                    print ("PRScor")
+    for j in range (len(indexFolders)) : 
+        viIndexName = os.path.basename(indexFolders[j])
+        inPath = indexFolders[j]
+        lstFiles = sorted(glob.glob(inPath+'/*.tif'))
+        FileName = os.path.basename(lstFiles[0]).split('_')[0]+'_%s_%s_'+\
+           os.path.basename(lstFiles[0]).split('_')[3]+'_'+os.path.basename(lstFiles[0]).split('_')[4]
+#       print (FileName)
+    
+        vi_var_PRS = ncds.createVariable('original_PRS_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
+        vi_var_PRS.long_name = 'PlanetScope, RapidEye & Sentinel-2 %s Index values'%viIndexName
+        
+        vi_var_cor = ncds.createVariable('original_PRScor_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
+        vi_var_cor.long_name = 'PlanetScope, RapidEye & Sentinel-2 %s Index values excluding S2 20171005, 20171015, 20171025 times'%viIndexName
+        
+        print ('Load %s Variables'%viIndexName)
+        
+        i = 0
+        for Date in lstDate :
+            print (Date)
+            if (Date in dicFile) : # and dicFile[Date]!='S2')  : # Exclude Sentinel-2 Imagery         
+                File = os.path.join(inPath,FileName%(Date,dicFile[Date]))
+                print (File)
+                with rasterio.open(File,'r') as ds:
+                    band = ds.read(1, window=((yOffset, yOffset+ysize),(xOffset, xOffset+xsize)))
+                    array = band * 10000
+                    array[np.isnan(array)] = fill_val
+        #            print (array)
+                    vi_var_PRS [i,:,:] = array
+                    print ("PRS")
+                    if (Date not in S2_Dates):
+                        vi_var_cor[i,:,:] =  array
+                        print ("PRScor")
+                    i+=1
+            else :
+                vi_var_PRS [i,:,:] =  empty_vec
+                vi_var_cor[i,:,:] =  empty_vec
                 i+=1
-#                print (i)
-        else :
-            vi_var_PRS [i,:,:] =  empty_vec
-            vi_var_PR[i,:,:] =  empty_vec
-            vi_var_P[i,:,:] =  empty_vec
-            vi_var_cor[i,:,:] =  empty_vec
-            i+=1
-#            print (i)
 #            
     ncds.close()
-    
     print ('###### NetCDF file created ######')
-    
     return outFile
 
 # =============================================================================
@@ -185,7 +184,6 @@ def HANTS(ni, nb, nf, y, ts, HiLo, low, high, fet, dod, delta, fill_val):
     This function applies the Harmonic ANalysis of Time Series (HANTS)
     algorithm originally developed by the Netherlands Aerospace Centre (NLR)
     (http://www.nlr.org/space/earth-observation/).
-
     This python implementation was based on two previous implementations
     available at the following links:
     https://codereview.stackexchange.com/questions/71489/harmonic-analysis-of-time-series-applied-to-arrays
@@ -297,17 +295,17 @@ def smooth_hants (ncFile, variable, nb=365, nf=3, HiLo='Lo', low=-0.3, high=1, f
     """
     # Read netcdfs
     ncds = Dataset(ncFile, 'r+')
-    viIndexName = os.path.basename(ncFile).split('_')[0]
+    viIndexName = variable.split('_')[2]
     
     # Get Existing Values
     time_var = ncds.variables['time'][:]
-    original_values = ncds.variables[variable%viIndexName][:]
+    original_values = ncds.variables[variable][:]
     original = original_values/10000
     
     # Create HANTS variables
     hants_varName = 'hants_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
     hants_var = ncds.createVariable(hants_varName%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    hants_var.long_name = 'HANTS Smoothing on %s'%ncds.variables[variable%viIndexName].long_name
+    hants_var.long_name = 'HANTS Smoothing on %s'%ncds.variables[variable].long_name
 
     [ztime ,rows, cols] = original.shape
     size_st = cols*rows
@@ -326,7 +324,7 @@ def smooth_hants (ncFile, variable, nb=365, nf=3, HiLo='Lo', low=-0.3, high=1, f
     
         y = pd.np.array(original[:, m, n])
         y[pd.np.isnan(y)] = fill_val
-        [yr, outliers] = HANTS(ni, nb, nf, y, ts, HiLo,low, high, fet, dod, delta, fill_val)
+        [yr, outliers] = HANTS(ni, nb, nf, y, ts, HiLo, low, high, fet, dod, delta, fill_val)
         values_hants[:, m, n] = yr
 #        outliers_hants[:, m, n] = outliers
 
@@ -334,63 +332,6 @@ def smooth_hants (ncFile, variable, nb=365, nf=3, HiLo='Lo', low=-0.3, high=1, f
     
     values_hants = values_hants * 10000
     ncds.variables[hants_varName%viIndexName][:] = values_hants
-    # Close netcdf file
-    ncds.close()
-    
-# =============================================================================
-# Smoothing with Savitzky-Golay Filter
-# =============================================================================
-
-def smooth_savgol(ncFile, variable, window_size=91, order=2):
-    """
-    Smooth Time Series in NetCDF4 Format with Savitzky-Golay 
-    Savitzky-Golay parameters are :
-       windows_length : 
-       polyorder : 
-    """
-    # Read netcdfs
-    ncds = Dataset(ncFile, 'r+')
-    viIndexName = os.path.basename(ncFile).split('_')[0]
-    fill_val = -9999.
-    
-    # Get Existing Values
-    original_values = ncds.variables[variable%viIndexName][:]
-    original = original_values/10000
-    
-    # Create Savitzky-Golay Filter variables
-#    savgol_varName = 'savgol_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
-#    savgol_var = ncds.createVariable(savgol_varName%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-#    savgol_var.long_name = 'Savitzky-Golay Filter Smoothing on %s'%ncds.variables[variable%viIndexName].long_name
-    
-    # Filtering
-    [ztime ,rows, cols] = original.shape
-    size_st = cols*rows
-#    values_savgol = np.empty((ztime, rows, cols))
-#    values_savgol[:] = pd.np.nan
-    
-    counter = 1
-    print ('Running Savitzky-Golay Filter...')
-#    for m,n in product(range(rows),range(cols)): # rows cols 
-#        print ('\t{0}/{1}'.format(counter, size_st))
-        
-    #Review
-    y = pd.np.array(original[:, 926, 551]) # m, n
-    yn = np.where(y==-9999.,np.nan,y)
-    y_inter = pd.Series(yn).interpolate(method='linear')
-#        print (y_inter.values)
-    ys = savgol_filter(y_inter.values,window_size, order)
-#        
-    plt.figure()
-    plt.plot(original[:, 926, 551],'r.',label='Original') # m, n
-#        plt.plot(y_inter.values,'b-',label='Interpolate')
-    plt.plot(ys,'m-',label='Savitzky-Golay Scipy')
-#        plt.plot(ys2,'g-',label='Savitzky-Golay Function')
-    plt.legend()
-#        values_savgol[:, m, n] = yr
-#        counter += 1
-      
-#    values_savgol = values_savgol * 10000
-#    ncds.variables[savgol_varName%viIndexName][:] = values_savgol
     # Close netcdf file
     ncds.close()
 
@@ -437,17 +378,18 @@ def smooth_whittaker(ncFile, variable, lamb=5000, d=2):
     """
     # Read netcdfs
     ncds = Dataset(ncFile, 'r+')
-    viIndexName = os.path.basename(ncFile).split('_')[0]
+    viIndexName = variable.split('_')[2]
     fill_val = -9999.
     
     # Get Existing Values
-    original_values = ncds.variables[variable%viIndexName][:]
+    original_values = ncds.variables[variable][:]
     original = original_values/10000
     
     # Create Whittaker Smoother variables
+    """ à remettre"""
     whit_varName = 'whittaker_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
-    whit_var = ncds.createVariable(whit_varName%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-    whit_var.long_name = 'Whittaker Smoothing on %s'%ncds.variables[variable%viIndexName].long_name
+#    whit_var = ncds.createVariable(whit_varName%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
+#    whit_var.long_name = 'Whittaker Smoothing on %s'%ncds.variables[variable].long_name
     
     # Filtering 
     
@@ -462,102 +404,124 @@ def smooth_whittaker(ncFile, variable, lamb=5000, d=2):
         print ('\t{0}/{1}'.format(counter, size_st))
         
         y = pd.np.array(original[:, m, n])
+        ynan = np.where(y==-9999.,np.nan,y)
         w = np.where(y==-9999,0,1) # Negative Values to test : ok
         z = whitsmw (y, w, lamb, d)
-#        plt.figure()
-#        plt.plot(original[:, m, n],'r.',label='Original')
-#        plt.plot(z,'y-',label='Whittaker Smoother')
-#        plt.legend()
 
-        values_whit[:, m, n] = z
+        y_new = np.where(y<z,z,y)
+#        print (y_new)
+        
+        di = np.empty((y.shape))
+        dmax = 0
+        for i in range(y.shape[0]):
+            di[i] = np.abs(ynan[i] - z[i])
+            if di[i] > dmax:
+                dmax = di[i]
+#        print (di, dmax)
+        
+        W = np.where(y<z,1-(di/dmax),1)
+#        print (W)
+        
+        iteration = 1
+#        print ('iteration %s'%iteration)
+        Fk = Fkmin = 1000000.
+        ziter = np.copy(y_new)
+        while (Fk <= Fkmin) :
+            ziter = whitsmw (ziter, w, lamb=2500)
+            lst = []
+            for k in range(ziter.shape[0]):
+                lst.append(np.abs(ziter[k]-ynan[k])*W[k])
+            array = np.array(lst)
+            Fk = np.nansum(array)
+            if Fk < Fkmin :
+                Fkmin = Fk
+            else:
+                break
+            ziter = np.where(y<ziter,ziter,y)
+            iteration+=1
+
+        values_whit[:, m, n] = ziter
         counter += 1
 
     values_whit = values_whit * 10000
-    ncds.variables[whit_varName%viIndexName][:] = values_whit
+    ncds.variables[whit_varName%viIndexName][:] = values_whit #  à remettre
 
     # Close netcdf file
     ncds.close()
 
-def check_fit(ncFile, variable, point, lstMethods):
+# =============================================================================
+# Smoothing with Savitzky-Golay Filter
+# =============================================================================
+
+def smooth_savgol(ncFile, variable, Points, lstWindow_size, lstOrder):
     """
-    Function to check Smoothing results on given variable
-    Using Matplotlib in some pixels
+    Read Time Series variable in NetCDF4 Format and Smooth values with Savitzky-Golay 
+    Savitzky-Golay parameters are :
+       windows_length : Size of Filter Window (must be odd 2m+1 with m as window half-width 
+       polyorder : Order of Fit Polynomial Function
+    Save Smoothed Values for current Point and setted parameters in CSV File
     """
-    # Read NetCDF File
-    ncds = Dataset(ncFile,'r')
+    
+    # Read netcdfs
+    ncds = Dataset(ncFile, 'r')
     Y = ncds.variables['Y'][:]
     X = ncds.variables['X'][:]
+    times = ncds.variables['time'][:]
     
-    # Get x and y
-    x = point[0]
-    y = point[1]
+    viIndexName = variable.split('_')[2]
+    outFolder = os.path.join(os.path.dirname(ncFile),str(viIndexName)+'_aggregate')
+    if not os.path.isdir(outFolder):
+        os.makedirs(outFolder)
+    outCSV = os.path.join(outFolder,'pxl_%s_savgol_%s.csv'%(viIndexName,variable.split('_')[1]))
     
-    # Get row and col index closest to x, y in the netcdf file
-    y_closest = Y.flat[pd.np.abs(Y - y).argmin()]
-    x_closest = X.flat[pd.np.abs(X - x).argmin()]
-
-    row = pd.np.where(Y == y_closest)[0][0]
-    col = pd.np.where(X == x_closest)[0][0]
+    csvDict = {}
     
-    # Read values
-    viIndexName = os.path.basename(ncFile).split('_')[0]
-    # original
-    values_o = ncds.variables[variable%viIndexName][:,row,col]
-    values_o = values_o / 10000
-    
-    minval = []
-    maxval = []
-    # Hants
-    if 'hants' in lstMethods :
-        hants_varName = 'hants_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
-        values_h = ncds.variables[hants_varName%viIndexName][:,row,col]
-        values_h = values_h / 10000
-        minval.append(min(values_h))
-        maxval.append(max(values_h))
-    # Savitzky-Golay
-    if 'savgol' in lstMethods :
-        savgol_varName = 'savgol_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
-        values_s = ncds.variables[savgol_varName%viIndexName][:,row,col]
-        values_s = values_s / 10000
-        minval.append(min(values_s))
-        maxval.append(max(values_s))
-    # Whittaker
-    if 'whittaker' in lstMethods :
-        whit_varName = 'whittaker_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
-        values_w = ncds.variables[whit_varName%viIndexName][:,row,col]
-        values_w = values_w / 10000
-        minval.append(min(values_w))
-        maxval.append(max(values_w))
-    # Time
-    times = [pd.to_datetime(Date, format='%Y%m%d') for Date in ncds.variables['time'][:]]
-
-    # Figure 
-    plt.figure() 
-    
-    ylim = [min(minval)-0.1, max(maxval)+0.1]
-    
-    # Plot
-    if 'hants' in lstMethods :
-        plt.plot(times, values_h, 'r-', label='HANTS')
-    if 'savgol' in lstMethods :
-        plt.plot(times, values_s, 'g-', label='Savitzky-Golay Filter')
-    if 'whittaker' in lstMethods :
-        plt.plot(times, values_w, 'y-', label='Whittaker Smoother')
+    for point in Points:
+        # Get Row and Col number for Point
+        id_point = point[0]
+        x_point = point[1]
+        y_point = point[2]
         
-    plt.plot(times, values_o, 'b.', label='Original data')
+        # Get row and col index closest to x, y in the netcdf file
+        y_closest = Y.flat[pd.np.abs(Y - y_point).argmin()]
+        x_closest = X.flat[pd.np.abs(X - x_point).argmin()]
     
-    plt.ylim(ylim[0], ylim[1])
-    plt.legend(loc='best')
-    plt.xlabel('time')
-    plt.ylabel('values')
-    plt.gcf().autofmt_xdate()
-    plt.axes().set_title('Point: X {0:.2f}, Y {1:.2f} \n Var : {2}'.format(x,y, variable%viIndexName))
-    plt.axes().set_aspect(0.5*(times[-1] - times[0]).days/(ylim[1] - ylim[0]))
-    plt.show()
+        row = pd.np.where(Y == y_closest)[0][0]
+        col = pd.np.where(X == x_closest)[0][0]
+    
+        # Get Existing Values
+        original_values = ncds.variables[variable][:,row,col]
+        original = original_values/10000
+        
+        for order in lstOrder : 
+            for window_size in lstWindow_size:
+                # Filtering
+                y = pd.np.array(original) # m, n
+                yn = np.where(y==-9999.,np.nan,y)
+                y_inter = pd.Series(yn).interpolate(method='linear')
+                ys = savgol_filter(y_inter.values,window_size, order)
+                
+                for i in range(len(times)):
+                    
+                    csvDict.setdefault("Date",[]).append(times[i])
+                    csvDict.setdefault("Original",[]).append(yn[i])
+                    csvDict.setdefault("Interpolate",[]).append(y_inter[i])
+                    csvDict.setdefault("Savgol",[]).append(ys[i])
+                
+                
+                    csvDict.setdefault("window",[]).append(window_size)
+                    csvDict.setdefault("order",[]).append(order)
+                    csvDict.setdefault("Point_id",[]).append(id_point)
+                    csvDict.setdefault("Point_X",[]).append(x_point)
+                    csvDict.setdefault("Point_Y",[]).append(y_point)
+                    
+#    print (csvDict)
+    outdf = pd.DataFrame.from_dict(csvDict)
+    outdf.to_csv(outCSV,index=False)
 
     # Close netcdf file
     ncds.close()
-    
+
 
 if __name__=="__main__":
     
@@ -565,21 +529,31 @@ if __name__=="__main__":
 #     NDVI
 # =============================================================================
     
-    inPath = "D:/Stage/Output/INDICES/NDVI"
-    inVectorFile = "D:/Stage/Gbodjo_2018/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
+#    inFolder = "E:/Stage2018/Output/INDICES"
+#    inVectorFile = "E:/Stage2018/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
 
-#    ncFile = create_time_series(inPath,inVectorFile)
-    ncFile = 'D:/Stage/Output/INDICES/NDVI/NDVI_TIME_SERIES.nc'
+#    ncFile = create_time_series(inFolder,inVectorFile)
+    ncFile = 'D:/TIME_SERIES.nc'
+#    
+    lstVar = ["original_PRScor_NDVI_values","original_PRS_NDVI_values"]
+#              "original_PRScor_MSAVI2_values", "original_PRS_MSAVI2_values"]
+#    
+#    for variable in lstVar:
+#        print (variable)
+##        smooth_hants(ncFile, variable)
+#        smooth_whittaker(ncFile, variable)
     
-    variable = "original_PRScor_%s_values"
-#    smooth_hants(ncFile, variable)
-#    smooth_whittaker(ncFile, variable)
-    smooth_savgol(ncFile, variable)
+    Points = [(1,336142.1, 1602889.5), (2,335329, 1603060), (3,334582.4, 1600219.6), (4,334578.5,1600143.5), (5,336082.9,1603694.0), \
+          (6,336746.3,1603706.7), (7,336423.9,1603248.0), (8,336858.4,1603152.2), (9,337457.6,1603508.4), (10,337067.1,1603144.3)]
+
+    lstOrder = [2,3,4]
+    lstWindow_size = [9,11,13,15]
     
-    lstMethods = ['hants','whittaker','savgol']
-    
-    Points = [(336142.1, 1602889.5), (335329, 1603060), (334582.4, 1600219.6), (334578.5,1600143.5), (336082.9,1603694.0), \
-          (336746.3,1603706.7), (336423.9,1603248.0), (336858.4,1603152.2), (337457.6,1603508.4), (337067.1,1603144.3)]
-    
-#    for point in Points :
-#        check_fit(ncFile, variable, point, lstMethods)
+    for variable in lstVar:
+    #    print(variable,point,order,window_size)
+        smooth_savgol(ncFile, variable, Points, lstWindow_size, lstOrder)
+                    
+#    ncFile = "E:/Stage2018/Output/TS/TIME_SERIES_2.nc"
+#    variable = "original_PRS_NDVI_values"
+#    smooth_savgol(ncFile, variable, point=Points[0], window_size=11, order=4)
+

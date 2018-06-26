@@ -1,14 +1,11 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 11:18:16 2018
+Created on Thu Apr 12 15:52:19 2018
 
 @author: je
 
 Calcul d'indices spectraux à partir des images Planetscope, RapidEye et Sentinel-2 prétraitées 
-
 Ordre des bandes des imageries
-
 PlanetScope : 1-Blue 2-Green 3-Red 4-NIR
 RapidEye :    1-Blue 2-Green 3-Red 4-Red Edge 5-NIR
 Sentinel-2 :  1-Blue(B2) 2-Green(B3) 3-Red(B4) 4-Red Edge(B5) 5-Red Edge(B6) 6-Red Edge(B7) 7-NIR(B8) 8-Red EdgeB8A 
@@ -20,8 +17,8 @@ import rasterio
 import subprocess
 import os
 import numpy as np
-from pprint import pprint
-from multiprocessing import Pool
+#from pprint import pprint
+import concurrent.futures
 import time
 
 def compute_indices (inPath, outPath, lstIndex) :
@@ -189,30 +186,36 @@ def Resample_SaveGeoTiff (outFile1,outFile2,nodata) :
     
 if  __name__=='__main__':
     
-    inPath= "/home/je/Bureau/Stage/Output/MOS_RESIZE/SENTINEL-2"
-    outPath = "/home/je/Bureau/Stage/Output/INDICES"
-    lstIndex = ['NDVI','MSAVI2']
+    inPath= "E:/Stage2018/Output"
+    outPath = "E:/Stage2018/Output/INDICES"
+    lstIndex = ['MSAVI2']
     
-    lstFiles = [os.path.join(inPath,file) for file in os.listdir(inPath) if file.endswith(".tif")]
-#    lstFiles = ["/home/je/Bureau/Stage/Output/MOS_RESIZE/SENTINEL-2/S2_2017_07_27_RESAMPLE_RESIZE_STACK.tif",
-#                "/home/je/Bureau/Stage/Output/MOS_RESIZE/RAPIDEYE/RapidEye_2017_07_27_MOS_RESIZE.tif",
-#                "/home/je/Bureau/Stage/Output/MOS_RESIZE/PLANETSCOPE/Planet_2017_07_27_MOS_RESIZE.tif"]
+    lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+    lstFiles = []
+    
+    for folder in lstFolders :
+        lstFiles += [os.path.join(inPath,folder,file) for file in os.listdir(os.path.join(inPath,folder)) if file.endswith(".tif")]
 #    pprint (lstFiles)
-#    compute_indices (lstFiles[0], outPath, lstIndex)
-            
-    def process_file(fileName) :
+    
+    NUM_WORKERS = 3
+
+    def work(fileName):
+        """
+        Thread Function
+        """
         compute_indices (fileName, outPath, lstIndex)
         return fileName
     
-    pool = Pool()
-    
     start_time = time.time()
     
-    results = pool.imap(process_file, lstFiles)
+    # Submit the jobs to the thread pool executor.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
+    # Map the futures returned from executor.submit() to their destination windows.
+    # The _example.compute function modifies no Python objects and releases the GIL. It can execute concurrently.
+        futures = {executor.submit(work, fileName) for fileName in lstFiles}
+        concurrent.futures.wait(futures)
+        
+    end_time = time.time()        
+         
+    print("Time for proccess : %ssecs" % (end_time - start_time)) 
     
-    for result in results :
-        print (result)
-    
-    end_time = time.time() 
-    
-    pprint("Time for proccess : %ssecs" % (end_time - start_time))

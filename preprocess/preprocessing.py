@@ -377,7 +377,7 @@ def Resample_Resize_Stack_S2 (inPath, outPath, inShpFile, option="SRE"):
                     pixelHeight2 = geoT2[5]
                     
                     xOffset2 = int((ulx- originX2) / pixelWidth2)
-                    yOffset2 = int((uly - originY2) / pixelHeight2)
+                    yOffset2 = int((uly - originY2) / pixelHeight2) # valeur pixel negative
                     
                     xsize2 = int((lrx - ulx)/pixelWidth2)  # Raster xsize col
                     ysize2 = int((uly - lry)/pixelWidth2)  # Raster ysize lines
