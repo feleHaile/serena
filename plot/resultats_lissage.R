@@ -6,24 +6,24 @@ library(scales)
 
 # PRS Cor
 # NDVI
-ndvi <- read.csv("/media/je/JE3/to_plot/Plot_CSV/agg_NDVI_original_PRScor_toggplot.csv",colClasses = 
+ndvi <- read.csv("//media/je/JE3/R_plot/Plot_CSV/agg_NDVI_original_PRScor_toggplot.csv",colClasses = 
                    c("Date","character","character","character","character","Date","Date","double","double"))
 ndvi <- ndvi[complete.cases(ndvi), ]
 ndvi$CropSys[ndvi$CropSys=="Mixed"] <- "Mixte"
 ndvi$CropSys[ndvi$CropSys=="Pure"] <- "Pur"
 id <- unique(ndvi$ID)
 
-hants <- read.csv("/media/je/JE3/to_plot/Plot_CSV/agg_NDVI_hants_PRScor_toggplot.csv",colClasses = 
+hants <- read.csv("/media/je/JE3/R_plot/Plot_CSV/agg_NDVI_hants_PRScor_toggplot.csv",colClasses = 
                     c("Date","double","double","character"))
 hants <- hants[complete.cases(hants),]
 hants$Methode <- "HANTS"
 
-whit <- read.csv("/media/je/JE3/to_plot/Plot_CSV/agg_NDVI_whittaker_PRScor_toggplot.csv", colClasses = 
+whit <- read.csv("//media/je/JE3/R_plot/Plot_CSV/agg_NDVI_whittaker_PRScor_toggplot.csv", colClasses = 
                    c("Date","double","double","character"))
 whit <- whit[complete.cases(whit),]
 whit$Methode <- "Whittaker"
 
-pdf("/media/je/JE3/to_plot/Plot_PDF_PNG/Lissage_def.pdf", width = 8.98, height = 5.86, title = "Résultat Lissage")
+pdf("/media/je/JE3/R_plot/Plot_PDF_PNG/Lissage_def.pdf", width = 8.98, height = 5.86, title = "Résultat Lissage")
 
 foreach(i=1:length(id)) %do% {
   plot <- ndvi[which(ndvi$ID==id[i]),]
@@ -40,7 +40,7 @@ foreach(i=1:length(id)) %do% {
     scale_x_date(name="Date", breaks = date_breaks("2 months"),labels = date_format("%b"), limits = c(as.Date("2017-05-08"),as.Date("2017-11-19"))) +
     ylab("Valeur")
   
-  print (p) 
+  p
 }
 
 dev.off()
@@ -61,7 +61,7 @@ p <- ggplot(data=ndvi_subset, aes(x=Date, y=Avg)) + #geom_line(aes(color = Syste
   geom_vline(aes(xintercept = Recolte),  colour="grey29", size=1) + #darkorchid3
   #geom_ribbon(aes(ymin=Avg-Std,ymax=Avg+Std, fill=Systeme),alpha=0.2)+
   geom_line(data=lissdf, aes(color = Methode)) +
-  facet_wrap (~ ID, ncol = 3) + 
+  facet_wrap (~ ID, ncol = 3) + theme_bw()+
   #ggtitle("Moyenne parcellaire de NDVI et Ecart type") + theme(plot.title = element_text(hjust = 0.5)) +
   scale_x_date(name="Date", breaks = date_breaks("2 months"),labels = date_format("%b"), limits = c(as.Date("2017-05-08"),as.Date("2017-11-19"))) +
   ylab("Valeur") + 
@@ -77,24 +77,24 @@ ggsave("/home/je/Bureau/serena/report/materiels_methodes/lissage_prscor.png")
 # PRS
 # NDVI 
 
-ndvi <- read.csv("/media/je/JE3/to_plot/Plot_CSV/agg_NDVI_original_PRS_toggplot.csv",colClasses = 
+ndvi <- read.csv("/media/je/JE3/R_plot/Plot_CSV/agg_NDVI_original_PRS_toggplot.csv",colClasses = 
                    c("Date","character","character","character","character","Date","Date","double","double"))
 ndvi <- ndvi[complete.cases(ndvi), ]
 ndvi$CropSys[ndvi$CropSys=="Mixed"] <- "Mixte"
 ndvi$CropSys[ndvi$CropSys=="Pure"] <- "Pur"
 id <- unique(ndvi$ID)
 
-hants <- read.csv("/media/je/JE3/to_plot/Plot_CSV/agg_NDVI_hants_PRS_toggplot.csv",colClasses = 
+hants <- read.csv("/media/je/JE3/R_plot/Plot_CSV/agg_NDVI_hants_PRS_toggplot.csv",colClasses = 
                     c("Date","double","double","character"))
 hants <- hants[complete.cases(hants),]
 hants$Methode <- "HANTS"
 
-whit <- read.csv("/media/je/JE3/to_plot/Plot_CSV/agg_NDVI_whittaker_PRS_toggplot.csv", colClasses = 
+whit <- read.csv("/media/je/JE3/R_plot/Plot_CSV/agg_NDVI_whittaker_PRS_toggplot.csv", colClasses = 
                    c("Date","double","double","character"))
 whit <- whit[complete.cases(whit),]
 whit$Methode <- "Whittaker"
 
-pdf("/media/je/JE3/to_plot/Plot_PDF_PNG/Lissage_test2.pdf", width = 8.98, height = 5.86, title = "Résultat Lissage")
+pdf("/media/je/JE3/R_plot/Plot_PDF_PNG/Lissage_test2.pdf", width = 8.98, height = 5.86, title = "Résultat Lissage")
 
 foreach(i=1:length(id)) %do% {
   plot <- ndvi[which(ndvi$ID==id[i]),]
@@ -111,7 +111,7 @@ foreach(i=1:length(id)) %do% {
     scale_x_date(name="Date", breaks = date_breaks("2 months"),labels = date_format("%b"), limits = c(as.Date("2017-05-08"),as.Date("2017-11-19"))) +
     ylab("Valeur")
   
-  print (p) 
+  p
 }
 
 dev.off()
@@ -132,7 +132,7 @@ p <- ggplot(data=ndvi_subset, aes(x=Date, y=Avg)) + #geom_line(aes(color = Syste
   geom_vline(aes(xintercept = Recolte),  colour="grey29", size=1) + #darkorchid3
   #geom_ribbon(aes(ymin=Avg-Std,ymax=Avg+Std, fill=Systeme),alpha=0.2)+
   geom_line(data=lissdf, aes(color = Methode)) +
-  facet_wrap (~ ID, ncol = 3) + 
+  facet_wrap (~ ID, ncol = 3) + theme_bw() +
   #ggtitle("Moyenne parcellaire de NDVI et Ecart type") + theme(plot.title = element_text(hjust = 0.5)) +
   scale_x_date(name="Date", breaks = date_breaks("2 months"),labels = date_format("%b"), limits = c(as.Date("2017-05-08"),as.Date("2017-11-19"))) +
   ylab("Valeur") + 
