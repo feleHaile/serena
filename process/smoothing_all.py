@@ -15,7 +15,6 @@ from netCDF4 import Dataset
 from itertools import product
 from copy import deepcopy
 import math
-import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 import scipy as sp
 from scipy import sparse, linalg
@@ -386,10 +385,9 @@ def smooth_whittaker(ncFile, variable, lamb=5000, d=2):
     original = original_values/10000
     
     # Create Whittaker Smoother variables
-    """ à remettre"""
     whit_varName = 'whittaker_'+variable.split('_')[1]+'_%s_'+variable.split('_')[3]
-#    whit_var = ncds.createVariable(whit_varName%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
-#    whit_var.long_name = 'Whittaker Smoothing on %s'%ncds.variables[variable].long_name
+    whit_var = ncds.createVariable(whit_varName%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
+    whit_var.long_name = 'Whittaker Smoothing on %s'%ncds.variables[variable].long_name
     
     # Filtering 
     
