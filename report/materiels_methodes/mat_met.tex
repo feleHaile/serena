@@ -322,7 +322,7 @@ ont été rééchantillonnés à la résolution des indices PlanetScope (3m), ce
 
 \section{Lissage des séries temporelles}
 
-\`A présent que nous disposons d'une série temporelle uniforme de NDVI, nous pouvons les exploiter pour la suite de notre travail. Cependant, un autre traitement s'impose : le \emph{lissage} ou \emph{smoothing}. En effet, bien que des prétraitements soient effectués sur les images satellitaires : calibrations radiométriques et corrections atmosphériques entre autres, il subsiste du bruit qui affecte l'utilisation des séries temporelles d'images, impactant ainsi les futures analyses et pouvant donc fausser les interprétations données aux résultats obtenus \citep{Chen2004}. Ce bruit résiduel peut être lié à plusieurs facteurs notamment les conditions atmosphériques variables ou la présence de pixels nuageux indétectés et particulièrement dans notre cas à l'utilisation de données multi-capteurs. Les techniques de lissage font l'hypothèse que le bruit résiduel dans les images entraine des chutes soudaines dans le profil temporel des indices de végétation \citep{Bojanowski2009}. Ces valeurs peuvent être ainsi identifiées puis supprimées et des séries temporelles de meilleure qualité reconstruites.
+\`A présent que nous disposons d'une série temporelle uniforme de NDVI, nous pouvons l'exploiter pour la suite de notre travail. Cependant, un autre traitement s'impose : le \emph{lissage} ou \emph{smoothing}. En effet, bien que des prétraitements soient effectués sur les images satellitaires : calibrations radiométriques et corrections atmosphériques entre autres, il subsiste du bruit qui affecte l'utilisation des séries temporelles d'images, impactant ainsi les futures analyses et pouvant donc fausser les interprétations données aux résultats obtenus \citep{Chen2004}. Ce bruit résiduel peut être lié à plusieurs facteurs notamment les conditions atmosphériques variables ou la présence de pixels nuageux indétectés et particulièrement dans notre cas à l'utilisation de données multi-capteurs. Les techniques de lissage font l'hypothèse que le bruit résiduel dans les images entraine des chutes soudaines dans le profil temporel des indices de végétation \citep{Bojanowski2009}. Ces valeurs peuvent être ainsi identifiées puis supprimées et des séries temporelles de meilleure qualité reconstruites.
 \\L'une des techniques usuelles adoptée notamment par les fournisseurs d'indices de végétation périodique comme GIMMS-MODIS, SPOT Vegetation ou PROBA-V est le \acrshort{mvc} \citep{Holben1986}. Cette technique 
 consiste à créer des synthèses d'indices de végétation sur une période donnée, généralement une décade en considérant pour chaque pixel la plus grande valeur enrégistrée sur la période.
 D'autres techniques de lissage de séries temporelles d'indices de végétation ont été mises au point. Nous pouvons citer des méthodes par seuillage comme les algorithmes \acrshort{bise} \citep{Viovy1992} ou \acrshort{idr} \citep{Julien2010} qui utilisent un seuil pour contrôler le degré de lissage des séries reconstruites, des méthodes qui définissent un filtre pour lisser les données dans une fenêtre mobile comme le filtre de Savitzky-Golay \citep{Savitzky1964, Chen2004} ou le filtre à poids variable de \citet{Zhu2012} ou encore d'autres méthodes qui ajustent des fonctions mathématiques au profil saisonnier de la végétation telles que la fonction asymétrique gaussienne \citep{Jonsson2002}, les doubles fonctions logistiques \citep{Beck2006} et les méthodes basées sur l'analyse de Fourier comme \acrshort{hants} \citep{Verhoef1996, Roerink2000} et la transformée de Fourier rapide \citep{Menenti1993}. La méthode de lissage de Whittaker \citep{Eilers2003,Atzberger2011} et la transformation en ondelettes \citep{Lu2007} sont également d'autres approches existantes.
@@ -463,6 +463,57 @@ Remarquons que cette procédure d'ajustement n'a pas eu d'effet notable sur la r
 
 Sur les quelques profils reconstruits présentés, nous constatons plus de similitudes entre les 2 méthodes de lissage sur la série temporelle rectifiée que la série temporelle comprenant les valeurs Sentinel-2 aberrantes. Sur les profils de cette dernière, nous remarquons également que les valeurs Sentinel-2 ont tendance à rapprocher le maximum de NDVI de la date de récolte ou fin de saison. Globalement, la série rectifiée donne des résultats plus cohérents que la série complète et les profils reconstruits par les 2 méthodes sont semblables. Nous avons donc retenu pour l'extraction des métriques phénologiques, les profils temporels de NDVI obtenus en lissant la série temporelle rectifiée par l'algorithme HANTS et la méthode de Whittaker.
 
-\section{Extraction des Métriques Phénologiques}
+\section{Extraction des métriques phénologiques}
+L'extraction des métriques phénologiques et plus précisement des dates du démarrage de croissance de la végétation ou SOS nous permettra d'atteindre le premier objectif de notre travail, qui pour mémoire est l'estimation des dates de semis. Parmi les méthodes repertoriées dans notre état de l'art (cf. \Cref{methodes-metriques}), nous avons opté pour l'approche par seuillage basée sur les ratios de NDVI \citep{White1997}. C'est une méthode simple, facile à mettre en \oe uvre et intéressante. En effet, contrairement aux méthodes par seuillage absolu, le seuillage effectué à partir des ratios de NDVI est relatif à l'amplitude des valeurs : 
+\begin{align}
+ NDVI_{ratio}(t) = \frac{NDVI(t) - NDVI_{min}}{NDVI_{max}-NDVI_{min}} %\label{eq-NDVIratio}
+\end{align}
+où $NDVI(t)$ est la valeur de l'indice spectral $NDVI$ à un instant t du profil temporel de la végétation, $NDVI_{min}$ la valeur minimale du profil temporel, $NDVI_{max}$ la valeur maximale du profil et $NDVI_{ratio}(t)$ la valeur de l'indice spectral transformée. 
+\\La transformation des valeurs de NDVI en ratio permet dès lors de déterminer les seuils des transitions phénologiques indépendamment du type de couvert ou de la localisation du site d'étude. Le ratio de NDVI varie entre $0$ et $1$. Avec cette approche, le SOS est identifié comme la date où le ratio de NDVI atteint un seuil fixé (généralement 20\%) pendant la phase ascendante du profil temporel de la végétation. La date de fin de saison ou EOS est déterminée similairement généralement avec un seuil de 80\% pendant la phase descendante du profil temporel.
+\\Nous avons extrait différentes métriques pour chacun des 2 profils temporels de NDVI retenus après le lissage :
+\begin{itemize}
+ \item le démarrage de la saison (SOS)
+ \item la fin de saison (EOS)
+ \item la durée de la saison (LOS)
+ \item la valeur maximale du NDVI (MAX)
+ \item l'amplitude du NDVI (AMPL)
+ \item le cumul des valeurs de NDVI du SOS à la date du MAX ($CUM_{SOS-MAX}$)
+ \item le cumul des valeurs de NDVI du SOS au EOS ($CUM_{SOS-EOS}$)
+ \item le taux de croissance de la végétation entre le SOS et le MAX ($RATE_{SOS-MAX}$)
+ \item le taux de décroissance de la végétation entre le MAX et le EOS ($RATE_{MAX-EOS}$)
+\end{itemize}
+La détermination du SOS et du EOS est essentielle pour calculer les autres métriques excepté MAX et AMPL. Nous avons ainsi testé différents seuils (10, 20, 30 et 50\% pour le SOS; 50, 60, 70 et 80\% pour le EOS)
 
-\section{Estimation des Rendements}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Estimation des rendements}
