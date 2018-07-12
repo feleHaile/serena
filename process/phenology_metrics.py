@@ -41,7 +41,8 @@ def extract_metrics_plots (inVector, inCSV, outPath):
     
     for i in range(len(join_df['ID'])): 
 #        print (join_df.ID[i]) # ID
-        
+        SystCult = str(join_df.CropSyst[i]+' '+join_df.Crop_1[i])
+#        print (SystCult)
         lstValues= [] # List to append values
         
         # Append each date value to list
@@ -50,106 +51,111 @@ def extract_metrics_plots (inVector, inCSV, outPath):
             lstValues.append(join_df[date][i])
         
         # Create Dataframe to extract metrics for current plot
-        plot_df = pd.DataFrame({"Date":times,"Values":lstValues})
+        plot_df = pd.DataFrame({"Date":times,"Value":lstValues})
 #        print (plot_df["Date"][1].strftime('%Y%m%d'))
         
-# =============================================================================
-#         First Method : NDVI Ratio (NDVI - NDVImin) / (NDVImax - NDVImin)
-# =============================================================================
+    # =============================================================================
+    #         First Method : NDVI Ratio (NDVI - NDVImin) / (NDVImax - NDVImin)
+    # =============================================================================
         
-        ndvi_min = plot_df.Values.min()
-        ndvi_max = plot_df.Values.max()
+        ndvi_min = plot_df.Value.min()
+        ndvi_max = plot_df.Value.max()
 #        print (ndvi_min, ndvi_max)
         
-        # Get SOS
-        # 10%
-        for k in range(len(times)):
-            ratio_sos = (plot_df.Values[k] - ndvi_min)/(ndvi_max-ndvi_min)
-#            print (ratio)
-            if (ratio_sos >= 0.1):
-                break
-        SOS_10 = plot_df["Date"][k].strftime('%Y%m%d')
-#        print (ratio, plot_df["Date"][k].strftime('%Y%m%d'))
+        # Get SOS (10% for Pure and Mixed Millet Plots, 20% for Mixed Groundnut)
+        # Get EOS (80% for Pure and Mixed Millet and 50% for Mixed Groundnut)
         
-        # 20%
-        for k in range(len(times)):
-            ratio_sos = (plot_df.Values[k] - ndvi_min)/(ndvi_max-ndvi_min)
-#            print (ratio)
-            if (ratio_sos >= 0.2):
-                break
-        SOS_20 = plot_df["Date"][k].strftime('%Y%m%d')
-        
-        # 30%
-        for k in range(len(times)):
-            ratio_sos = (plot_df.Values[k] - ndvi_min)/(ndvi_max-ndvi_min)
-#            print (ratio)
-            if (ratio_sos >= 0.3):
-                break
-        SOS_30 = plot_df["Date"][k].strftime('%Y%m%d')
+        if (SystCult == "Pure Millet" or SystCult == "Mixed Millet") : 
             
-        # 50%
-        for k in range(len(times)):
-            ratio_sos = (plot_df.Values[k] - ndvi_min)/(ndvi_max-ndvi_min)
-#            print (ratio)
-            if (ratio_sos >= 0.5):
-                break
-        SOS_50 = plot_df["Date"][k].strftime('%Y%m%d')
+            for k in range(len(times)):
+                ratio_sos = (plot_df.Value[k] - ndvi_min)/(ndvi_max-ndvi_min)
+                if (ratio_sos >= 0.1):
+                    break
+            SOS = int(plot_df["Date"][k].strftime('%j'))
+            SOS_index = k
+#            plot_df["Date"][k].strftime('%Y%m%d')
+#            print (ratio, plot_df["Date"][k].strftime('%Y%m%d'))
+            
+            for k in range(len(times)):
+                ratio_eos = (plot_df.Value[len(times)-(k+1)] - ndvi_min)/(ndvi_max-ndvi_min)
+                if (ratio_eos >= 0.8):
+                    break
+            EOS = int(plot_df["Date"][len(times)-(k+1)].strftime('%j'))
+            EOS_index = len(times)-(k+1)
+            
+            
+        elif SystCult == "Mixed Groundnut" :
+            for k in range(len(times)):
+                ratio_sos = (plot_df.Value[k] - ndvi_min)/(ndvi_max-ndvi_min)
+                if (ratio_sos >= 0.2):
+                    break
+            SOS = int(plot_df["Date"][k].strftime('%j'))
+            SOS_index = k
+            
+            for k in range(len(times)):
+                ratio_eos = (plot_df.Value[len(times)-(k+1)] - ndvi_min)/(ndvi_max-ndvi_min)
+                if (ratio_eos >= 0.5):
+                    break
+            EOS = int(plot_df["Date"][len(times)-(k+1)].strftime('%j'))
+            EOS_index = len(times)-(k+1)
         
+        # Get LOS
+        LOS = EOS - SOS
         
-        # Get EOS
-        # 50%
-        for k in range(len(times)):
-            ratio_eos = (plot_df.Values[len(times)-(k+1)] - ndvi_min)/(ndvi_max-ndvi_min)
-#            print (ratio)
-            if (ratio_eos >= 0.5):
-                break
-#        print (ratio, plot_df["Date"][k].strftime('%Y%m%d'))
-        EOS_50 = plot_df["Date"][len(times)-(k+1)].strftime('%Y%m%d')
+        # Get AMPL
+        AMPL = ndvi_max - ndvi_min
         
-        # 60%
-        for k in range(len(times)):
-            ratio_eos = (plot_df.Values[len(times)-(k+1)] - ndvi_min)/(ndvi_max-ndvi_min)
-#            print (ratio)
-            if (ratio_eos >= 0.6):
-                break
-        EOS_60 = plot_df["Date"][len(times)-(k+1)].strftime('%Y%m%d')
+        # Integrated values from SOS to EOS
+        CUM_SOS_EOS = 0
+        for m in range(SOS_index,EOS_index+1) :
+            CUM_SOS_EOS += plot_df["Value"][m]
+            
+        # Integrated values from SOS to MAX
+        MAX_index = plot_df.loc[plot_df["Value"]==ndvi_max].index[0]
+        CUM_SOS_MAX = 0
+        for m in range(SOS_index,MAX_index+1) :
+            CUM_SOS_MAX += plot_df["Value"][m]
         
-        # 70%
-        for k in range(len(times)):
-            ratio_eos = (plot_df.Values[len(times)-(k+1)] - ndvi_min)/(ndvi_max-ndvi_min)
-#            print (ratio)
-            if (ratio_eos >= 0.7):
-                break
-        EOS_70 = plot_df["Date"][len(times)-(k+1)].strftime('%Y%m%d')
+        # RATE_SOS_MAX Value
+        RATE_SOS_MAX = 100 * (ndvi_max - plot_df["Value"][SOS_index]) / plot_df["Value"][SOS_index]
         
-        # 80%
-        for k in range(len(times)):
-            ratio_eos = (plot_df.Values[len(times)-(k+1)] - ndvi_min)/(ndvi_max-ndvi_min)
-#            print (ratio)
-            if (ratio_eos >= 0.8):
-                break
-        EOS_80 = plot_df["Date"][len(times)-(k+1)].strftime('%Y%m%d')
+        # RATE_MAX_EOS Value
+        RATE_MAX_EOS = 100 * (plot_df["Value"][EOS_index] - ndvi_max) / ndvi_max
         
-#        print (join_df.ID[i], SOS, join_df.DateSemi[i], EOS, join_df.DateReco[i])
-        
+#        print (SOS, EOS, LOS, ndvi_max, AMPL, CUM_SOS_EOS, RATE_SOS_MAX, RATE_MAX_EOS)
+   
         # Add to outDict
         outDict.setdefault('ID',[]).append(join_df.ID[i])
-        outDict.setdefault('SOS_10',[]).append(SOS_10)
-        outDict.setdefault('SOS_20',[]).append(SOS_20)
-        outDict.setdefault('SOS_30',[]).append(SOS_30)
-        outDict.setdefault('SOS_50',[]).append(SOS_50)
+        # Integrated Values from SOS to 100 days after SOS for every 5 days 
+        for m in range (20): # 0 à 100/5 avec un pas de 5
+            CUM = 0
+            for n in range (5*m,5*m+5):
+                CUM += plot_df["Value"][SOS_index+n]
+            outDict.setdefault('CUM_%s_%s'%(str(5*m),str(5*m+5)),[]).append(CUM)
         
-        outDict.setdefault('EOS_50',[]).append(EOS_50)
-        outDict.setdefault('EOS_60',[]).append(EOS_60)
-        outDict.setdefault('EOS_70',[]).append(EOS_70)
-        outDict.setdefault('EOS_80',[]).append(EOS_80)
-
-        outDict.setdefault('Semi',[]).append(join_df.DateSemi[i])
-        outDict.setdefault('Recolte',[]).append(join_df.DateReco[i])
-        outDict.setdefault('Projet',[]).append(join_df.Projet[i])
-        outDict.setdefault('SystCult',[]).append(join_df.CropSyst[i]+'_'+join_df.Crop_1[i])
-    
-    outName = 'metrics_'+os.path.basename(inCSV).split('_',1)[1]
+        outDict.setdefault('SOS',[]).append(SOS)
+        outDict.setdefault('EOS',[]).append(SOS)
+        outDict.setdefault('LOS',[]).append(LOS)
+        outDict.setdefault('MAX',[]).append(ndvi_max)
+        outDict.setdefault('AMPL',[]).append(AMPL)
+        outDict.setdefault('CUM_SOS_EOS',[]).append(CUM_SOS_EOS)
+        outDict.setdefault('CUM_SOS_MAX',[]).append(CUM_SOS_MAX)
+        outDict.setdefault('RATE_SOS_MAX',[]).append(RATE_SOS_MAX)
+        outDict.setdefault('RATE_MAX_EOS',[]).append(RATE_MAX_EOS)
+        
+#        outDict.setdefault('FieldType',[]).append(join_df.FieldType[i])
+#        outDict.setdefault('Projet',[]).append(join_df.Projet[i])
+#        outDict.setdefault('SystCult',[]).append(SystCult)
+#        if not (join_df.Crop_2[i] is None or join_df.Crop_3[i] is None):
+#            outDict.setdefault('MixedCrops',[]).append(str(join_df.Crop_2[i]+' '+join_df.Crop_3[i]))
+#        else : 
+#            outDict.setdefault('MixedCrops',[]).append(join_df.Crop_2[i])
+#
+#        outDict.setdefault('Nb_Tree',[]).append(join_df.Projet[i])
+#        outDict.setdefault('Yield',[]).append(float(join_df.Rdt[i]))
+#        outDict.setdefault('Biomass',[]).append(float(join_df.Biom[i]))
+   
+    outName = 'METRICS_'+os.path.basename(inCSV).split('_',1)[1]
     outCSV = os.path.join(outPath,outName)
     outdf = pd.DataFrame.from_dict(outDict)
     outdf.to_csv(outCSV,index=False)
@@ -175,7 +181,7 @@ def extract_metrics_pixels(ncFile,variable,outPath):
     variable_values = ncds.variables[variable][:]
     variable_values = variable_values/10000
 #    print (time)
-    [ztime ,rows, cols] = variable_values.shape
+    rows, cols = variable_values.shape[1],variable_values.shape[2]
     size_st = cols*rows
     
     SOS_values = np.empty((4, rows, cols),dtype=np.uint16) # 10,20,30,50
@@ -285,18 +291,19 @@ def extract_metrics_pixels(ncFile,variable,outPath):
   
 if  __name__=='__main__':
     
-    inVector = "D:/Stage/TS/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOINCor.geojson"
-    inCSV = "D:/Stage/TS/NDVI_aggregate/agg_NDVI_whittaker_PRScor.csv"
+    inVector = "/home/je/Bureau/Stage/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOINCor.geojson"
+    inCSV = "/home/je/Bureau/Stage/Output/TS/NDVI_aggregate/agg_NDVI_whittaker_PRScor.csv"
+    outPath = "/home/je/Bureau/Stage/Output/METRICS"
+
+    extract_metrics_plots (inVector,inCSV,outPath)
     
-    lstCSV = ["D:/Stage/TS/NDVI_aggregate/agg_NDVI_hants_PRScor.csv","D:/Stage/TS/NDVI_aggregate/agg_NDVI_whittaker_PRScor.csv",
-              "D:/Stage/TS/NDVI_aggregate/agg_NDVI_hants_PRS.csv","D:/Stage/TS/NDVI_aggregate/agg_NDVI_whittaker_PRS.csv"]
-    
-    outPath = "D:/Stage/Metrics"
+    # lstCSV = ["D:/Stage/TS/NDVI_aggregate/agg_NDVI_hants_PRScor.csv","D:/Stage/TS/NDVI_aggregate/agg_NDVI_whittaker_PRScor.csv",
+    #           "D:/Stage/TS/NDVI_aggregate/agg_NDVI_hants_PRS.csv","D:/Stage/TS/NDVI_aggregate/agg_NDVI_whittaker_PRS.csv"]
     
 #    for inCSV in lstCSV :
 #        extract_metrics_plots (inVector,inCSV,outPath)
 
-    ncFile = "D:/Stage/TS/TIME_SERIES.nc"
-    lstVariables = ["hants_PRScor_NDVI_values","whittaker_PRScor_NDVI_values"]
-#    for variable in lstVariables :
+#     ncFile = "D:/Stage/TS/TIME_SERIES.nc"
+#     lstVariables = ["hants_PRScor_NDVI_values","whittaker_PRScor_NDVI_values"]
+#     for variable in lstVariables :
 #        extract_metrics_pixels(ncFile,variable,outPath)
