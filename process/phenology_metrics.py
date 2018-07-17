@@ -39,7 +39,7 @@ def extract_metrics_plots (inVector, inCSV, outPath):
     # For each plot, get Mean values from 20170508 to 20171119
     outDict = {}
     
-    for i in range(len(join_df['ID'])): 
+    for i in range(len(join_df)): 
 #        print (join_df.ID[i]) # ID
         SystCult = str(join_df.CropSyst[i]+' '+join_df.Crop_1[i])
 #        print (SystCult)
@@ -126,15 +126,36 @@ def extract_metrics_plots (inVector, inCSV, outPath):
    
         # Add to outDict
         outDict.setdefault('ID',[]).append(join_df.ID[i])
-        # Integrated Values from SOS to 100 days after SOS for every 5 days 
+        # Integrated Values from SOS to 100 days after SOS every 
+        # 5 days 
         for m in range (20): # 0 à 100/5 avec un pas de 5
-            CUM = 0
+            CUM_5 = 0
             for n in range (5*m,5*m+5):
-                CUM += plot_df["Value"][SOS_index+n]
-            outDict.setdefault('CUM_%s_%s'%(str(5*m),str(5*m+5)),[]).append(CUM)
+                CUM_5 += plot_df["Value"][SOS_index+n]
+            outDict.setdefault('CUM_%s_%s'%(str(5*m),str(5*m+5)),[]).append(CUM_5)
+        # 10 days
+        for m in range (10): # 0 à 100/10 avec un pas de 10
+            CUM_10 = 0
+            for n in range (10*m,10*m+10):
+                CUM_10 += plot_df["Value"][SOS_index+n]
+            outDict.setdefault('CUM_%s_%s'%(str(10*m),str(10*m+10)),[]).append(CUM_10)
+        # 15 days
+        for m in range (6): # 0 à partie entière de 100/15 avec un pas de 15 
+            CUM_15 = 0
+            for n in range (15*m,15*m+15):
+                CUM_15 += plot_df["Value"][SOS_index+n]
+            outDict.setdefault('CUM_%s_%s'%(str(15*m),str(15*m+15)),[]).append(CUM_15)
         
+        # Integrated Values from SOS to 100 days after SOS with 
+        # 5 days Step 
+        for m in range (3,20): # 0 à 100/5 avec un pas de 5
+            CUM_5s = 0
+            for n in range (5*m+5):
+                CUM_5s += plot_df["Value"][SOS_index+n]
+            outDict.setdefault('CUM_0_%s'%str(5*m+5),[]).append(CUM_5s)
+                
         outDict.setdefault('SOS',[]).append(SOS)
-        outDict.setdefault('EOS',[]).append(SOS)
+        outDict.setdefault('EOS',[]).append(EOS)
         outDict.setdefault('LOS',[]).append(LOS)
         outDict.setdefault('MAX',[]).append(ndvi_max)
         outDict.setdefault('AMPL',[]).append(AMPL)
@@ -142,18 +163,6 @@ def extract_metrics_plots (inVector, inCSV, outPath):
         outDict.setdefault('CUM_SOS_MAX',[]).append(CUM_SOS_MAX)
         outDict.setdefault('RATE_SOS_MAX',[]).append(RATE_SOS_MAX)
         outDict.setdefault('RATE_MAX_EOS',[]).append(RATE_MAX_EOS)
-        
-#        outDict.setdefault('FieldType',[]).append(join_df.FieldType[i])
-#        outDict.setdefault('Projet',[]).append(join_df.Projet[i])
-#        outDict.setdefault('SystCult',[]).append(SystCult)
-#        if not (join_df.Crop_2[i] is None or join_df.Crop_3[i] is None):
-#            outDict.setdefault('MixedCrops',[]).append(str(join_df.Crop_2[i]+' '+join_df.Crop_3[i]))
-#        else : 
-#            outDict.setdefault('MixedCrops',[]).append(join_df.Crop_2[i])
-#
-#        outDict.setdefault('Nb_Tree',[]).append(join_df.Projet[i])
-#        outDict.setdefault('Yield',[]).append(float(join_df.Rdt[i]))
-#        outDict.setdefault('Biomass',[]).append(float(join_df.Biom[i]))
    
     outName = 'METRICS_'+os.path.basename(inCSV).split('_',1)[1]
     outCSV = os.path.join(outPath,outName)
