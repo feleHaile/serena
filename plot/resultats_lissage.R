@@ -6,7 +6,7 @@ library(scales)
 
 # PRS Cor
 # NDVI
-ndvi <- read.csv("//media/je/JE3/R_plot/Plot_CSV/agg_NDVI_original_PRScor_toggplot.csv",colClasses = 
+ndvi <- read.csv("/media/je/JE3/R_plot/Plot_CSV/agg_NDVI_original_PRScor_toggplot.csv",colClasses = 
                    c("Date","character","character","character","character","Date","Date","double","double"))
 ndvi <- ndvi[complete.cases(ndvi), ]
 ndvi$CropSys[ndvi$CropSys=="Mixed"] <- "Mixte"

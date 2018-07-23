@@ -26,9 +26,10 @@ import os
 import numpy as np
 from netCDF4 import Dataset
 import sys
+from itertools import product
 #from pprint import pprint
 
-def create_csv(outCSV, time, origin_time, xsize, ysize, originX, originY, Proj, rGeoT, v_values) :
+def create_csv(outCSV, time, origin_time, xsize, ysize, originX, originY, Proj, rGeoT, v_values, ovalues_20170618) :
     """
     Aggregate Parcels Mean Values and Write them in CSV
     
@@ -70,7 +71,34 @@ def create_csv(outCSV, time, origin_time, xsize, ysize, originX, originY, Proj, 
         col_nb = int((lrx - ulx)/cellsize) # Raster xsize col
         row_nb = int((uly - lry)/cellsize)  # Raster ysize lines
         
-#        lstMean = []
+        # Mask Tree Value
+        # Create in memory Raster for date 18-06-2017
+        
+        dest = rmem_drv.Create('', xsize, ysize, 1, gdal.GDT_Float64) # 7 is Float_64 Gdal datatype
+        dest.SetGeoTransform(rGeoT)
+        dest.SetProjection(Proj.ExportToWkt())
+        dest.GetRasterBand(1).WriteArray(ovalues_20170618)
+        dest.GetRasterBand(1).SetNoDataValue(np.nan)
+        
+        plot_array = dest.GetRasterBand(1).ReadAsArray(xOffset,yOffset,col_nb,row_nb)
+        #print (plot_array)
+        # print(plot_array.shape)
+        lst = []
+        for m,n in product(range(row_nb),range(col_nb)):
+            lst.append(plot_array[m,n])
+        tree_mask_value = pd.Series(lst).quantile(.95)
+        # print ("Feature_%s_ID_%s.tif"%(i,feature.GetField('ID')), tree_mask_value)
+
+        tree_mask_array = np.ones((row_nb,col_nb),dtype=int)
+        tree_mask_array = np.where(plot_array>=tree_mask_value,0,tree_mask_array)
+        dest = None
+        # print (tree_mask_array)
+#        driver = gdal.GetDriverByName("GTiff")
+#        ds = driver.Create("/home/je/Bureau/Stage/Output/MASK_TREE/Feature_%s_ID_%s.tif"%(i,feature.GetField('ID')), col_nb, row_nb, 1, gdal.GDT_Byte) # 7 is Float_64 Gdal datatype
+#        ds.SetGeoTransform(vGeoT)
+#        ds.SetProjection(Proj.ExportToWkt())
+#        ds.GetRasterBand(1).WriteArray(tree_mask_array)
+        
         counter = 0
         for Date in time : 
             if (os.path.basename(outCSV).split('_')[2]=='original' and Date in origin_time) or (os.path.basename(outCSV).split('_')[2]=='hants' or os.path.basename(outCSV).split('_')[2]=='whittaker' or os.path.basename(outCSV).split('_')[2]=='savgol') :
@@ -102,7 +130,7 @@ def create_csv(outCSV, time, origin_time, xsize, ysize, originX, originY, Proj, 
                     # we also mask out nodata values explictly
                 rfeatArray = rfeat_ds.ReadAsArray()
                 nodata = np.nan
-                masked = np.ma.MaskedArray(valuesArray,mask=np.logical_or(valuesArray == nodata,np.logical_not(rfeatArray)))
+                masked = np.ma.MaskedArray(valuesArray,mask=np.logical_or(valuesArray == nodata,np.logical_not(rfeatArray)*tree_mask_array))
     #            print (masked)
                 
                 mean = masked.mean()
@@ -116,7 +144,7 @@ def create_csv(outCSV, time, origin_time, xsize, ysize, originX, originY, Proj, 
     #            masked.max()
     #            masked.sum()
     #            masked.count()
-
+                dest = None
                 rfeat_ds = None
                 vfeat_ds = None
                 
@@ -148,7 +176,7 @@ def aggregate (inFile, inVectorFile, variable) :
     xsize = len(X)
     ysize = len(Y)
     time = [Date for Date in ncds.variables['time'][:]]
-    origin_time = ncds.variables['time_origin'][:]
+    origin_time = [Date for Date in ncds.variables['time_origin'][:]]#ncds.variables['time_origin'][:]
 #    print (time)
     Proj = osr.SpatialReference()
     Proj.ImportFromEPSG(32628)
@@ -157,18 +185,23 @@ def aggregate (inFile, inVectorFile, variable) :
     originY = max(Y)-0.5*3.
     
     rGeoT = (originX,3.,0,originY,0,-3.)
-     
+    
+    date_index = time.index(20170618)
+    ovalues_20170618 = np.array(ncds.variables["original_"+variable.split('_',1)[1]][date_index,:,:])
+    ovalues_20170618 = np.where(ovalues_20170618==-9999.,np.nan,ovalues_20170618)
+    ovalues_20170618 = ovalues_20170618 / 10000
+    
     # Extract Original and Hants Values
     variable_values = np.array(ncds.variables[variable][:])
     v_values = np.where(variable_values==-9999.,np.nan,variable_values)
     v_values = v_values / 10000
     #outName
-    outFolder = os.path.join(os.path.dirname(inFile),str(viIndexName)+'_aggregate')
+    outFolder = os.path.join(os.path.dirname(inFile),str(viIndexName)+'_aggregate_notree')
     if not os.path.isdir(outFolder):
         os.makedirs(outFolder)
     # CSV Name
     outCSV = os.path.join(outFolder,'agg_%s_%s_%s.csv'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
-    create_csv(outCSV, time, origin_time, xsize, ysize, originX, originY, Proj, rGeoT, v_values)
+    create_csv(outCSV, time, origin_time, xsize, ysize, originX, originY, Proj, rGeoT, v_values, ovalues_20170618)
     
     # CSVt File for Attribute Join in GIS Software
     outCSVt = os.path.join(outFolder,'agg_%s_%s_%s.csvt'%(viIndexName,variable.split('_')[0],variable.split('_')[1]))
@@ -188,15 +221,17 @@ if __name__=="__main__":
 #     NDVI & MSAVI2
 # =============================================================================
     
-    inFile = "D:/TIME_SERIES.nc"
-    inVectorFile = "F:/Gbodjo_2018/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOINCor.shp"
+    inFile = "/home/je/Bureau/Stage/Output/TS/TIME_SERIES.nc"
+    inVectorFile = "/home/je/Bureau/Stage/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOINCor.shp"
     
-#    variables = ["original_PRScor_NDVI_values","original_PRS_NDVI_values","original_PRScor_MSAVI2_values","original_PRS_MSAVI2_values",
-#                 "hants_PRScor_NDVI_values","hants_PRS_NDVI_values","hants_PRScor_MSAVI2_values", "hants_PRS_MSAVI2_values",
-#                 "whittaker_PRScor_NDVI_values","whittaker_PRS_NDVI_values","whittaker_PRScor_MSAVI2_values", "whittaker_PRS_MSAVI2_values"]
-#    
-    variables = ["whittaker_PRScor_NDVI_values","whittaker_PRS_NDVI_values"]
+    variables = ["original_PRScor_NDVI_values","original_PRS_NDVI_values",
+                 "hants_PRScor_NDVI_values","hants_PRS_NDVI_values",
+                 "whittaker_PRScor_NDVI_values","whittaker_PRS_NDVI_values"]
+    
+#    variable = "whittaker_PRScor_NDVI_values"
+#    aggregate (inFile, inVectorFile, variable)
     
     for variable in variables :
         print (variable)
+        
         aggregate (inFile, inVectorFile, variable)
