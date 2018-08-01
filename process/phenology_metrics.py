@@ -186,16 +186,20 @@ def extract_metrics_plots (inVector, inCSV, outPath, check_treshold=False):
             LOS = EOS - SOS
             #LOS = int(LOS.days)
             
+            
             # Get AMPL
             AMPL = ndvi_max - ndvi_min
             
             # Integrated values from SOS to EOS
-            CUM_SOS_EOS = 0
-            for m in range(SOS_index,EOS_index+1) :
-                CUM_SOS_EOS += plot_df["Value"][m]
+#            CUM_SOS_EOS = 0
+#            for m in range(SOS_index,EOS_index+1) :
+#                CUM_SOS_EOS += plot_df["Value"][m]
                 
-            # Integrated values from SOS to MAX
+            # Date NDVI_MAX & Integrated values from SOS to MAX
             MAX_index = plot_df.loc[plot_df["Value"]==ndvi_max].index[0]
+            
+            MAX = int(plot_df["Date"][MAX_index].strftime('%j'))
+            
             CUM_SOS_MAX = 0
             for m in range(SOS_index,MAX_index+1) :
                 CUM_SOS_MAX += plot_df["Value"][m]
@@ -216,50 +220,25 @@ def extract_metrics_plots (inVector, inCSV, outPath, check_treshold=False):
             # Add to outDict
             outDict.setdefault('ID',[]).append(join_df.ID[i])
             
-            # Integrated Values from SOS to 100 days after SOS every 
-    #        # 5 days 
-    #        for m in range (20): # 0 à 100/5 avec un pas de 5
-    #            CUM_5 = 0
-    #            for n in range (5*m,5*m+5):
-    #                CUM_5 += plot_df["Value"][SOS_index+n]
-    #            outDict.setdefault('CUM_%s_%s'%(str(5*m),str(5*m+5)),[]).append(CUM_5)
-    #        # 10 days
-    #        for m in range (10): # 0 à 100/10 avec un pas de 10
-    #            CUM_10 = 0
-    #            for n in range (10*m,10*m+10):
-    #                CUM_10 += plot_df["Value"][SOS_index+n]
-    #            outDict.setdefault('CUM_%s_%s'%(str(10*m),str(10*m+10)),[]).append(CUM_10)
-    #        # 15 days
-    #        for m in range (6): # 0 à partie entière de 100/15 avec un pas de 15 
-    #            CUM_15 = 0
-    #            for n in range (15*m,15*m+15):
-    #                CUM_15 += plot_df["Value"][SOS_index+n]
-    #            outDict.setdefault('CUM_%s_%s'%(str(15*m),str(15*m+15)),[]).append(CUM_15)
-    #        
-    #        # Integrated Values from SOS to 100 days after SOS with 
-    #        # 5 days Step 
-    #        for m in range (3,20): # 0 à 100/5 avec un pas de 5
-    #            CUM_5s = 0
-    #            for n in range (5*m+5):
-    #                CUM_5s += plot_df["Value"][SOS_index+n]
-    #            outDict.setdefault('CUM_0_%s'%str(5*m+5),[]).append(CUM_5s)
-            
-            # Integrated Values from SOS to 100 days after SOS from 5 to 20 days with 5 days step
-            for m in range (17): # 0 à 80/5 avec un pas de 5
-                for l in range (m+1,m+5):
-                    CUM = 0
-                    for n in range (5*m,5*l):
-                        CUM += plot_df["Value"][SOS_index+n]
-                    outDict.setdefault('CUM_%s_%s'%(str(5*m),str(5*l)),[]).append(CUM)
+            # Integrated Values from SOS to 100 days after SOS, with SOS + 5 days shift
+            for m in range (20): # 0 à 100/5 
+                for l in range (m+1,m+21):
+                    if 5*l <= 100 :
+                        CUM = 0
+                        for n in range (5*m,5*l):
+                            CUM += plot_df["Value"][SOS_index+n]
+                        # print ('CUM_%s_%s'%(str(5*m),str(5*l)))
+                        outDict.setdefault('CUM_%s_%s'%(str(5*m),str(5*l)),[]).append(CUM)
             
             outDict.setdefault('SOS',[]).append(SOS)
-            outDict.setdefault('SOS_value',[]).append(plot_df.Value[SOS_index])
+            # outDict.setdefault('SOS_value',[]).append(plot_df.Value[SOS_index])
             outDict.setdefault('EOS',[]).append(EOS)
-            outDict.setdefault('EOS_value',[]).append(plot_df.Value[EOS_index])
+            # outDict.setdefault('EOS_value',[]).append(plot_df.Value[EOS_index])
             outDict.setdefault('LOS',[]).append(LOS)
-            outDict.setdefault('MAX',[]).append(ndvi_max)
+            outDict.setdefault('MAX',[]).append(MAX)
+            outDict.setdefault('NDVI_MAX',[]).append(ndvi_max)
             outDict.setdefault('AMPL',[]).append(AMPL)
-            outDict.setdefault('CUM_SOS_EOS',[]).append(CUM_SOS_EOS)
+            # outDict.setdefault('CUM_SOS_EOS',[]).append(CUM_SOS_EOS)
             outDict.setdefault('CUM_SOS_MAX',[]).append(CUM_SOS_MAX)
             outDict.setdefault('CUM_MAX_EOS',[]).append(CUM_MAX_EOS)
             outDict.setdefault('RATE_SOS_MAX',[]).append(RATE_SOS_MAX)
@@ -412,11 +391,11 @@ if  __name__=='__main__':
 #    extract_metrics_plots (inVector,inCSV,outPath,check_treshold=True)
     extract_metrics_plots (inVector,inCSV,outPath)
     
-    lstCSV = ["/home/je/Bureau/Stage/Output/TS/NDVI_aggregate_notree/agg_NDVI_hants_PRScor.csv","/home/je/Bureau/Stage/Output/TS/NDVI_aggregate_notree/agg_NDVI_whittaker_PRScor.csv",
-               "/home/je/Bureau/Stage/Output/TS/NDVI_aggregate_notree/agg_NDVI_hants_PRS.csv","/home/je/Bureau/Stage/Output/TS/NDVI_aggregate_notree/agg_NDVI_whittaker_PRS.csv"]
-    
-    for inCSV in lstCSV :
-        extract_metrics_plots (inVector,inCSV,outPath, check_treshold = True)
+#    lstCSV = ["/home/je/Bureau/Stage/Output/TS/NDVI_aggregate_notree/agg_NDVI_hants_PRScor.csv","/home/je/Bureau/Stage/Output/TS/NDVI_aggregate_notree/agg_NDVI_whittaker_PRScor.csv",
+#               "/home/je/Bureau/Stage/Output/TS/NDVI_aggregate_notree/agg_NDVI_hants_PRS.csv","/home/je/Bureau/Stage/Output/TS/NDVI_aggregate_notree/agg_NDVI_whittaker_PRS.csv"]
+#    
+#    for inCSV in lstCSV :
+#        extract_metrics_plots (inVector,inCSV,outPath, check_treshold = True)
 
 #     ncFile = "D:/Stage/TS/TIME_SERIES.nc"
 #     lstVariables = ["hants_PRScor_NDVI_values","whittaker_PRScor_NDVI_values"]

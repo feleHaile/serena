@@ -81,16 +81,10 @@ def create_csv(outCSV, time, origin_time, xsize, ysize, originX, originY, Proj, 
         dest.GetRasterBand(1).SetNoDataValue(np.nan)
         
         plot_array = dest.GetRasterBand(1).ReadAsArray(xOffset,yOffset,col_nb,row_nb)
-        #print (plot_array)
-        # print(plot_array.shape)
-        lst = []
-        for m,n in product(range(row_nb),range(col_nb)):
-            lst.append(plot_array[m,n])
-        tree_mask_value = pd.Series(lst).quantile(.95)
-        # print ("Feature_%s_ID_%s.tif"%(i,feature.GetField('ID')), tree_mask_value)
+        # print (plot_array)
 
         tree_mask_array = np.ones((row_nb,col_nb),dtype=int)
-        tree_mask_array = np.where(plot_array>=tree_mask_value,0,tree_mask_array)
+        tree_mask_array = np.where(plot_array>0.16,0,plot_array)
         dest = None
         # print (tree_mask_array)
 #        driver = gdal.GetDriverByName("GTiff")
