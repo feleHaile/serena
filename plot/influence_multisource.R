@@ -4,7 +4,7 @@ library(ggthemes)
 library(foreach)
 library(scales)
 
-ndvi <- read.csv("/media/je/JE3/R_plot/Plot_CSV/agg_NDVI_original_PRS_toggplot.csv",colClasses = 
+ndvi <- read.csv("/media/je/JE3/agg_NDVI_original_PRS_toggplot.csv",colClasses = 
                    c("Date","character","character","character","character","Date","Date","double","double"))
 ndvi$CropSys[ndvi$CropSys=="Mixed"] <- "Mixte"
 ndvi$CropSys[ndvi$CropSys=="Pure"] <- "Pur"
@@ -27,7 +27,7 @@ ndvi_subset$Systeme <- paste(ndvi_subset$Culture,ndvi_subset$CropSys, sep=" ")
 p <- ggplot(data=ndvi_subset, aes(x=Date, y=Avg)) + geom_line(aes(color = Systeme)) + 
   geom_vline(aes(xintercept = Semi), colour="grey29", size=1) + #maroon3
   geom_vline(aes(xintercept = Recolte),  colour="grey29", size=1) + #darkorchid3
-  geom_point(aes(shape = Sensor,color = Systeme)) +
+  geom_point(aes(shape = Sensor,color = Systeme),size=2) +
   geom_ribbon(aes(ymin=Avg-Std,ymax=Avg+Std, fill=Systeme),alpha=0.2)+
   facet_wrap (~ ID, ncol = 3) + theme_bw() +
   #ggtitle("Moyenne parcellaire de NDVI et Ecart type") + theme(plot.title = element_text(hjust = 0.5)) +
@@ -35,7 +35,7 @@ p <- ggplot(data=ndvi_subset, aes(x=Date, y=Avg)) + geom_line(aes(color = System
   ylab("Valeur") + 
   labs(shape = "Capteurs", color = "Culture et Système", fill="Culture et Système")
 
-ggsave("/home/je/Bureau/serena/report/materiels_methodes/multisource.png")
+ggsave("/media/je/JE3/serena/report/materiels_methodes/multisource_notree.png")
 ##############################
 
 pdf("/media/je/JE3/R_plot/Plot_PDF_PNG/test.pdf", width = 8.98, height = 5.86, title = "Moyenne Parcellaire NDVI")

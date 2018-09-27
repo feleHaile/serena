@@ -17,7 +17,7 @@ import rasterio
 import subprocess
 import os
 import numpy as np
-#from pprint import pprint
+from pprint import pprint
 import concurrent.futures
 import time
 
@@ -27,9 +27,9 @@ def compute_indices (inPath, outPath, lstIndex) :
         - NDVI (Normalized Difference Vegetation Index)           -->  nir - red / nir + red
         - CCCI (Canopy Chlorophylle Content Index)                -->  (nir - red-edge / nir + red-edge) / (nir - red / nir + red)
         - CVI (Chlorophylle Vegetation Index)                     -->  nir * (red / blue²)
-        - CIGreen (Chlorophylle Index Green)                      -->  nir / red - 1
+        - CIGreen (Chlorophylle Index Green)                      -->  (nir / green) - 1
         - ChlRE (Chlorophylle RE)                                 -->  red-edge / nir
-        - GDVI (Green Difference Vegetation Index)                -->
+        - GDVI (Green Difference Vegetation Index)                -->  nir - green
         - GLI (Green Leaf Index)                                  -->
         - MSAVI2 (Modified Soil Adjusted Vegetation Index)        -->  (2 * (nir + 1) - sqrt((2 * nir + 1)² - 8 * (nir - red)))/2
         - NDRE (Normalized Difference Red Edge)                   -->
@@ -158,8 +158,41 @@ def compute_indices (inPath, outPath, lstIndex) :
         Resample_SaveGeoTiff(outFile1,outFile2,nodata=np.nan)
 
 # =============================================================================
-#      EVI
+#      GDVI
 # =============================================================================
+        
+    if 'GDVI' in lstIndex :
+        indexName = "GDVI"
+        gdvi = nir - g
+        outFolder = os.path.join(outPath,indexName)
+        if not os.path.isdir(outFolder) :
+            os.makedirs(outFolder)
+            
+        outFile1 = os.path.join(outFolder,outName1.format(indexName))
+        outFile2 = os.path.join(outFolder,outName2.format(indexName))
+        
+        with rasterio.open(outFile1,'w', **profile) as outDS :
+           outDS.write(gdvi.astype(rasterio.float64),1)
+        
+        Resample_SaveGeoTiff(outFile1,outFile2,nodata=np.nan)
+        
+# =============================================================================
+#      CIGreen
+# =============================================================================
+    if 'CIGreen' in lstIndex :
+        indexName = "CIGreen"
+        cigreen = (nir/g) - 1
+        outFolder = os.path.join(outPath,indexName)
+        if not os.path.isdir(outFolder) :
+            os.makedirs(outFolder)
+            
+        outFile1 = os.path.join(outFolder,outName1.format(indexName))
+        outFile2 = os.path.join(outFolder,outName2.format(indexName))
+        
+        with rasterio.open(outFile1,'w', **profile) as outDS :
+           outDS.write(cigreen.astype(rasterio.float64),1)
+        
+        Resample_SaveGeoTiff(outFile1,outFile2,nodata=np.nan)
         
 def Resample_SaveGeoTiff (outFile1,outFile2,nodata) :
     """
@@ -186,18 +219,18 @@ def Resample_SaveGeoTiff (outFile1,outFile2,nodata) :
     
 if  __name__=='__main__':
     
-    inPath= "E:/Stage2018/Output"
-    outPath = "E:/Stage2018/Output/INDICES"
-    lstIndex = ['MSAVI2']
+    inPath= "H:/Stage2018/Preproc/MOS_RESIZE"
+    outPath = "H:/Stage2018/Process/INDICES"
+    lstIndex = ['GDVI','CIGreen']
     
     lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
     lstFiles = []
     
     for folder in lstFolders :
         lstFiles += [os.path.join(inPath,folder,file) for file in os.listdir(os.path.join(inPath,folder)) if file.endswith(".tif")]
-#    pprint (lstFiles)
+    # pprint (lstFiles)
     
-    NUM_WORKERS = 3
+    NUM_WORKERS = 6
 
     def work(fileName):
         """

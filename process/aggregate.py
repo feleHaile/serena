@@ -181,7 +181,7 @@ def aggregate (inFile, inVectorFile, variable) :
     rGeoT = (originX,3.,0,originY,0,-3.)
     
     date_index = time.index(20170618)
-    ovalues_20170618 = np.array(ncds.variables["original_"+variable.split('_',1)[1]][date_index,:,:])
+    ovalues_20170618 = np.array(ncds.variables["original_PRScor_NDVI_values"][date_index,:,:])
     ovalues_20170618 = np.where(ovalues_20170618==-9999.,np.nan,ovalues_20170618)
     ovalues_20170618 = ovalues_20170618 / 10000
     
@@ -215,12 +215,11 @@ if __name__=="__main__":
 #     NDVI & MSAVI2
 # =============================================================================
     
-    inFile = "/home/je/Bureau/Stage/Output/TS/TIME_SERIES.nc"
-    inVectorFile = "/home/je/Bureau/Stage/Data/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOINCor.shp"
+    inFile = "H:/Stage2018/Process/LISSAGE/TIME_SERIES.nc"
+    inVectorFile = "H:/Stage2018/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOINCor_epure.shp"
     
-    variables = ["original_PRScor_NDVI_values","original_PRS_NDVI_values",
-                 "hants_PRScor_NDVI_values","hants_PRS_NDVI_values",
-                 "whittaker_PRScor_NDVI_values","whittaker_PRS_NDVI_values"]
+    variables = ["original_PRScor_GDVI_values","original_PRS_GDVI_values",
+                 "original_PRScor_CIGreen_values","original_PRS_CIGreen_values"]
     
 #    variable = "whittaker_PRScor_NDVI_values"
 #    aggregate (inFile, inVectorFile, variable)

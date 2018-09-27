@@ -82,10 +82,10 @@ def create_time_series (inFolder, inVectorFile):
     # Create Time Series in netCDF4
     
     # Create netcdf file
-    outFolder = os.path.join(os.path.dirname(inFolder),'TS')
+    outFolder = os.path.join(os.path.dirname(inFolder),'LISSAGE')
     if not os.path.isdir(outFolder):
         os.makedirs(outFolder)
-    outFile = os.path.join(outFolder,'TIME_SERIES_2.nc')
+    outFile = os.path.join(outFolder,'TIME_SERIES.nc')
     ncds = Dataset(outFile ,'w',format='NETCDF4')
 #    print (ncds)
     
@@ -174,6 +174,111 @@ def create_time_series (inFolder, inVectorFile):
     ncds.close()
     print ('###### NetCDF file created ######')
     return outFile
+
+def update_time_series (ncFile, lstFolders, inVectorFile) :
+    """
+    - Function to update Vegetation Index Time Series in NetCDF4 Format 
+    - 3 Time Series variables are created : PlanetScope - PlanetScope & RapidEye - PlanetScope, RapidEye & Sentinel-2
+    - inFolder containing GeoTiff files
+    - VI Index Values have 10 000 scale factor
+    """
+   
+    
+    ncds = Dataset(ncFile, 'r+')
+    fill_val = -9999.
+    Y = ncds.variables['Y'][:]
+    X = ncds.variables['X'][:]
+    xsize = len(X)
+    ysize = len(Y)
+    lstDate = [Date for Date in ncds.variables['time'][:]]
+
+
+    inPath = lstFolders[0]
+     
+    S2_Dates = ["20171005","20171015","20171025"]
+    # Create Date List
+    lstFiles = sorted(glob.glob(inPath+'/*.tif'))
+    dicFile = {}
+    for File in lstFiles :
+        dicFile.update({os.path.basename(File).split('_')[1]:os.path.basename(File).split('_')[2]})
+    # print (dicFile)
+
+    
+    # Read Shapefile and Get Extent
+    driver = ogr.GetDriverByName('ESRI Shapefile')
+    ds = driver.Open(inVectorFile,gdal.GA_ReadOnly)
+    if ds is None:
+        print ('Couldn\'t open ShapeFile. Please Check it.')
+        sys.exit (1)
+    layer = ds.GetLayer()
+    extent =  layer.GetExtent()
+    
+    ulx = int(extent[0])
+    uly = int(extent[3])
+    lrx = int(extent[1])
+    lry = int(extent[2])
+       
+    # Retrieve images profile
+    with rasterio.open(lstFiles[0],'r') as ds:
+        cellsize = ds.transform[1]
+        originX = ds.transform[0]
+        originY = ds.transform[3]
+    
+    xOffset = int((ulx- originX) / cellsize)
+    yOffset = int((uly - originY) / -cellsize)
+    xsize2 = int((lrx - ulx)/cellsize)  # Raster xsize col
+    ysize2 = int((uly - lry)/cellsize) # Raster ysize lines
+    
+#    print (xOffset,yOffset,xsize2,ysize2)
+    
+    empty_vec = np.empty((ysize,xsize))
+    empty_vec[:] = -9999.
+    
+    for j in range (len(lstFolders)) : 
+        viIndexName = os.path.basename(lstFolders[j])
+        inPath = lstFolders[j]
+        lstFiles = sorted(glob.glob(inPath+'/*.tif'))
+#        pprint (lstFiles)
+        FileName = os.path.basename(lstFiles[0]).split('_')[0]+'_%s_%s_'+\
+            os.path.basename(lstFiles[0]).split('_')[3]+'_'+os.path.basename(lstFiles[0]).split('_')[4]
+#       print (FileName)
+    
+        vi_var_PRS = ncds.createVariable('original_PRS_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
+        vi_var_PRS.long_name = 'PlanetScope, RapidEye & Sentinel-2 %s Index values'%viIndexName
+#        vi_var_PRS = ncds.variables['original_PRS_%s_values'%viIndexName][:]
+        
+        vi_var_cor = ncds.createVariable('original_PRScor_%s_values'%viIndexName, 'i2', ('time', 'Y', 'X'), fill_value=fill_val)
+        vi_var_cor.long_name = 'PlanetScope, RapidEye & Sentinel-2 %s Index values excluding S2 20171005, 20171015, 20171025 times'%viIndexName
+#        vi_var_cor = ncds.variables['original_PRScor_%s_values'%viIndexName][:]
+        
+        print ('Load %s Variables'%viIndexName)
+        
+        i = 0
+        for Date in lstDate :
+            print (Date)
+            if (str(Date) in dicFile) : # and dicFile[Date]!='S2')  : # Exclude Sentinel-2 Imagery         
+                File = os.path.join(inPath,FileName%(Date,dicFile[str(Date)]))
+                # print (File)
+                with rasterio.open(File,'r') as ds:
+                    band = ds.read(1, window=((yOffset, yOffset+ysize2),(xOffset, xOffset+xsize2)))
+                    array = band * 10000
+                    array[np.isnan(array)] = fill_val
+        #            print (array)
+                    vi_var_PRS [i,:,:] = array
+                    print ("PRS")
+                    if (Date not in S2_Dates):
+                        vi_var_cor[i,:,:] =  array
+                        print ("PRScor")
+                    i+=1
+            else :
+                vi_var_PRS [i,:,:] =  empty_vec
+                vi_var_cor[i,:,:] =  empty_vec
+                i+=1
+            
+    ncds.close()
+    print ('###### NetCDF file updated ######')
+    return ncFile
+
 
 # =============================================================================
 # Smoothing with HANTS
@@ -318,10 +423,10 @@ def smooth_hants (ncFile, variable, nb=365, nf=3, HiLo='Lo', low=-0.3, high=1, f
     # Loop
     counter = 1
     print ('Running HANTS...')
-    for m,n in product(range(rows),range(cols)):
+    for m,n in product(range(rows),range(cols)): # rows cols
         print ('\t{0}/{1}'.format(counter, size_st))
     
-        y = pd.np.array(original[:, m, n])
+        y = pd.np.array(original[:, m, n]) #m n 
         y[pd.np.isnan(y)] = fill_val
         [yr, outliers] = HANTS(ni, nb, nf, y, ts, HiLo, low, high, fet, dod, delta, fill_val)
         values_hants[:, m, n] = yr
@@ -398,14 +503,16 @@ def smooth_whittaker(ncFile, variable, lamb=5000, d=2):
     
     counter = 1
     print ('Running Whittaker Smoother...')
-    for m,n in product(range(rows),range(cols)): # rows cols 
+    for m,n in product(range(1),range(1)): # rows cols 
         print ('\t{0}/{1}'.format(counter, size_st))
         
-        y = pd.np.array(original[:, m, n])
+        y = pd.np.array(original[:, 926, 551]) # m , n
         ynan = np.where(y==-9999.,np.nan,y)
         w = np.where(y==-9999,0,1) # Negative Values to test : ok
         z = whitsmw (y, w, lamb, d)
-
+        
+        # Upper Profil Fitting
+        
         y_new = np.where(y<z,z,y)
 #        print (y_new)
         
@@ -440,6 +547,7 @@ def smooth_whittaker(ncFile, variable, lamb=5000, d=2):
 
         values_whit[:, m, n] = ziter
         counter += 1
+        
 
     values_whit = values_whit * 10000
     ncds.variables[whit_varName%viIndexName][:] = values_whit #  à remettre
@@ -531,6 +639,20 @@ if __name__=="__main__":
 #    inVectorFile = "E:/Stage2018/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOIN.shp"
 
 #    ncFile = create_time_series(inFolder,inVectorFile)
+    
+    #lstFolders = ["H:/Stage2018/Process/INDICES/GDVI","H:/Stage2018/Process/INDICES/CIGreen"]
+    inVectorFile = "H:/Stage2018/Terrain/SimCo_2017_CLEAN_JOIN_COR_SOPHIE_ADAMA_32628_JOINCor_epure.shp"
+    ncFile = "H:/Stage2018/Process/LISSAGE/TIME_SERIES.nc"
+    
+    #update_time_series (ncFile, lstFolders, inVectorFile)
+
+    variable = "original_PRScor_GDVI_values"
+    smooth_hants(ncFile, variable, low = 0 , high= 0.3)
+    
+    variable = "original_PRScor_CIGreen_values"
+    smooth_hants(ncFile, variable, low=0, high=3)
+    
+    """
     ncFile = 'D:/TIME_SERIES.nc'
 #    
     lstVar = ["original_PRScor_NDVI_values","original_PRS_NDVI_values"]
@@ -553,5 +675,5 @@ if __name__=="__main__":
                     
 #    ncFile = "E:/Stage2018/Output/TS/TIME_SERIES_2.nc"
 #    variable = "original_PRS_NDVI_values"
-#    smooth_savgol(ncFile, variable, point=Points[0], window_size=11, order=4)
+#    smooth_savgol(ncFile, variable, point=Points[0], window_size=11, order=4)"""
 
