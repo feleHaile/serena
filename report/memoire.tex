@@ -1,16 +1,16 @@
-\documentclass[a4paper,12pt,oneside,chapterprefix=true]{scrbook}
+\documentclass[a4paper,12pt,oneside,chapterprefix=false]{scrbook}
 %\usepackage[Sonny]{fncychap}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
 \usepackage[osf,sc]{mathpazo}
-\usepackage[citecolor=magenta,colorlinks=true,hypertexnames=false,pdftitle=Mémoire SERENA Gbodjo]{hyperref}
+\usepackage[citecolor=magenta,linkcolor=black,colorlinks=true,hypertexnames=false,pdftitle=Mémoire SERENA Gbodjo]{hyperref}
 \usepackage{natbib}
 \usepackage[english,french]{babel}
 %\usepackage{setspace}
 %\usepackage{makeidx}
 %\usepackage[french]{nomencl}
-\usepackage[acronyms,xindy,toc,nomain]{glossaries}
+\usepackage[nonumberlist,acronyms,xindy,nomain]{glossaries}
 \usepackage{graphicx}
 \usepackage{amsmath,amssymb,mathrsfs}
 \usepackage{tikz}
@@ -26,6 +26,8 @@
 \usepackage[french]{cleveref}
 \usepackage[automark,headsepline=true,autooneside=false,markcase=used]{scrlayer-scrpage} 
 %\usepackage{scrpage2}
+\usepackage{lettrine}
+\usepackage{caption}
 
 %\title{Evaluation du potentiel d’une série temporelle multi-source à haute résolution spatiale pour le suivi des cultures annuelles en petite agriculture familiale : 
 %Cas du bassin arachidier sénégalais}
@@ -83,23 +85,89 @@
   \selectlanguage {french}
     \begin{abstract}
     \thispagestyle{plain}
+    
+    \lettrine{L} 'intensification écologique des pratiques agricoles est assurément aujourd’hui l’une des voies les plus efficaces pour garantir la sécurité alimentaire de tous, tout en
+    favorisant une agriculture durable préservant les écosystèmes et la biodiversité no-
+    tamment dans les pays en voie de développement. Le présent travail s’inscrit dans le
+    cadre de recherches portant sur l’évaluation spatialisée des pratiques d’intensification écologique des systèmes de cultures à base de mil et d’arachide, à Diohine (région de Fatick) dans la zone écogéographique du bassin arachider sénégalais. Il a pour objectif d’évaluer les dates de semis et de calibrer des modèles statistiques pour l’estimation de leur biomasses et rendements sur la saison agricole 2017, en se basant sur des métriques phénologiques dérivées de télédétection. Pour ce faire, nous avons utilisé une série temporelle multisource d’images satellitaires incluant des images PlanetScope, RapidEye et Sentinel-2 et un réseau de 47 parcelles. L’indice de végétation NDVI a été calculé pour les différentes images et la série temporelle de NDVI a été lissée et reconstruite avec un pas de temps journalier en employant deux méthodes de lissage : l’algorithme HANTS et la méthode de Whittaker. Les profils temporels de NDVI obtenus par les 2 méthodes étant difficilement dissociables sur base des critères qualitatifs de sélection définis, ils ont été maintenu pour la phase d’évaluation des dates de semis. Cette dernière a montré que la méthode de Whittaker était plus performante que HANTS compte tenu des variabilités plus faibles obtenues sur les écarts entre dates de semis observées et dates de début de croissance de la végétation extraites (SOS). Pour le reste, les dates de semis ont été estimées avec plus ou moins 5, 10 et 20 jours de décalage respectivement pour les parcelles d’arachide, de mil en culture pure et de mil en culture associée. En ce qui concerne l’estimation des biomasses et rendements, deux indices de végétation ont été comparés : le NDVI et le GDVI. Les modèles de régression linéaire établis pour l’arachide ont modérément expliqué les biomasses ($R^{2} = 0,56$ ; $RMSE = 1292$ \emph{kg/ha}) et rendements ($R^{2} = 0,49$ ; $RMSE = 404$ \emph{kg/ha}) tandis que pour le mil, les rendements ($R^{2} = 0,45$ ; $RMSE = 540$ \emph{kg/ha}) ont été mieux estimés que les biomasses ($R^{2} = 0,27$ ; $RMSE = 4254$ \emph{kg/ha}). Les variables explicatives dérivées du GDVI ont été plus performantes que celles du NDVI traditionnellement utilisé dans ce type d’approche. Nous avons expliqué ceci notamment par un changement dans les technologies d’observation de la Terre mobilisées dans le cadre de ce travail par rapport à la littérature existante.
+    
+    \vspace{8mm}
+    
+    \emph{Mots-clefs} : Intensification écologique, Evaluation spatialisée, Mil, Arachide, Série temporelle multisource (Sentinel-2, RapidEye, PlanetScope), Métriques phénologiques, Estimation des biomasses et rendements.
+
     \end {abstract}
     
   \selectlanguage {english}
     \begin {abstract}
     \thispagestyle{plain}
+    
+    \lettrine{N}owadays, the ecological intensification of agricultural practices had became undoubtedly one of the most effective way of ensuring food security for all, while promoting sustainable agriculture that preserves ecosystems and biodiversity particularly in developing countries. This work is part of researches on spatial evaluation of the ecological intensification practices of millet and groundnut-based crop systems at Diohine (Fatick region) in the Senegalese groundnut Basin. Its objective is to
+    evaluate sowing dates and to calibrate statistical models for estimating biomass and
+    yields on the 2017 agricultural season, based on phenological metrics. To do this, we
+    used a multisource time series of satellite images including PlanetScope, RapidEye
+    and Sentinel-2 images and a network of 47 field plots. The popular vegetation in-
+    dex NDVI were extracted from the images and the NDVI time series was smoothed
+    and reconstructed with a daily time step using two smoothing methods : HANTS
+    algorithm and Whittaker smoother. The temporal profiles of NDVI obtained by the
+    2 methods being difficult to dissociate on the basis of our qualitative criteria of selection, we maintained them for the sowing dates evaluation. It was later showed
+    that Whittaker’s method was more efficient than HANTS, given the lower variability
+    obtained on the gap between observed sowing dates and starting dates of growth of
+    vegetation (SOS). For the remainder, we managed to estimate sowing dates with more
+    or less 5, 10 and 20 days of interval, for the groundnut, pure millet and mixed millet
+    plots respectively. With regard to the estimation of biomass and yields, we compared
+    NDVI and GDVI indices. The established linear regression models moderately ex-
+    plained groundnut biomass ($R^{2} = 0,56$ ; $RMSE = 1292$ \emph{kg/ha}) and yields ($R^{2} = 0,49$ ; $RMSE = 404$ \emph{kg/ha}) while millet yields ($R^{2} = 0,45$ ; $RMSE = 540$ \emph{kg/ha}) were better estimated than biomass ($R^{2} = 0,27$ ; $RMSE = 4254$ \emph{kg/ha}). The explanatory variables derived from the GDVI were more efficient than those of NDVI usually used in this type of approach. We explained this by a change in earth observation technologies mobilized as part of this work compared to the existing literature.
+    
+    \vspace{8mm}
+    
+    \emph{Keywords} : Ecological intensification, Spatial evaluation, Millet, Groundnut, Multisource time series (Sentinel-2, RapidEye, PlanetScope), Phenological metrics, Biomass and Yields estimation.
+    
     \end{abstract}
 
   \selectlanguage {french}
   
     \begin{acknowledgements}
     \thispagestyle{plain}
+    
+    \vspace{5mm}
+    
+    {\fontfamily{lmr}\selectfont \large{Par ces simples mots, je viens tout d’abord témoigner ma gratitude à vous tous qui aviez de près ou de loin par vos soutiensmultiformes à l’aboutissement de ce travail qui vient couronner une année académique (2017-2018)
+    de dur labeur et riche d’expériences.}}
+    
+    \vspace{5mm}
+    
+    {\fontfamily{lmr}\selectfont \large{Merci à toi Papa, qui n’a eu point de cesse d’\oe uvrer pour que je produise un document de qualité.}}
+    
+    \vspace{5mm}
+    
+    {\fontfamily{lmr}\selectfont \large{Ma gratitude va également à tout le corps professoral du Master SIGMA qui par leurs expertises et la qualité de leurs enseignements m’ont formé pour être parmi les meilleurs dans le domaine de la Géomatique.}}
+    
+    \vspace{5mm}
+    
+    {\fontfamily{lmr}\selectfont \large{Un infini merci à mes maîtres de stage, Dr. Louise \textsc{Leroux} et Dr. Abdoul
+    Aziz \textsc{Diouf} avec qui j’ai pris plaisir à travailler tout au long de ce stage.
+    Merci encore pour vos orientations et conseils quand par moment j’étais
+    perdu. J’ai apprécié à leur juste valeur en ces moments précis, vos savoir-
+    faire qui ont été pour moi d’une utilité inexprimable.}}
+    
+    \vspace{5mm}
+    
+    {\fontfamily{lmr}\selectfont \large{Merci également aux agents du CSE qui ont grandement contribué à mon intégration en m’accueillant comme leur frère et ami : Mme. \textsc{Sene}, Mme \textsc{Soti}, M. \textsc{N’dao}, M. \textsc{Thiaw} \emph{Jërëngen jëf}.}}
+    
+    \vspace{5mm}
+    
+    {\fontfamily{lmr}\selectfont \large{Enfin, merci spécial à mon tuteur enseignant M. David \textsc{Sheeren} qui
+    a encadré ce travail et à vous messieurs les membres du jury qui allez le
+    juger, recevez ici la marque de ma sincère reconnaissance.}}
+    
     \end{acknowledgements}
 
   %\shorttoc{Sommaire}{2}
   \tableofcontents
   \listoffigures
   \listoftables
+  \input{glossaire}
+  \printglossary[type=\acronymtype,title=Glossaire]
   
 
 \mainmatter
@@ -130,13 +198,9 @@
   
 \appendix
 
-\chapter{Diagramme de Gantt}\label{annexe-a}
-\chapter{Essais de lissage avec le filtre de Savitzky-Golay}\label{annexe-b}
- \input{annexes/annexe}
+\input{annexes/annexe}
 
 \backmatter
-\input{acronymes}
-\printglossary[type=\acronymtype]
 
 \cleardoublepage
 \refstepcounter{chapter}

@@ -1,0 +1,78 @@
+Ce travail a été réalisé dans le contexte de l’évaluation spatialisée par télédétection
+des systèmes de cultures à base de mil et d’arachide dans le bassin arachidier du
+Sénégal. Dans cette perspective, il avait pour objectif principal d’évaluer le potentiel
+d’une série temporelle multisource (Sentinel-2, RapidEye et PlanetScope) à travers
+deux sous objectifs : l’évaluation des dates de semis et l’estimation des biomasses vé-
+gétatives et des rendements grains du mil et gousses de l’arachide.
+\\En lissant les profils temporels de NDVI extraits à partir de la série multisource,
+notamment avec la méthode de Whittaker, nous avons extrait différentes métriques
+phénologiques dont les dates de début de croissance de la végétation (SOS). Avec les
+SOS extraits, nous avons estimé les dates de semis des différents systèmes de culture
+avec notamment plus ou moins 5 jours de décalage pour les parcelles d’arachide et
+10 à 20 jours de décalage pour celles de mil. Pour l’estimation des biomasses et ren-
+dements, le NDVI, qui est traditionnellement utilisé, a été comparé à un autre indica-
+teur de productivité de la végétation, le GDVI. Nous avons montré que le NDVI était
+moins performant que le GDVI pour expliquer la variabilité de la biomasse et des
+rendements, ceci s’expliquant notamment par un changement dans les technologies
+d’observation de la Terre par rapport aux études précédentes. Cette étude a montré
+le réel intérêt de combiner différentes sources d’images satellitaires afin d’améliorer
+la répétitivité de l’information spatiale. Elle a également montré que la différence de
+résolutions spatiales entre les types d’images ne représente en aucun cas un frein à
+leur utilisation combinée au sein d’une même application.
+\\Néanmoins, au vu des résultats obtenus, la méthodologie mise en place pourrait être
+affinée, notamment pour améliorer la partie estimation des biomasses et rendements.
+Dans un ordre de priorité, notre première recommandation concerne la phase de
+prétraitements des images qui pourrait inclure des corrections atmosphériques afin
+d’uniformiser tout le jeu données. En effet, seules les images Sentinel-2A dans notre
+série temporelle multisource présentaient des corrections atmosphériques et nom-
+breuses sont les études en télédétection ayant fait état du gain significatif que ces
+corrections pouvaient apporter. Dans notre série temporelle, nous n’avons utilisé que
+les images Sentinel-2A. Sentinel-2B étant aujourd’hui opérationnel, un couplage des
+2 types d’images viendrait densifier notre série temporelle afin d’éviter des périodes
+sans informations comme cela a été le cas pendant le mois de Septembre dans notre
+étude. Également sur ce point, l’utilisation d’images radar pourrait être une solution
+envisageable quand on sait que le principal avantage de l’imagerie radar se trouve
+dans l’affranchissement des conditions atmosphériques, nuages notamment. L’adop-
+tion d’images radars permettrait également de tester un apport éventuel des indices
+radar pour l’extraction des SOS et EOS et l’estimation des biomasses et rendements.
+En ce qui concerne les méthodes de lissage, s’il est vrai qu’elles ont plutôt donné
+satisfaction, il n’en est pas moins que cette étape influence fortement les résultats
+obtenus par la suite. Il serait alors intéressant de tester d’autres types d’approches
+comme les fonctions asymétriques gaussiennes ou les doubles fonctions logistiques dont les résultats sont jugés tout autant satisfaisants. Aussi, la grande majorité de
+notre travail a été basé sur l’utilisation du NDVI qui a montré ses limites pour l’es-
+timation des biomasses et rendements. Dès lors, il serait pertinent de se tourner vers
+d’autres indices de végétation comme cela a déjà pu être le cas avec le GDVI. D’autres
+indicateurs comme le MSAVI qui tient compte de l’effet des sols (intéressant dans
+le cas de cultures peu couvrantes comme le mil), le NDWI pouvant détecter la pré-
+sence de stress hydrique chez les cultures ou encore les indices explorant la bande
+du red edge comme le Red Edge NDVI pourraient être de réelles alternatives. Par
+ailleurs, l’extraction des métriques phénologiques a été réalisée uniquement à partir
+de la méthode de seuillage relatif sur les amplitudes de NDVI et il serait intéressant
+de tester d’autres méthodes notamment les méthodes dérivatives. Outre cette étape,
+celle de l’estimation des biomasses et rendements a tenu compte de variables expli-
+catives provenant des seuls indices que sont le NDVI et le GDVI. Nous n’avons ni
+exploré les variables biophysiques comme le LAI ni les variables climatiques comme
+l’humidité du sol et les quantités de précipitations bien connues pour améliorer les
+modèles calibrés. Les indices texturaux pourraient être également interessant à tester.
+L’autre phase inexplorée également dans notre travail concerne la non prise en compte
+du pouvoir explicatif des arbres (présents dans les parcelles) dans la productivité des
+systèmes de cultures. Une des limites de notre travail aura été l’étroitresse de la taille
+de notre jeu de données terrain rendant impossible la calibration de modèles multi-
+variés plus robustes et leur validation. En effet, une taille d’échantillons plus grande
+aurait permis l’implication de plusieurs variables dans nos modèles et aurait certaine-
+ment amélioré les estimations de biomasses et rendements. D’autre part, augmenter
+la taille de nos échantillons permettrait d’envisager le recours à des méthodes de ré-
+gression plus poussées par fouilles de données telle que les forêts aléatoires d’arbres
+décisionnels pour l’estimation des biomasses et rendements. Une autre limite de notre
+travail repose sur la qualité des données de biomasses et de rendements observés. Ef-
+fectivement, ces données ayant été collectées dans la cadre d’autres projets et donc
+pas initialement pour l’estimation des biomasses et rendements, il nous aura été im-
+possible de savoir jusqu’à quel point nous y fier. Sur ce point, un nouveau réseau de
+parcelles est en cours de suivi pour la campagne agricole 2018. Ce nouveau jeu de
+données sera ajouté à celui de la campagne 2017 sur laquelle nous avons travaillé et
+viendra élargir la taille d’échantillons pour les estimations de biomasses et de rende-
+ments de 2018. Pour finir, une évaluation spatialisée des rendements dans la région
+du bassin arachidier sénégalais requiera avant tout un masque des principaux sys-
+tèmes de cultures présents. Ce type de données est obtenu par classification. Dans le
+cadre du projet S2-Agri\footnote{\url{http://www.esa-sen2agri.org/}} , un outil a été mis en place pour la production de masques
+de cultures ainsi que des cartes d’occupation du sol spécialisées sur l’agriculture.

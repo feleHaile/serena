@@ -1,5 +1,39 @@
 \section{Présentation générale de la zone d'étude}
 
+Notre zone d’étude (\Cref{fig-zone-etude}) est située dans le bassin arachidier au centre ouest
+du Sénégal à cheval entre les arrondissements de N’goye (département de Bambey,
+région de Diourbel), de Niakhar et Tattaguine (département et région de Fatick) et de
+Mbour (département de Fissel et région de Thiès). Le principal centre urbain de notre
+zone d’intérêt est la ville de Niakhar située au sud-est. Notre zone d’étude est essen-
+tiellement agricole avec principalement des cultures de mil, d’arachide, de niébé et de
+sorgho. On y trouve également de nombreuses espèces arborées dont les principales
+sont le \emph{Faidherbia albida}, le Baobab (\emph{Adansonia digitata}) et le Neem (\emph{Azadirachta indica}).
+La zone est située dans une vaste plaine dont les altitudes maximales ne dépassent
+pas les 100 mètres. Il est courant de retrouver quelques dépressions communément
+appelées bas-fonds. Deux types de sols y sont rencontrés : les sols Dior et les sols
+Deck. Dior est le terme vernaculaire désignant des sols ferrugineux tropicaux lessivés,
+meubles et très perméables. Ces sols sont propices aux cultures d’arachide et de mil.
+Les Deck sont des sols ferrugineux tropicaux non lessivés à forte teneur en limons et
+argiles. De ce fait elles ont une plus grande capacité de rétention en eau. La nappe
+phréatique existante est salée et empêche toute activité d’irrigation en plus du pro-
+blème sans cesse accru de la salinisation des sols.
+\\Notre zone d’étude étant située plus vers le Sud du bassin arachidier, son climat est
+plutôt du type soudano-sahélien caractérisé par une saison sèche et une saison plu-
+vieuse. La saison sèche relativement longue s’étend d’Octobre à Juin avec des tempé-
+ratures mensuelles moyennes comprises entre 25 et 40\textcelsius{} influencées par l’harmattan
+(vent chaud et sec). La saison pluvieuse (hivernage) s’étend de Juillet à Octobre avec
+des pluies fortes et intenses pendant les mois d’Août et Septembre associées au vent
+de la Mousson. La pluviométrie interannuelle est très variable avec une moyenne au-
+tour de 700 mm.
+
+\begin{figure}[htbp]
+ \begin{center}
+  \fbox{\includegraphics[scale=0.5]{materiels_methodes/zone_etude.png}}
+ \end{center}
+ \caption{Situation géographique de la zone d’étude}
+  \label{fig-zone-etude}
+\end{figure}
+
 \section{Données satellitaires utilisées}
 
 Notre série temporelle est composée de 3 types d’imageries satellitaires. Il s'agit d'images PlanetScope, RapidEye et Sentinel-2. 
@@ -168,102 +202,28 @@ Les 26 images utilisées ont été acquises entre Juin et Novembre 2017, soit en
   \label{fig-Chronologie}
 \end{figure}
 
-%\begin{figure}[htbp]
-  %\begin{center}
-    %\begin{tikzpicture}
-     %\begin{axis}[hide y axis,axis lines=middle,
-      %date coordinates in=x,
-      %xticklabel={\texttt{\month}},
-      %xlabel=RapidEye,
-      %xlabel style={at={(current axis.right of origin)}, xshift=7.5ex, anchor=center},
-      %%x tick label style={},
-      %date ZERO=2017-05-01,
-      %xmin=2017-05-25,
-      %xmax=2017-12-05,
-      %ymin=0,ymax=0.1,
-      %xtick=\empty,clip=false]
-      %\addplot [magenta,thick,mark=*,only marks]coordinates{
-        %(2017-07-27,0)
-        %(2017-10-06,0)
-        %(2017-10-26,0)
-        %(2017-11-09,0)
-        %};
-      %\end{axis}
-  %\end{tikzpicture}
-  %
-  %\begin{tikzpicture}
-    %\begin{axis}[hide y axis,axis lines=middle,
-      %date coordinates in=x,
-      %xticklabel={\texttt{\month}},
-      %xlabel=Sentinel-2,
-      %xlabel style={at={(current axis.right of origin)}, xshift=7.5ex, anchor=center},
-      %%x tick label style={},
-      %date ZERO=2017-05-01,
-      %xmin=2017-05-25,
-      %xmax=2017-12-05,
-      %ymin=0,ymax=0.1,
-      %xtick=\empty,clip=false]
-      %\addplot [magenta,thick,mark=*,only marks]coordinates{
-        %(2017-06-07,0)
-        %(2017-06-17,0)
-        %(2017-07-27,0)
-        %(2017-08-06,0)
-        %(2017-10-05,0)
-        %(2017-10-15,0)
-        %(2017-10-25,0)
-        %(2017-11-04,0)
-        %(2017-11-14,0)};
-     %\end{axis}
-    %\end{tikzpicture}
-  %
-  %\begin{tikzpicture}
-    %\begin{axis}[hide y axis,axis lines=middle,
-      %date coordinates in=x,
-      %xticklabel={\texttt{\month}},
-      %xlabel={PlanetScope},
-      %xlabel style={at={(current axis.right of origin)}, xshift=7.5ex, anchor=center},
-      %%x label style={},
-      %date ZERO=2017-05-01,
-      %xmin=2017-05-25,
-      %xmax=2017-12-05,
-      %ymin=0,ymax=0.1,
-      %xtick={{2017-06-01},{2017-07-01},{2017-08-01},{2017-09-01},{2017-10-01},{2017-11-01},{2017-12-01}},clip=false]
-      %\addplot [magenta,thick,mark=*,only marks]coordinates{
-        %(2017-06-04,0)
-        %(2017-06-18,0)
-        %(2017-07-09,0)
-        %(2017-07-16,0)
-        %(2017-07-27,0)
-        %(2017-08-15,0)
-        %(2017-09-19,0)
-        %(2017-10-01,0)
-        %(2017-10-11,0)
-        %(2017-10-16,0)
-        %(2017-10-23,0)
-        %(2017-10-30,0)
-        %(2017-11-15,0)
-        %(2017-11-19,0)};
-    %\end{axis}
-   %\end{tikzpicture}
-   %
-  %\end{center}
-  %\caption{Chronologie des images acquises}
-  %\label{fig-Chronologie}
-%\end{figure}
-
 \section{Données de terrain}
 
-Notre jeu de données terrain est basé sur des enquêtes agronomiques réalisées courant 2017 sur 47 parcelles agricoles. Ces enquêtes ont été menées dans le cadre des projets Oracle \footnote{\url{https://afrique-ouest.cirad.fr/actualites/projet-oracle-2017-2020}} et ANR CERAO \footnote{\url{http://www.agence-nationale-recherche.fr/Projet-ANR-13-AGRO-0002}}. Le jeu de données du projet Oracle provient de la thèse de \textsc{Djiba} Sophie et consiste en un réseau de 30 parcelles enquêtées en milieu paysan où les pratiques agricoles sont 
+Notre jeu de données terrain est basé sur des enquêtes agronomiques réalisées au cours de la saison agricole 2017 sur 47 parcelles d’environ un demi hectare de surface, situées à l’ouest du village de Diohine. Ces enquêtes ont été menées dans le cadre des projets Oracle \footnote{\url{https://afrique-ouest.cirad.fr/actualites/projet-oracle-2017-2020}} et ANR CERAO \footnote{\url{http://www.agence-nationale-recherche.fr/Projet-ANR-13-AGRO-0002}}. Le jeu de données du projet Oracle provient de la thèse de \textsc{Djiba} Sophie et consiste en un réseau de 30 parcelles enquêtées en milieu paysan où les pratiques agricoles sont 
 axées sur des rotations entre céréales et légumineuses (mil/arachide et/ou niébé) et des associations entre légumineuses (arachide/niébé). Par contre, celui du projet ANR CERAO, mis au point par \textsc{Tounkara} Adama lors de sa thèse, est un réseau de 17 parcelles enquêtées également en milieu paysan mais présentant chacune sur une partie, des essais relatifs à l'efficience de l'utilisation de l'azote par le mil en fonction de différents niveaux d'apports ou non en fertilisants, et ce indépendamment des pratiques de l'agriculteur. Nous émettons l'hypothèse que ces essais sont représentatifs des parcelles concernées, néanmoins, conscients de l'incertitude potentielle dans cette généralisation, nous envisageons d'analyser nos résultats séparement en tenant compte de la source des données de terrain. Pour chaque parcelle enquêtée, différentes informations sont collectées. Celles qui nous interessent principalement sont :
 \begin{itemize}
  \item le système de culture : espèces cultivées et pratiques culturales (fertilisant, dates de semis et de récoltes)
  \item la biomasse (fraîche et sèche) et le rendement (frais et sec)
  \item la géolocalisation des parcelles
- \item ou encore le nombre et les espèces d'arbres présentes au sein des parcelles.
+ \item le nombre et les espèces d'arbres présentes au sein des parcelles.
 \end{itemize}
-Le \cref{tab-terrain} présente les principales statistiques descriptives pour les parcelles enquêtées et comme nous pouvons nous en apercevoir, le rendement du mil est meilleur quand il est associé avec une légumineuse ($1670,21$ \si[per-mode=symbol]
+Pour les parcelles de mil, les données de biomasse représentent le poids des pailles
+(fraîches ou sèches) sur une surface de 15 m2 (3 placettes) extrapolé à l’hectare, calculé
+à partir du poids total des pailles pour 10 pieds de mil et du nombre de pieds se
+trouvant sur une surface de 15 m2. Les rendements représentent le poids des grains
+(frais ou secs) une fois extraits de leur épis et calculé par le même procédé. Pour les
+parcelles d’arachide, la biomasse totale (fraîche ou sèche) est mesurée sur une surface
+de 15 m2 puis extrapolée à l’hectare et les rendements correspondent au poids (frais
+ou sec) des gousses matures pour 15 m2 extrapolé également à l’hectare.
+
+Le \cref{tab-terrain} présente les principales statistiques descriptives pour les parcelles enquêtées et comme nous pouvons nous en apercevoir, les rendements du mil sont meilleurs quand il y’a association culturale avec une légumineuse ($1670,21$ \si[per-mode=symbol]
 {\kilogram\per\hectare} en système de culture mixte contre $989,51$ \si[per-mode=symbol]
-{\kilogram\per\hectare} en système de culture pure). Le rendement reporté pour le mil représente le poids des grains une fois extraits de leurs épis. Par contre pour l'arachide, il s'agit du poids des grains des gousses mâtures. \\Les \cref{fig-terrain1,fig-terrain2} présentent la localisation des parcelles suivant leur culture et système de culture ainsi que leur biomasse fraîche et les rendements frais observés.
+{\kilogram\per\hectare} en système de culture pure). La \cref{fig-terrain} présente la localisation des parcelles terrain suivant leur système de culture.
 
 \begin{table}[htbp]
 \begin{center}
@@ -287,26 +247,17 @@ Le \cref{tab-terrain} présente les principales statistiques descriptives pour l
 
 \begin{figure}[htbp]
  \begin{center}
-  %\includegraphics[scale=0.45]{synthese_biblio/metrics.png} 
+  \fbox{\includegraphics[scale=0.5]{materiels_methodes/parcelles.png}}
  \end{center}
- \caption{Localisation des parcelles suivies }
- \label{fig-terrain1}
+ \caption[Parcelles terrain]{Localisation des parcelles terrain suivant leur culture et système de culture avec leurs biomasses fraîches et rendements frais}
+  \label{fig-terrain}
 \end{figure}
-
-\begin{figure}[htbp]
- \begin{center}
-  %\includegraphics[scale=0.45]{synthese_biblio/metrics.png} 
- \end{center}
- \caption{Caractéristiques agronomiques des parcelles suivies }
- \label{fig-terrain2}
-\end{figure}
-
-
   
 \section{Calcul du NDVI}
 
 Sur base des images de réflectance, nous avons extrait l'indice de végétation par différence normalisé NDVI. Il importe de noter que les indices dérivés d'images RapidEye (5m) ou Sentinel-2 (10m) 
-ont été rééchantillonnés à la résolution des indices PlanetScope (3m), ce afin de pouvoir considérer une série temporelle uniforme.
+ont été rééchantillonnés par la méthode du plus proche
+voisin à la résolution des indices PlanetScope (3m), ce afin de pouvoir considérer une série temporelle uniforme.
 
 \paragraph{NDVI} \citep{Rouse1974,Tucker1979} 
 
@@ -388,8 +339,8 @@ Comme évoqué par \citet{Atzberger2011}, l'interpolation des valeurs manquantes
 
 \subsection{Evaluation du lissage}
 
-Nous avons testé les 3 méthodes décrites ci-dessus pour lisser la série temporelle de NDVI. Nous avons dans un premier temps mené une réflexion sur l'influence de l'utilisation des données multisources sur le profil temporel des cultures. Pour cela, nous avons calculé et tracé les moyennes parcellaires de NDVI et leur écart type en fonction du temps. Il nous est alors apparu que les valeurs Sentinel-2 des 05, 15 et 25 Octobre étaient aberrantes puisqu'elles étaient largement au dessus des autres valeurs situées dans la même plage et ce pour des dates situées après la date de récolte notamment sur les parcelles de mil (\Cref{fig-multisource}). Nous avons alors considéré 2 séries temporelles de NDVI pour le lissage : la série d'origine et la série sans les valeurs Sentinel-2 jugées aberrantes. 
-\\Afin d'optimiser le temps de traitement \footnote{Deux heures approximativement par méthode de lissage avec une station de travail HP possédant un processeur Intel® Core™ i7-7700 CPU @ 3.60 GHz de 8 c\oe urs et 16 Go de mémoire RAM} de chaque série temporelle, le nombre de pixels en entrée a été réduit de façon à ne considérer que l'emprise des parcelles suivies sur la zone d'étude (une taille de $1056\times1384$ soit $1\,461\,504$ pixels sur $41\,990\,000$ ou une taille de $6500\times6460$ ~\Cref{fig-carte-lissage}). Une chaîne de traitement incluant les 3 méthodes de lissage a été mise en place avec le langage \texttt{Python}. Le filtre de Savitzky-Golay a été implémenté dans la chaîne de traitement grâce à la fonction \texttt{savgol\_filter} du module \texttt{scipy.signal}. L'algorithme HANTS implémenté est la transcription en \texttt{Python} effectuée par \citet{Espinoza-Davalos2017} du programme originel écrit en \texttt{Fortran} et \texttt{Matlab}. Enfin, pour implémenter la méthode de Whittaker, nous avons transcrit en langage \texttt{Python}, le programme \texttt{Matlab} développé par \citet{Eilers2003} \footnote{\url{https://pubs.acs.org/doi/abs/10.1021/ac034173t}}. Les valeurs originales et lissées par série temporelle pour l'ensemble des pixels sont stockées comme variables d'un fichier \texttt{netCDF4}. 
+Nous avons testé les 3 méthodes décrites ci-dessus pour lisser la série temporelle de NDVI. Nous avons dans un premier temps mené une réflexion sur l'influence de l'utilisation des données multisources sur le profil temporel des cultures. Nous avons tout d’abord masqué les arbres présents dans les parcelles en appliquant un seuillage absolu (0, 16) sur les valeurs de NDVI correspondant à l’image PlanetScope du 18/06/2017, la plus contrastée. Par la suite nous avons calculé et tracé les moyennes parcellaires de NDVI et leur écart type en fonction du temps. Il nous est alors apparu que les valeurs Sentinel-2 des 05, 15 et 25 Octobre étaient aberrantes puisqu'elles étaient largement au dessus des autres valeurs situées dans la même plage et ce pour des dates situées après la date de récolte notamment sur les parcelles de mil (\Cref{fig-multisource}). Nous avons alors considéré 2 séries temporelles de NDVI pour le lissage : la série d'origine et la série sans les valeurs Sentinel-2 jugées aberrantes. 
+\\Afin d'optimiser le temps de traitement \footnote{Deux heures approximativement par méthode de lissage avec une station de travail HP possédant un processeur Intel® Core™ i7-7700 CPU @ 3.60 GHz de 8 c\oe urs et 16 Go de mémoire RAM} de chaque série temporelle, le nombre de pixels en entrée a été réduit de façon à ne considérer que l'emprise des parcelles terrain au sud ouest de la zone d’étude (une taille de $1056\times1384$ soit $1\,461\,504$ pixels sur $41\,990\,000$ ou une taille de $6500\times6460$ ~\Cref{fig-zone-etude}). Une chaîne de traitement incluant les 3 méthodes de lissage a été mise en place avec le langage \texttt{Python}. Le filtre de Savitzky-Golay a été implémenté dans la chaîne de traitement grâce à la fonction \texttt{savgol\_filter} du module \texttt{scipy.signal}. L'algorithme HANTS implémenté est la transcription en \texttt{Python} effectuée par \citet{Espinoza-Davalos2017} du programme originel écrit en \texttt{Fortran} et \texttt{Matlab}. Enfin, pour implémenter la méthode de Whittaker, nous avons transcrit en langage \texttt{Python}, le programme \texttt{Matlab} développé par \citet{Eilers2003} \footnote{\url{https://pubs.acs.org/doi/abs/10.1021/ac034173t}}. Les valeurs originales et lissées par série temporelle pour l'ensemble des pixels sont stockées comme variables d'un fichier \texttt{netCDF4}. 
 \\En vue de définir le paramétrage optimal pour chaque méthode de lissage, nous avons adopté 3 critères d'évaluation qualitative tels que définis par \citet{Klisch2006} : 
 \begin{enumerate}
  \item Conserver la temporalité des profils notamment que les dates de début et de fin de saison ne soient pas influencées par le lissage
@@ -416,18 +367,10 @@ Remarquons que cette procédure d'ajustement n'a pas eu d'effet notable sur la r
 
 \begin{figure}[htbp]
  \begin{center}
-  \includegraphics[scale=0.23]{materiels_methodes/multisource.png} 
+  \includegraphics[scale=0.23]{materiels_methodes/multisource_notree.png} 
  \end{center}
  \caption[Moyenne et Ecart type du NDVI sur quelques parcelles]{Moyenne et Ecart type du NDVI sur quelques parcelles (\emph{Les traits gris correspondent de la gauche vers la droite respectivement aux dates de semis et de récolte des parcelles dont les identifiants sont marqués au dessus})}
  \label{fig-multisource}
-\end{figure}
-
-\begin{figure}[htbp]
- \begin{center}
-  %\includegraphics[scale=0.45]{synthese_biblio/metrics.png} 
- \end{center}
- \caption{Emprise de l'application du lissage}
- \label{fig-carte-lissage}
 \end{figure}
 
 \begin{table}[htbp]
@@ -447,7 +390,7 @@ Remarquons que cette procédure d'ajustement n'a pas eu d'effet notable sur la r
 
 \begin{figure}[htbp]
  \begin{center}
-   \includegraphics[scale=0.7]{materiels_methodes/lissage_prs.png} 
+   \includegraphics[scale=0.7]{materiels_methodes/lissage_prs_notree.png} 
  \end{center}
  \caption{Résultats du lissage de la série complète pour 6 parcelles}
  \label{fig-lissage-prs}
@@ -455,22 +398,28 @@ Remarquons que cette procédure d'ajustement n'a pas eu d'effet notable sur la r
 
 \begin{figure}[htbp]
  \begin{center}
-  \includegraphics[scale=0.7]{materiels_methodes/lissage_prscor.png} 
+  \includegraphics[scale=0.7]{materiels_methodes/lissage_prscor_notree.png} 
  \end{center}
  \caption{Résultats du lissage de la série rectifiée pour 6 parcelles}
  \label{fig-lissage-prscor}
 \end{figure}
 
-Sur les quelques profils reconstruits présentés, nous constatons plus de similitudes entre les 2 méthodes de lissage sur la série temporelle rectifiée que la série temporelle comprenant les valeurs Sentinel-2 aberrantes. Sur les profils de cette dernière, nous remarquons également que les valeurs Sentinel-2 ont tendance à rapprocher le maximum de NDVI de la date de récolte ou fin de saison. Globalement, la série rectifiée donne des résultats plus cohérents que la série complète et les profils reconstruits par les 2 méthodes sont semblables. Nous avons donc retenu pour l'extraction des métriques phénologiques, les profils temporels de NDVI obtenus en lissant la série temporelle rectifiée par l'algorithme HANTS et la méthode de Whittaker.
+Sur les quelques profils reconstruits présentés, nous constatons plus de similitudes entre les 2 méthodes de lissage sur la série temporelle rectifiée que la série temporelle comprenant les valeurs Sentinel-2 aberrantes. Sur les profils de cette dernière, nous remarquons également que les valeurs Sentinel-2 ont tendance à rapprocher le maximum de NDVI de la date de récolte ou fin de saison. Globalement, la série rectifiée donne des résultats plus cohérents avec le cycle de développement des cultures (on ne peut observer un maximum de végétation après la date de récolte) que la série complète et les profils reconstruits par les 2 méthodes sont semblables. Nous avons donc retenu pour l'extraction des métriques phénologiques, les profils temporels de NDVI obtenus en lissant la série temporelle rectifiée par l'algorithme HANTS et la méthode de Whittaker.
 
-\section{Extraction des métriques phénologiques}
-Nous arrivons à l'étape de l'extraction des métriques phénologiques qui va nous permettre entre autres, d'évaluer les dates de semis premier objectif de notre travail. Parmi les méthodes d'extraction repertoriées dans notre état de l'art (cf. \Cref{methodes-metriques}), nous avons opté pour l'approche par seuillage basée sur les ratios de NDVI \citep{White1997}. C'est une méthode simple, facile à mettre en \oe uvre et intéressante. En effet, contrairement aux méthodes par seuillage absolu, le seuillage effectué à partir des ratios de NDVI est relatif à l'amplitude des valeurs : 
+\section{Extraction des métriques phénologiques} \label{metriques}
+L’extraction des métriques phénologiques va nous permettre, entre autres, d’évaluer les dates de semis. Parmi les méthodes d'extraction repertoriées dans notre état de l'art (cf. \Cref{methodes-metriques}), nous avons opté pour l'approche par seuillage basée sur les ratios de NDVI \citep{White1997}. C'est une méthode simple, facile à mettre en \oe uvre. Contrairement aux méthodes par seuillage absolu, le seuillage effectué à partir des ratios de NDVI est relatif à l'amplitude des valeurs : 
 \begin{align}
  NDVI_{ratio}(t) = \frac{NDVI(t) - NDVI_{min}}{NDVI_{max}-NDVI_{min}} %\label{eq-NDVIratio}
 \end{align}
 où $NDVI(t)$ est la valeur de l'indice spectral $NDVI$ à un instant t du profil temporel de la végétation, $NDVI_{min}$ la valeur minimale du profil temporel, $NDVI_{max}$ la valeur maximale du profil et $NDVI_{ratio}(t)$ la valeur de l'indice spectral transformée. 
 \\La transformation des valeurs de NDVI en ratio permet dès lors de déterminer les seuils des transitions phénologiques indépendamment du type de couvert ou de la géolocalisation du site d'étude. Le ratio de NDVI varie entre $0$ et $1$. Avec cette approche, le SOS est identifié comme la date où le ratio de NDVI atteint un seuil fixé (généralement 20\% de l'amplitude) avant la valeur maximale du NDVI. La date de fin de saison ou EOS est déterminée similairement généralement avec un seuil de 80\% de l'amplitude après la valeur maximale du NDVI.
-\\Nous avons extrait les métriques suivantes à partir des profils temporels de NDVI lissés : le démarrage de la saison (SOS), la fin de saison (EOS), la durée de la saison (LOS), la valeur maximale du NDVI (MAX), l'amplitude du NDVI (AMPL), le cumul des valeurs de NDVI du SOS à la date du MAX ($CUM_{SOS-MAX}$), le cumul des valeurs de NDVI du SOS au EOS ($CUM_{SOS-EOS}$), le taux d'augmentation du NDVI entre le SOS et le MAX ($RATE_{SOS-MAX}$) et le taux de diminution du NDVI entre le MAX et le EOS ($RATE_{MAX-EOS}$).
-\\La détermination du SOS et du EOS est essentielle pour calculer les autres métriques excepté le MAX et le AMPL. Pour ce faire, nous avons testé plusieurs seuils, respectivement 10, 20, 30 puis 50\% pour le SOS et 50, 60, 70 puis 80\% pour le EOS.
+\\Pour chaque système de culture, nous avons extrait les métriques suivantes à partir des profils temporels de NDVI lissés : le démarrage de la saison (SOS), la fin de saison (EOS), la durée de la saison (LOS), la date de la valeur maximale du NDVI (MAX), la
+valeur maximale du NDVI ($NDVI_{MAX}$), l'amplitude du NDVI (AMPL), le cumul des valeurs de NDVI du SOS à la date du MAX ($CUM_{SOS-MAX}$), le cumul des valeurs de NDVI du MAX au EOS ($CUM_{MAX-EOS}$), le taux d'augmentation du NDVI entre le SOS et le MAX ($RATE_{SOS-MAX}$) et le taux de diminution du NDVI entre le MAX et le EOS ($RATE_{MAX-EOS}$).
+\\La détermination du SOS et du EOS est essentielle pour calculer les autres métriques excepté le MAX, le $NDVI_{MAX}$ et le AMPL. Pour ce faire, nous avons testé plusieurs seuils, respectivement 10, 20, 30 puis 50\% pour le SOS et 50, 60, 70 puis 80\% pour le EOS.
 
 \section{Estimation des rendements}
+
+La dernière étape de notre travail consiste à calibrer des modèles statistiques pour estimer les biomasses végétatives et rendements grain ou gousse pour chaque type de culture : arachide et mil. Nous disposons déjà comme variables explicatives des différentes métriques phénologiques calculées en \cref{metriques}. Néanmoins, nous avons cherché d’autres variables pouvant mieux expliquer les biomasses et rendements observés. Pour ce faire, nous avons tout d’abord introduit un nouvel indice spectral en supplément du NDVI : le GDVI (Difference NIR/Green ou Green Difference Vegetation Index) qui est la différence entre les bandes du proche infrarouge et du vert ($PIR - V$). Tout comme pour le NDVI, les images de GDVI extraits à partir des données RapidEye et Sentinel-2 ont été rééchantillonnées à 3 mètres de résolution spatiale par la méthode du plus proche voisin. La série temporelle de GDVI a ensuite été lissée et reconstruite avec un pas journalier avec la méthode de lissage de Whittaker ($\lambda = 3000$; $d = 2$). Ainsi, pour chaque type de culture, les valeurs des indices de végétation provenant des profils temporels reconstruits ont respectivement été cumulées sur un intervalle de 100 jours à partir de la date du SOS, avec des pas et des décalages de 5 jours. Pour le NDVI par exemple, les valeurs sont cumulées à partir du SOS à 5 jours après le SOS, du SOS à 10 jours après le SOS et ainsi de suite jusqu’à 100 jours après le SOS. On reprend ensuite le même procédé en décalant le début de 5 jours c’est à dire en commençant cette fois ci à partir de 5 jours après le SOS et ce jusqu’à 95 jours après le SOS. Pour chaque cumul effectué, un modèle de régression linéaire est établi pour tenter d’expliquer les biomasses et rendements observés. Ceci doit nous permettre d’identifier pour chaque système de culture les périodes d’intégration les plus correlées avec les biomasses et rendements finaux. Une fois ces périodes déterminées et à condition que les régréssions effectuées soient significatives, nous recherchons les interactions possibles entre nos deux jeux de données de variables
+explicatives c’est-à-dire les métriques phénologiques calculées et les périodes d’intégration, pouvant expliquer les biomasses et rendements observés. Pour cela, nous établissons à nouveau, des modèles de régression linéaire à partir de chaque interaction possible de variables. Ainsi, les interactions les plus correlées avec les biomasses et rendements observés sont gardées à condition que les régressions effectuées soient significatives. Au final, étant donné l’étroitesse de la taille d’échantillons dont nous disposons (12 parcelles d’arachide et 35 de mil) pour établir des modèles multivariés
+et des échecs répétés de méthodes de sélection de variables comme le VIF (Variable Inflation Factor) ou de transformation de variables comme l’analyse en composantes principales (ACP), nous calibrons nos modèles définitifs pour chaque type de culture, à partir des variables précédentes (indices de végétation intégrés et interaction des
+variables intégrées et des métriques phénologiques) ayant le mieux expliqué les biomasses et rendements. Également, compte tenu de cette étroitesse d’échantillons, nous nous arrêterons à la calibration des modèles et n’aborderons pas leur validation.

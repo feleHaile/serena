@@ -29,7 +29,7 @@ la végétation, par l’ensemble des stades de développement intervenant dans 
 sénescence \citep{Kimball2014}. La phénologie du Mil peut être par exemple décomposée en une phase \emph{végétative}, une phase \emph{reproductrice} et une phase de 
 \emph{maturation}. Selon les variétés de Mil cultivées, la longueur du cycle de développement peut être de 90 à 100 jours pour les \emph{Souna} (variétés à cycle court --- 
 petits grains, épis non aristés et peu photosensibles) ou de 130 à 150 jours pour les \emph{Sanio} (variétés à cycle long --- grains plus gros, épis aristés et variété photopériodique) \citep{Diouf2001}.
-\\L'\'etude de la phénologie des plantes sur une échelle régionale à globale à partir d’observations satellitaires est désignée par \acrfull{lsp} \citep{Helman2018}. Le terme LSP 
+\\L'\'etude de la phénologie des plantes sur une échelle régionale à globale à partir d’observations satellitaires est désignée par \acrshort{lsp} \citep{Helman2018}. Le terme LSP 
 tient compte du fait que le signal intercepté par les satellites provient d’une surface hétérogène et n’est pas représentatif de la réponse spectrale d’une seule espèce 
 \citep{Kimball2014}. L'analyse de la LSP contribue entre autres à diverses applications comme l’étude des changements climatiques \citep{Begue2014} ou encore au suivi des
 cultures. Les séries temporelles d’indices de végétation provenant de capteurs à basse résolution comme AVHRR, MODIS, SPOT Vegetation ou encore PROBA-V permettent d’évaluer 
@@ -63,7 +63,7 @@ végétation utilisé par exemple le NDVI. D'autres métriques en plus peuvent �
  \begin{center}
   \includegraphics[scale=0.45]{synthese_biblio/metrics.png} 
  \end{center}
- \caption[Illustration de quelques métriques phénologiques]{Illustration de quelques métriques phénologiques : \emph{a- SOS b- EOS c- Durée de la saison d- Valeur de Base (en unité d'indice de végétation) e- Milieu de la saison f- Maximum de l'indice de végétation et g- Amplitude de l'indice de végétation}, Source : \citet{Eklundh2017}}
+ \caption[Illustration de quelques métriques phénologiques]{Illustration de quelques métriques phénologiques : \emph{(a)- SOS (b)- EOS (c)- Durée de la saison (d)- Valeur de Base (en unité d'indice de végétation) (e)- Milieu de la saison (f)- Maximum de l'indice de végétation (g)- Amplitude de l'indice de végétation (h)- Petite intégrale (h et i)- Grande intégrale}, Source : \citet{Eklundh2017}}
  \label{metrics}
 \end{figure}
 %\clearpage
@@ -97,3 +97,89 @@ Nous avons identifié les suivants :
 \end{itemize}
 
 \section{Estimation des rendements par télédétection}
+
+L’évaluation des rendements agricoles, qu’elle intervienne très tôt dans la saison
+(prévision) ou en fin de saison (estimation), est une information d’une extrême utilité
+pour de nombreux acteurs du secteur agricole, particulièrement dans les pays dont
+l’économie est fortement influencée par la production agricole annuelle. L’estimation
+des rendements couplée à l’évaluation des superficies cultivées fournit notamment les
+statistiques agricoles nécessaires aux gouvernements dans leur planification des bud-
+gets d’importation et d’exportation de denrées alimentaires. L’estimation des rende-
+ments agricoles intéresse également les Systèmes d’Alerte Précoce (SAP) qui doivent
+effectuer un suivi exhaustif des conditions de développement des cultures au cours
+de la saison agricole afin notamment d’estimer la production des principales cultures
+et déterminer l’organisation éventuelle d’aides alimentaires.
+\\En agriculture, le rendement est la quantité de produit récolté sur une surface cultivée souvent exprimée en kilogrammes, quintaux ou tonnes par hectares. Dans le cas d’une culture céréalière, le rendement est le poids des grains récoltés par unité de surface.
+Le rendement d’une culture dépend des interactions entre 3 paramètres : le potentiel
+génétique ou caractéristiques variétales de la plante cultivée, l’environnement naturel
+réel de la plante et les pratiques agricoles adoptées (\Cref{facteurs}). En fonction des interactions entre ces 3 paramètres, on distingue 3 types de rendements \citep{Neumann2010,Tittonell2013,VanIttersum2013} :
+\begin{itemize}
+ \item le \emph{rendement potentiel} qui est le rendement obtenu pour une culture si tous les
+facteurs déterminants, notamment les conditions environnementales, sont reu-
+nies ; 
+\item le \emph{rendement atteignable} qui est le rendement maximum atteignable en fonction
+des facteurs limitants (contraintes hydriques dans le cas de cultures pluviales) ;
+\item et le \emph{rendement observé} est le rendement obtenu dans les conditions réelles, dé-
+terminé par différents facteurs de réduction comme la présence de mauvaises
+herbes, de ravageurs ou de maladies \ldots
+\end{itemize}
+
+\vspace{5mm}
+
+Au final, le rendement observé est déterminé par l’action conjointe des facteurs
+déterminants, limitants et des facteurs de réduction.
+
+\begin{figure}[htbp]
+ \begin{center}
+  \includegraphics[scale=0.3]{synthese_biblio/facteurs_rendements.png} 
+ \end{center}
+ \caption[Types de rendements et facteurs déterminants]{Définitions du rendement potentiel, atteignable et observé et des princi-
+paux facteurs déterminants, Source : \citet{Leroux2015}}
+ \label{facteurs}
+\end{figure}
+
+\vspace{5mm}
+
+Du fait qu’elles intègrent l’ensemble des facteurs affectant les rendements observés,
+les données de télédétection apparaissent comme un outil pertinent pour l’estimation
+des rendements agricoles. De plus, grâce à la vue synoptique qu’offrent les images satellitaires, la télédétection est complémentaire des méthodes traditionnelles que sont
+la modélisation agro-météorologique et les enquêtes terrains. La relation entre les propriétés spectrales des cultures et leur biomasse et rendement a été mise en évi-
+dence très tôt, peu après le lancement du premier satellite civil Landsat-1 en 1972.
+Tucker fut l’un des premiers à montrer que la combinaison des réflectances spectrales
+dans les bandes du rouge et du proche infrarouge, communément appelé indices de
+végétation, était corrélée à la biomasse totale aérienne sous la forme d’une relation
+linéaire \citep{Tucker1979} et à estimer les rendements de cultures à partir d’observations
+satellitaires \citep{Tucker1981, Tucker1986}. D’autres études ayant suivi
+ont montré que le NDVI était étroitement lié à l’activité photosynthétique de la vé-
+gétation et aux variables biophysiques comme le LAI et le FAPAR. En raison de sa
+relation quasi linéaire avec le FAPAR, le NDVI est une mesure indirecte de la produc-
+tivité primaire de la végétation \citep{Prince1990}. Dans leur article de synthèse, \citep{Rembold2013} ont distingué 2 types d’approches pour le suivi des rendements : une ap-
+proche qualitative et des approches quantitatives. Le suivi qualitatif des rendements
+repose sur l’interprétation des indices de végétation tout au long de la saison agricole
+notamment par rapport aux données historiques afin de détecter des anomalies de
+production de biomasse. Le VCI \citep{Kogan1995} est un indice de végétation bien connu
+pour ce cas de figure. Les approches quantitatives pour estimer le rendement d’une
+culture sur base de données de télédétection se présentent soit sous la forme de mo-
+dèles de régression entre observations satellitaires et rendements observés ou sous la
+forme de modèles de simulation de la croissance des cultures.
+
+\paragraph{Modèles de régression} Il s’agit d’établir une relation empirique entre les rendements observés sur le terrain et les indices de végétation dérivés d’observations satellitaires, généralement le NDVI à une date donnée ou cumulé sur un intervalle de
+temps caractéristique des stades phénologiques des cultures. Dès lors, la fiabilité de
+cette relation est grandement déterminée par la qualité des données récoltées sur le
+terrain. D’autres types d’informations peuvent être rajoutés aux observations satellitaires pour mieux affiner les modèles établis, notamment des variables biophysiques
+comme le LAI ou des variables bio-climatiques et météorologiques à l’instar de l’humidité du sol, des quantités de précipitations et des indices thermiques \citep{Leroux2016}. Par ailleurs, l’utilisation de données historiques sur les rendements des saisons
+agricoles précédentes peut aussi aider à mieux déterminer cette relation. L’utilisation d’un masque de cultures provenant notamment d’une carte d’occupation du sol est
+également une pratique courante dans l’estimation des rendements. Ceci peut aider
+à améliorer les estimations en réduisant la part de variabilité du NDVI due à la présence de la végétation naturelle. Les modèles de régression les plus simples pour
+l’estimation des rendements sont linéaires avec une ou plusieurs variables \citep{Johnson2014,Lambert2018}. D’autres méthodes plus complexes par fouille de données peuvent être également utilisées comme les forêts d’arbres décisionnels ou les réseaux de neurones artificiels \citep{Fieuzal2017}.
+
+\paragraph{Modèles de simulation de la croissance des cultures} Dans ce cas de figure, les observations satellitaires sont couplées avec des modèles de simulation de la croissance
+des cultures. Ces modèles mathématiques basés sur des équations déterministes per-
+mettent de formaliser les connaissances que l’on a sur les mécanismes physiologiques
+de croissance des végétaux et leurs interactions avec les principaux facteurs limitants
+comme le climat ou le niveau de fertilité du sol, tout en prenant en compte les dif-
+férentes pratiques culturales \citep{Delecolle1992}. Dans ces modèles, les variables biophysiques dérivées des données de télédétection (LAI, FAPAR) sont utilisées pour
+(re)-paramétrer, (re)-calibrer ou forcer les modèles \citep{Jin2018}. Ceci permet à
+la fois de bénéficier d’une estimation continue dans le temps de la croissance des
+cultures et d’une spatialisation des variables d’état du couvert végétal et des variables de sorties comme la biomasse ou le rendement \citep{Rembold2013}.
+
