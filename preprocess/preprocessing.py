@@ -32,6 +32,7 @@ import sys
 import subprocess
 import time
 import concurrent.futures
+from pprint import pprint
 
 def get_datatype (dataset):
     
@@ -161,8 +162,10 @@ def dnToTOA (inPath, outPath, sensor) :
         
           # Compute Earth-Sun Distance at the day of acquisition in Astronomical Units.
            # At this time, the Earth-Sun Distance is done on this website : http://www.instesre.org/Aerosols/sol_calc.htm
+           # lat  = 14,64 & lon = -16,44
         dicESUN={"2017-07-27":1.015107862579904,"2017-10-06":0.99966670968068246,
-                 "2017-10-26":0.994036745275356,"2017-11-09":0.990452817341342}
+                 "2017-10-26":0.994036745275356,"2017-11-09":0.990452817341342,
+                 "2018-03-15":0.9917799308371985}
         
         ESUN=float(dicESUN[ACQUISITION_DATE])
 #        print (ESUN)
@@ -420,21 +423,21 @@ def Mos_Resize (inPath,outPath, inShpFile, sensor) :
     
     
 if  __name__=='__main__':
-    '''
+    
     ################################## PLANETSCOPE  #####################################
-#                              TOA Reflectance, MOSAIC AND RESIZE
-    inPath="E:/Stage2018/Brutes/RAPIDEYE"
-    outPath="E:/Stage2018/Output/RAPIDEYE"
-    inShpFile="E:/Stage2018/Extent_Zone_Corr.shp"
-    sensor=1
+    
+    # TOA Reflectance
+    
+    inPath="G:/Images_Niakhar/Planet"
+    outPath="G:/Images_Niakhar/Preproc/Planet"
+    inShpFile="G:/Images_Niakhar/Zone_d_etude.shp"
+    sensor=0
     
     lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
     lstSubfolders = []
     for parentFolder in lstFolders :
         lstSubfolders += [os.path.join(parentFolder,subfolder) for subfolder in os.listdir(parentFolder) if os.path.isdir(os.path.join(parentFolder,subfolder))]
-#    print(lstSubfolders)
-    
-    import concurrent.futures
+#    pprint(lstSubfolders)
     
     NUM_WORKERS = 3
 
@@ -456,19 +459,13 @@ if  __name__=='__main__':
         
     end_time = time.time()        
          
-    print("Time for proccess : %ssecs" % (end_time - start_time)) 
-    '''
+    print("Time for proccess : %ssecs" % (end_time - start_time))
     
-     ################################## RAPIDEYE #####################################
-    inPath="E:/Stage2018/Output/PLANETSCOPE"
-    outPath="E:/Stage2018/Output/PLANETSCOPE"
-    inShpFile="E:/Stage2018/Extent_Zone_Corr.shp"
-    sensor=0
-    
+    # Mosaic and Resize
+    inPath="G:/Images_Niakhar/Preproc/Planet"
     lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+#    pprint(lstFolders)
     
-    NUM_WORKERS = 3
-
     def work(folderName):
         """
         Thread Function
@@ -480,22 +477,76 @@ if  __name__=='__main__':
     
     # Submit the jobs to the thread pool executor.
     with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
-    # Map the futures returned from executor.submit() to their destination windows.
-    # The _example.compute function modifies no Python objects and releases the GIL. It can execute concurrently.
         futures = {executor.submit(work, folderName) for folderName in lstFolders}
         concurrent.futures.wait(futures)
         
-    end_time = time.time()
+    end_time = time.time()        
+    print("Time for Mosaic and Resize : %ssecs" % (end_time - start_time))
+    
+    
+     ################################## RAPIDEYE #####################################
+    inPath="G:/Images_Niakhar/RapidEye"
+    outPath="G:/Images_Niakhar/Preproc/RapidEye"
+    inShpFile="G:/Images_Niakhar/Zone_d_etude.shp"
+    sensor=1
+    
+    lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+    lstSubfolders = []
+    for parentFolder in lstFolders :
+        lstSubfolders += [os.path.join(parentFolder,subfolder) for subfolder in os.listdir(parentFolder) if os.path.isdir(os.path.join(parentFolder,subfolder))]
+#    pprint(lstSubfolders)
+    
+    NUM_WORKERS = 3
+
+    def work(folderName):
+        """
+        Thread Function
+        """
+        dnToTOA (folderName, outPath, sensor)
+        return folderName
+    
+    start_time = time.time()
+    
+    # Submit the jobs to the thread pool executor.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
+    # Map the futures returned from executor.submit() to their destination windows.
+    # The _example.compute function modifies no Python objects and releases the GIL. It can execute concurrently.
+        futures = {executor.submit(work, folderName) for folderName in lstSubfolders}
+        concurrent.futures.wait(futures)
+        
+    end_time = time.time()        
+         
+    print("Time for proccess : %ssecs" % (end_time - start_time))
+    
+    # Mosaic and Resize
+    inPath="G:/Images_Niakhar/Preproc/RapidEye"
+    lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
+#    pprint(lstFolders)
+    
+    def work(folderName):
+        """
+        Thread Function
+        """
+        Mos_Resize (folderName, outPath, inShpFile, sensor)
+        return folderName
+    
+    start_time = time.time()
+    
+    # Submit the jobs to the thread pool executor.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
+        futures = {executor.submit(work, folderName) for folderName in lstFolders}
+        concurrent.futures.wait(futures)
+        
+    end_time = time.time()        
+    print("Time for Mosaic and Resize : %ssecs" % (end_time - start_time))
 #
 #    ################################### SENTINEL-2 ######################################
-    '''
-    inPath="E:/Stage2018/Brutes/S2"
-    outPath="E:/Stage2018/Output/SENTINEL-2"
-    inShpFile="E:/Stage2018/Extent_Zone_Corr.shp"
+    
+    inPath="G:/Images_Niakhar/Sentinel"
+    outPath="G:/Images_Niakhar/Preproc/Sentinel"
+    inShpFile="G:/Images_Niakhar/Zone_d_etude.shp"
 
     lstFolders = [os.path.join(inPath,folder) for folder in os.listdir(inPath) if os.path.isdir(os.path.join(inPath,folder))]
-        
-    import concurrent.futures
     
     NUM_WORKERS = 3
 
@@ -510,13 +561,11 @@ if  __name__=='__main__':
     
     # Submit the jobs to the thread pool executor.
     with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
-    # Map the futures returned from executor.submit() to their destination windows.
-    # The _example.compute function modifies no Python objects and releases the GIL. It can execute concurrently.
         futures = {executor.submit(work, folderName) for folderName in lstFolders}
         concurrent.futures.wait(futures)
         
     end_time = time.time()        
          
     print("Time for proccess : %ssecs" % (end_time - start_time))
-    '''
+    
 
